@@ -6,19 +6,10 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# Python 3 support
-extra = {}
-if sys.version_info >= (3, 0):
-    extra.update(
-        use_2to3=True,
-        use_2to3_fixers=['custom_fixers']
-    )
-
-
 if 'sdist' in sys.argv:
     os.system('./admin/makedoc')
 
-version = '[library version:2.2.5]'[17:-1]
+version = '3.0.0-alpha'
 
 setup(
     name='python-openid',
@@ -40,9 +31,9 @@ and support for a variety of storage back-ends.''',
               ],
     # license specified by classifier.
     # license=getLicense(),
-    author='JanRain',
-    author_email='openid@janrain.com',
-    download_url='http://github.com/openid/python-openid/tarball/%s' % (version,),
+    author='Rami Chowdhury',
+    author_email='rami.chowdhury@gmail.com',
+    download_url='http://github.com/necaris/python3-openid/tarball/%s' % (version,),
     classifiers=[
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -55,6 +46,5 @@ and support for a variety of storage back-ends.''',
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Systems Administration :: Authentication/Directory",
-    ],
-    **extra
+    ]
     )
