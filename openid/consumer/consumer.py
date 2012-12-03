@@ -345,7 +345,7 @@ class Consumer(object):
             service = disco.getNextService(self._discover)
         except fetchers.HTTPFetchingError, why:
             raise DiscoveryFailure(
-                'Error fetching XRDS document: %s' % (why[0],), None)
+                'Error fetching XRDS document: %s' % (why.why,), None)
 
         if service is None:
             raise DiscoveryFailure(
@@ -646,7 +646,7 @@ class GenericConsumer(object):
             try:
                 return self._doIdRes(message, endpoint, return_to)
             except (ProtocolError, DiscoveryFailure), why:
-                return FailureResponse(endpoint, why[0])
+                return FailureResponse(endpoint, why)
 
     def _completeInvalid(self, message, endpoint, _):
         mode = message.getArg(OPENID_NS, 'mode', '<No mode set>')
@@ -663,7 +663,7 @@ class GenericConsumer(object):
         try:
             self._verifyReturnToArgs(message.toPostArgs())
         except ProtocolError, why:
-            logging.exception("Verifying return_to arguments: %s" % (why[0],))
+            logging.exception("Verifying return_to arguments: %s" % (why,))
             return False
 
         # Check the return_to base URL against the one in the message.
@@ -770,7 +770,7 @@ class GenericConsumer(object):
         try:
             timestamp, salt = splitNonce(nonce)
         except ValueError, why:
-            raise ProtocolError('Malformed nonce: %s' % (why[0],))
+            raise ProtocolError('Malformed nonce: %s' % (why,))
 
         if (self.store is not None and
             not self.store.useNonce(server_url, timestamp, salt)):
@@ -1262,18 +1262,18 @@ class GenericConsumer(object):
         try:
             response = self._makeKVPost(args, endpoint.server_url)
         except fetchers.HTTPFetchingError, why:
-            logging.exception('openid.associate request failed: %s' % (why[0],))
+            logging.exception('openid.associate request failed: %s' % (why,))
             return None
 
         try:
             assoc = self._extractAssociation(response, assoc_session)
         except KeyError, why:
             logging.exception('Missing required parameter in response from %s: %s'
-                        % (endpoint.server_url, why[0]))
+                        % (endpoint.server_url, why))
             return None
         except ProtocolError, why:
             logging.exception('Protocol error parsing response from %s: %s' % (
-                endpoint.server_url, why[0]))
+                endpoint.server_url, why))
             return None
         else:
             return assoc
@@ -1395,7 +1395,7 @@ class GenericConsumer(object):
         try:
             expires_in = int(expires_in_str)
         except ValueError, why:
-            raise ProtocolError('Invalid expires_in field: %s' % (why[0],))
+            raise ProtocolError('Invalid expires_in field: %s' % (why,))
 
         # OpenID 1 has funny association session behaviour.
         if assoc_response.isOpenID1():
@@ -1434,7 +1434,7 @@ class GenericConsumer(object):
             secret = assoc_session.extractSecret(assoc_response)
         except ValueError, why:
             fmt = 'Malformed response for %s session: %s'
-            raise ProtocolError(fmt % (assoc_session.session_type, why[0]))
+            raise ProtocolError(fmt % (assoc_session.session_type, why))
 
         return Association.fromExpiresIn(
             expires_in, assoc_handle, secret, assoc_type)
@@ -1669,9 +1669,9 @@ class AuthRequest(object):
 
         @returns: str
         """
-        return oidutil.autoSubmitHTML(self.formMarkup(realm, 
+        return oidutil.autoSubmitHTML(self.formMarkup(realm,
                                                       return_to,
-                                                      immediate, 
+                                                      immediate,
                                                       form_tag_attrs))
 
     def shouldSendRedirect(self):
