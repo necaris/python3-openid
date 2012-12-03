@@ -138,7 +138,7 @@ def remove_dot_segments(path):
 
 def urinorm(uri):
     if isinstance(uri, unicode):
-        uri = _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii')
+        uri = _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
 
     illegal_mo = uri_illegal_char_re.search(uri)
     if illegal_mo:
@@ -171,7 +171,7 @@ def urinorm(uri):
     if '%' in host:
         host = host.lower()
         host = pct_encoded_re.sub(_pct_encoded_replace, host)
-        host = unicode(host, 'utf-8').encode('idna')
+        host = unicode(host, 'utf-8').encode('idna').decode()
     else:
         host = host.lower()
 
