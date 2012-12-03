@@ -140,12 +140,11 @@ def appendArgs(url, args):
     @rtype: str
     """
     if hasattr(args, 'items'):
-        args = list(args.items())
-        args.sort()
+        args = sorted(args.items())
     else:
         args = list(args)
 
-    if len(args) == 0:
+    if not args:
         return url
 
     if '?' in url:
@@ -157,11 +156,11 @@ def appendArgs(url, args):
     # about the encodings of plain bytes (str).
     i = 0
     for k, v in args:
-        if type(k) is not str:
-            k = k.encode('UTF-8')
+        if not isinstance(k, bytes):
+            k = k.encode('utf-8')
 
-        if type(v) is not str:
-            v = v.encode('UTF-8')
+        if not isinstance(v, bytes):
+            v = v.encode('utf-8')
 
         args[i] = (k, v)
         i += 1
