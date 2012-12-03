@@ -7,7 +7,11 @@ __all__ = ['fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
            'HTTPFetcher', 'createHTTPFetcher', 'HTTPFetchingError',
            'HTTPError']
 
-import urllib2
+try:
+    import urllib2
+except:
+    # Python 3
+    import urllib.request as urllib2
 import time
 import cStringIO
 import sys
