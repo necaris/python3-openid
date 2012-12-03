@@ -6,12 +6,12 @@ This module contains the HTTP fetcher interface and several implementations.
 __all__ = ['fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
            'HTTPFetcher', 'createHTTPFetcher', 'HTTPFetchingError',
            'HTTPError']
-
 try:
-    import urllib2
-except:
     # Python 3
     import urllib.request as urllib2
+except ImportError:
+    import urllib2
+
 import time
 import cStringIO
 import sys
