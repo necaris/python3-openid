@@ -218,7 +218,8 @@ class Urllib2Fetcher(HTTPFetcher):
             'User-Agent',
             "%s Python-urllib/%s" % (USER_AGENT, urllib.request.__version__))
 
-        req = urllib.request.Request(url, data=body, headers=headers)
+        req = urllib.request.Request(url, data=bytes(body, encoding="utf-8"),
+                                     headers=headers)
         try:
             f = self.urlopen(req)
             try:
