@@ -6,11 +6,16 @@ This module contains the HTTP fetcher interface and several implementations.
 __all__ = ['fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
            'HTTPFetcher', 'createHTTPFetcher', 'HTTPFetchingError',
            'HTTPError']
+
+import urllib2
 try:
-    # Python 3
-    import urllib.request as urllib2
-except ImportError:
-    import urllib2
+    urllib_version = urllib2.__version__
+except:
+    # Python 3 -- the urllib2 import is rewritten by 2to3 into
+    # `import urllib.request, urllib.error, urllib.parse', but
+    # 2to3 doesn't know which of them the __version__ should be
+    # read from.
+    urllib_version = urllib.request.version
 
 import time
 import cStringIO
@@ -204,7 +209,7 @@ class Urllib2Fetcher(HTTPFetcher):
 
         headers.setdefault(
             'User-Agent',
-            "%s Python-urllib/%s" % (USER_AGENT, urllib2.__version__,))
+            "%s Python-urllib/%s" % (USER_AGENT, urllib_version,))
 
         req = urllib2.Request(url, data=body, headers=headers)
         try:
