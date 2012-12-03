@@ -6,7 +6,8 @@ __all__ = ['Message', 'NamespaceMap', 'no_default', 'registerNamespaceAlias',
 
 import copy
 import warnings
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.error
 
 from openid import oidutil
 from openid import kvform
@@ -545,12 +546,12 @@ class NamespaceMap(object):
         """Return an iterator over the aliases"""
         return iter(self.alias_to_namespace)
 
-    def iteritems(self):
+    def items(self):
         """Iterate over the mapping
 
         @returns: iterator of (namespace_uri, alias)
         """
-        return iter(self.namespace_to_alias.items())
+        return self.namespace_to_alias.items()
 
     def addAlias(self, namespace_uri, desired_alias, implicit=False):
         """Add an alias from this namespace URI to the desired alias
