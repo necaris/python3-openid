@@ -170,11 +170,15 @@ def appendArgs(url, args):
 
 
 def toBase64(s):
-    """Represent string s as base64, omitting newlines"""
+    """Represent string / bytes s as base64, omitting newlines"""
+    if isinstance(s, str):
+        s = s.encode("utf-8")
     return binascii.b2a_base64(s)[:-1]
 
 
 def fromBase64(s):
+    if isinstance(s, str):
+        s = s.encode("utf-8")
     try:
         return binascii.a2b_base64(s)
     except binascii.Error as why:
