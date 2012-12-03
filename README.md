@@ -1,23 +1,13 @@
-This is the Python OpenID library.
-
-[![Build Status][travis-image]][travis-link]
-
-[travis-image]: https://secure.travis-ci.org/openid/python-openid.png?branch=master
-[travis-link]: http://travis-ci.org/openid/python-openid
+This started out as a fork of the Python OpenID library, with changes
+to make it Python 3 compatible. It's now a port of that library, including
+cleanups and updates to the code in general, since I unfortunately lack
+the patience to try and keep code compatible with Python 2.3 - 3.2.
 
 
 REQUIREMENTS
 ============
 
- - Python 2.3, 2.4, or 2.5.
-
- - ElementTree.  This is included in the Python 2.5 standard library,
-   but users of earlier versions of Python may need to install it
-   seperately.
-
- - pycrypto, if on Python 2.3 and without /dev/urandom, or on Python
-   2.3 or 2.4 and you want SHA256.
-
+ - Python 3.x
 
 INSTALLATION
 ============
