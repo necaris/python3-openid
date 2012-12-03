@@ -9,10 +9,16 @@ __all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML', 'toU
 
 import binascii
 import sys
-import urlparse
 import logging
 
-from urllib import urlencode
+try:
+    import urlparse
+    from urllib import urlencode
+except ImportError:
+    # Python 3.x
+    import urllib.parse as urlparse
+    from urllib.parse import urlencode
+
 
 elementtree_modules = [
     'lxml.etree',
