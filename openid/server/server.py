@@ -441,7 +441,7 @@ class AssociateRequest(OpenIDRequest):
             session = session_class.fromMessage(message)
         except ValueError, why:
             raise ProtocolError(message, 'Error parsing %s session: %s' %
-                                (session_class.session_type, why[0]))
+                                (session_class.session_type,))
 
         assoc_type = message.getArg(OPENID_NS, 'assoc_type', 'HMAC-SHA1')
         if assoc_type not in session.allowed_assoc_types:
@@ -1505,13 +1505,13 @@ class Server(object):
         associations I can make and how.
     @type negotiator: L{openid.association.SessionNegotiator}
     """
-    
+
     def __init__(
         self,
         store,
         op_endpoint=None,
-        signatoryClass=Signatory, 
-        encoderClass=SigningEncoder, 
+        signatoryClass=Signatory,
+        encoderClass=SigningEncoder,
         decoderClass=Decoder):
         """A new L{Server}.
 

@@ -18,7 +18,7 @@ class _TestCase(unittest.TestCase):
 	try:
             p.feed(self.case)
         except ParseDone, why:
-            found = why[0]
+            found = str(why)
 
             # make sure we protect outselves against accidental bogus
             # test cases

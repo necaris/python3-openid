@@ -185,7 +185,7 @@ def findHTMLMeta(stream):
             chunks.append(stream.read())
             break
         except ParseDone, why:
-            uri = why[0]
+            uri = why
             if uri is None:
                 # Parse finished, but we may need the rest of the file
                 chunks.append(stream.read())

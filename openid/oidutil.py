@@ -172,7 +172,7 @@ def fromBase64(s):
         return binascii.a2b_base64(s)
     except binascii.Error, why:
         # Convert to a common exception type
-        raise ValueError(why[0])
+        raise ValueError(str(why))
 
 class Symbol(object):
     """This class implements an object that compares equal to others

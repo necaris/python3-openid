@@ -90,7 +90,7 @@ def run_fetcher_tests(server):
         try:
             exc_fetchers.append(klass())
         except RuntimeError, why:
-            if why[0].startswith('Cannot find %s library' % (library_name,)):
+            if str(why).startswith('Cannot find %s library' % (library_name,)):
                 try:
                     __import__(library_name)
                 except ImportError:

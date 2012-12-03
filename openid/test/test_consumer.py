@@ -788,7 +788,7 @@ class IdResCheckForFieldsTest(TestIdRes):
             try:
                 self.consumer._idResCheckForFields(message)
             except ProtocolError, why:
-                self.failUnless(why[0].startswith('Missing required'))
+                self.failUnless(str(why).startswith('Missing required'))
             else:
                 self.fail('Expected an error, but none occurred')
         return test
@@ -799,7 +799,7 @@ class IdResCheckForFieldsTest(TestIdRes):
             try:
                 self.consumer._idResCheckForFields(message)
             except ProtocolError, why:
-                self.failUnless(why[0].endswith('not signed'))
+                self.failUnless(str(why).endswith('not signed'))
             else:
                 self.fail('Expected an error, but none occurred')
         return test
@@ -1477,8 +1477,8 @@ class ConsumerTest(unittest.TestCase):
             try:
                 self.consumer.begin('unused in this test')
             except DiscoveryFailure, why:
-                self.failUnless(why[0].startswith('Error fetching'))
-                self.failIf(why[0].find('Unit test') == -1)
+                self.failUnless(str(why).startswith('Error fetching'))
+                self.failIf(str(why).find('Unit test') == -1)
             else:
                 self.fail('Expected DiscoveryFailure')
 
@@ -1493,8 +1493,8 @@ class ConsumerTest(unittest.TestCase):
             try:
                 self.consumer.begin(url)
             except DiscoveryFailure, why:
-                self.failUnless(why[0].startswith('No usable OpenID'))
-                self.failIf(why[0].find(url) == -1)
+                self.failUnless(str(why).startswith('No usable OpenID'))
+                self.failIf(str(why).find(url) == -1)
             else:
                 self.fail('Expected DiscoveryFailure')
 
@@ -1771,7 +1771,7 @@ class TestDiscoveryVerification(unittest.TestCase):
             self.failUnless(str(e), text)
         else:
             self.fail("expected ProtocolError, %r returned." % (r,))
-            
+
 
     def test_foreignDelegate(self):
         text = "verify failed"

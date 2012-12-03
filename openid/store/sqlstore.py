@@ -350,7 +350,7 @@ class SQLiteStore(SQLStore):
         try:
             return super(SQLiteStore, self).useNonce(*args, **kwargs)
         except self.exceptions.OperationalError, why:
-            if re.match('^columns .* are not unique$', why[0]):
+            if re.match('^columns .* are not unique$', str(why)):
                 return False
             else:
                 raise

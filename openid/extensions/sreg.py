@@ -159,7 +159,7 @@ def getSRegNS(message):
         except KeyError, why:
             # An alias for the string 'sreg' already exists, but it's
             # defined for something other than simple registration
-            raise SRegNamespaceError(why[0])
+            raise SRegNamespaceError(why)
 
     # we know that sreg_ns_uri defined, because it's defined in the
     # else clause of the loop as well, so disable the warning

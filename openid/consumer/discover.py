@@ -79,7 +79,7 @@ class OpenIDServiceEndpoint(object):
         I consider C{/server} endpoints to implicitly support C{/signon}.
         """
         return (
-            (type_uri in self.type_uris) or 
+            (type_uri in self.type_uris) or
             (type_uri == OPENID_2_0_TYPE and self.isOPIdentifier())
             )
 
@@ -306,7 +306,7 @@ def normalizeURL(url):
     try:
         normalized = urinorm.urinorm(url)
     except ValueError, why:
-        raise DiscoveryFailure('Normalizing identifier: %s' % (why[0],), None)
+        raise DiscoveryFailure('Normalizing identifier: %s' % (why,), None)
     else:
         return urlparse.urldefrag(normalized)[0]
 

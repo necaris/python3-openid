@@ -269,7 +269,7 @@ def test_mysql():
         try:
             conn = MySQLdb.connect(user=db_user, passwd=db_passwd, host = db_host)
         except MySQLdb.OperationalError, why:
-            if why[0] == 2005:
+            if int(why) == 2005:
                 print ('Skipping MySQL store test (cannot connect '
                        'to test server on host %r)' % (db_host,))
                 return

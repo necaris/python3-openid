@@ -87,7 +87,7 @@ def generateSample(test_name, base_url,
         template = getData(filename, test_name)
     except IOError, why:
         import errno
-        if why[0] == errno.ENOENT:
+        if int(why) == errno.ENOENT:
             raise KeyError(filename)
         else:
             raise
