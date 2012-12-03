@@ -341,8 +341,9 @@ class Message(object):
                      'value': oidutil.toUnicode(value)}
             form.append(ElementTree.Element('input', attrs))
 
-        submit = ElementTree.Element('input',
-            {'type':'submit', 'value':oidutil.toUnicode(submit_text)})
+        submit = ElementTree.Element(
+            'input',
+            {'type': 'submit', 'value': oidutil.toUnicode(submit_text)})
         form.append(submit)
 
         return ElementTree.tostring(form, encoding='utf-8')
