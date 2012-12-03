@@ -77,7 +77,7 @@ def kvToSeq(data, strict=False):
             logging.warn(formatted)
 
     if isinstance(data, bytes):
-        data = bytes.decode("utf-8")
+        data = data.decode("utf-8")
 
     lines = data.split('\n')
     if lines[-1]:
