@@ -6,6 +6,15 @@ try:
 except ImportError:
     from distutils.core import setup
 
+# Python 3 support
+extra = {}
+if sys.version_info >= (3, 0):
+    extra.update(
+        use_2to3=True,
+        use_2to3_fixers=['custom_fixers']
+    )
+
+
 if 'sdist' in sys.argv:
     os.system('./admin/makedoc')
 
@@ -46,4 +55,5 @@ and support for a variety of storage back-ends.''',
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Systems Administration :: Authentication/Directory",
     ],
+    **extra
     )
