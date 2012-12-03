@@ -15,7 +15,7 @@ except:
     # `import urllib.request, urllib.error, urllib.parse', but
     # 2to3 doesn't know which of them the __version__ should be
     # read from.
-    urllib_version = urllib.request.version
+    urllib_version = urllib.request.__version__
 
 import time
 import cStringIO
