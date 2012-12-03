@@ -54,7 +54,7 @@ class TestExtractReturnToURLs(unittest.TestCase):
         return result
 
     def failUnlessFileHasReturnURLs(self, filename, expected_return_urls):
-        self.failUnlessXRDSHasReturnURLs(file(filename).read(),
+        self.failUnlessXRDSHasReturnURLs(open(filename).read(),
                                          expected_return_urls)
 
     def failUnlessXRDSHasReturnURLs(self, data, expected_return_urls):

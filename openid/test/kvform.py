@@ -108,7 +108,7 @@ kvseq_cases = [
     ([], '', 0),
 
     # Make sure that we handle non-ascii characters (also wider than 8 bits)
-    ([(u'\u03bbx', u'x')], '\xce\xbbx:x\n', 0),
+    ([('\u03bbx', 'x')], '\xce\xbbx:x\n', 0),
 
     # If it's a UTF-8 str, make sure that it's equivalent to the same
     # string, decoded.
@@ -128,7 +128,7 @@ kvseq_cases = [
     ([(' open id ', ' use ful '),
       (' a ', ' b ')], ' open id : use ful \n a : b \n', 8),
 
-    ([(u'foo', 'bar')], 'foo:bar\n', 0),
+    ([('foo', 'bar')], 'foo:bar\n', 0),
     ]
 
 kvexc_cases = [

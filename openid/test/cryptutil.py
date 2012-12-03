@@ -17,15 +17,15 @@ def test_cryptrand():
     assert len(t) == 32
     assert s != t
 
-    a = cryptutil.randrange(2L ** 128)
-    b = cryptutil.randrange(2L ** 128)
-    assert type(a) is long
-    assert type(b) is long
+    a = cryptutil.randrange(2 ** 128)
+    b = cryptutil.randrange(2 ** 128)
+    assert type(a) is int
+    assert type(b) is int
     assert b != a
 
     # Make sure that we can generate random numbers that are larger
     # than platform int size
-    cryptutil.randrange(long(sys.maxint) + 1L)
+    cryptutil.randrange(int(sys.maxsize) + 1)
 
 def test_reversed():
     if hasattr(cryptutil, 'reversed'):
@@ -39,7 +39,7 @@ def test_reversed():
             ([1], [1]),
             ([1,2], [2,1]),
             ([1,2,3], [3,2,1]),
-            (range(1000), range(999, -1, -1)),
+            (list(range(1000)), list(range(999, -1, -1))),
             ]
 
         for case, expected in cases:
@@ -50,11 +50,11 @@ def test_reversed():
             assert twice == list(case), (actual, case, twice)
 
 def test_binaryLongConvert():
-    MAX = sys.maxint
-    for iteration in xrange(500):
-        n = 0L
+    MAX = sys.maxsize
+    for iteration in range(500):
+        n = 0
         for i in range(10):
-            n += long(random.randrange(MAX))
+            n += int(random.randrange(MAX))
 
         s = cryptutil.longToBinary(n)
         assert type(s) is str
@@ -62,14 +62,14 @@ def test_binaryLongConvert():
         assert n == n_prime, (n, n_prime)
 
     cases = [
-        ('\x00', 0L),
-        ('\x01', 1L),
-        ('\x7F', 127L),
-        ('\x00\xFF', 255L),
-        ('\x00\x80', 128L),
-        ('\x00\x81', 129L),
-        ('\x00\x80\x00', 32768L),
-        ('OpenID is cool', 1611215304203901150134421257416556L)
+        ('\x00', 0),
+        ('\x01', 1),
+        ('\x7F', 127),
+        ('\x00\xFF', 255),
+        ('\x00\x80', 128),
+        ('\x00\x81', 129),
+        ('\x00\x80\x00', 32768),
+        ('OpenID is cool', 1611215304203901150134421257416556)
         ]
 
     for s, n in cases:
@@ -79,20 +79,20 @@ def test_binaryLongConvert():
         assert s == s_prime, (n, s, s_prime)
 
 def test_longToBase64():
-    f = file(os.path.join(os.path.dirname(__file__), 'n2b64'))
+    f = open(os.path.join(os.path.dirname(__file__), 'n2b64'))
     try:
         for line in f:
             parts = line.strip().split(' ')
-            assert parts[0] == cryptutil.longToBase64(long(parts[1]))
+            assert parts[0] == cryptutil.longToBase64(int(parts[1]))
     finally:
         f.close()
 
 def test_base64ToLong():
-    f = file(os.path.join(os.path.dirname(__file__), 'n2b64'))
+    f = open(os.path.join(os.path.dirname(__file__), 'n2b64'))
     try:
         for line in f:
             parts = line.strip().split(' ')
-            assert long(parts[1]) == cryptutil.base64ToLong(parts[0])
+            assert int(parts[1]) == cryptutil.base64ToLong(parts[0])
     finally:
         f.close()
 

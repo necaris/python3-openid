@@ -27,7 +27,7 @@ def parseCase(s):
     name = lines.pop(0)
     assert name.startswith('Name: ')
     desc = name[6:]
-    return desc, markup, map(parseLink, lines)
+    return desc, markup, list(map(parseLink, lines))
 
 def parseTests(s):
     tests = []
@@ -65,7 +65,7 @@ class _LinkTest(unittest.TestCase):
                     continue
 
             act_link = actual[i]
-            for k, (o, v) in exp_link.items():
+            for k, (o, v) in list(exp_link.items()):
                 if o:
                     act_v = act_link.get(k)
                     if act_v is None:

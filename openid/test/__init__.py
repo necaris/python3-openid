@@ -17,7 +17,7 @@ def fixpath():
         d = os.path.dirname(sys.argv[0])
     parent = os.path.normpath(os.path.join(d, '..'))
     if parent not in sys.path:
-        print ("putting %s in sys.path" % (parent,))
+        print(("putting %s in sys.path" % (parent,)))
         sys.path.insert(0, parent)
 
 
@@ -28,7 +28,7 @@ def otherTests():
         try:
             test_mod = __import__(module_name, {}, {}, [None])
         except ImportError:
-            print ('Failed to import test %r' % (module_name,))
+            print(('Failed to import test %r' % (module_name,)))
         else:
             suite.addTest(unittest.FunctionTestCase(test_mod.test))
 
@@ -106,7 +106,7 @@ def pyUnitTests():
         except AttributeError:
             # because the AttributeError doesn't actually say which
             # object it was.
-            print ("Error loading tests from %s:" % (name,))
+            print(("Error loading tests from %s:" % (name,)))
             raise
 
     return s
@@ -115,7 +115,7 @@ def pyUnitTests():
 def splitDir(d, count):
     # in python2.4 and above, it's easier to spell this as
     # d.rsplit(os.sep, count)
-    for i in xrange(count):
+    for i in range(count):
         d = os.path.dirname(d)
     return d
 
@@ -137,7 +137,7 @@ def _import_djopenid():
         with open(djinit, 'r') as f:
             exec(compile(f.read(), "__init__.py"), "exec", djinit.__dict__)
     else:
-        execfile(djinit, djopenid.__dict__)
+        exec(compile(open(djinit).read(), djinit, 'exec'), djopenid.__dict__)
     djopenid.__file__ = djinit
 
     # __path__ is the magic that makes child modules of the djopenid package

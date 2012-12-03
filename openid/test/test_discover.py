@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import unittest
-import datadriven
+from . import datadriven
 import os.path
 from openid import fetchers
 from openid.fetchers import HTTPResponse
@@ -9,7 +9,7 @@ from openid.yadis.discover import DiscoveryFailure
 from openid.consumer import discover
 from openid.yadis import xrires
 from openid.yadis.xri import XRI
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 from openid import message
 
 ### Tests for conditions that trigger DiscoveryFailure
@@ -51,7 +51,7 @@ class TestDiscoveryFailure(datadriven.DataDrivenTestCase):
         expected_status = self.responses[-1].status
         try:
             discover.discover(self.url)
-        except DiscoveryFailure, why:
+        except DiscoveryFailure as why:
             self.failUnlessEqual(why.http_response.status, expected_status)
         else:
             self.fail('Did not raise DiscoveryFailure')
@@ -129,7 +129,7 @@ class TestNormalization(unittest.TestCase):
 
         try:
             discover.discover('users.stompy.janrain.com:8000/x')
-        except DiscoveryFailure, why:
+        except DiscoveryFailure as why:
             self.fail('failed to parse url with port correctly')
         except RuntimeError:
             pass #expected
@@ -231,7 +231,7 @@ def readDataFile(filename):
     module_directory = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(
         module_directory, 'data', 'test_discover', filename)
-    return file(filename).read()
+    return open(filename).read()
 
 class TestDiscovery(BaseTestDiscovery):
     def _discover(self, content_type, data,

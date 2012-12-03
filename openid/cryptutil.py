@@ -97,7 +97,7 @@ except ImportError:
         reversed
     except NameError:
         def reversed(seq):
-            return map(seq.__getitem__, xrange(len(seq) - 1, -1, -1))
+            return list(map(seq.__getitem__, range(len(seq) - 1, -1, -1)))
 
     def longToBinary(l):
         if l == 0:
@@ -140,7 +140,7 @@ except AttributeError:
         # have Windows equivalent here, but for now, require pycrypto
         # on Windows.
         try:
-            _urandom = file('/dev/urandom', 'rb')
+            _urandom = open('/dev/urandom', 'rb')
         except IOError:
             raise ImportError('No adequate source of randomness found!')
         else:
@@ -217,7 +217,7 @@ def randomString(length, chrs=None):
         return getBytes(length)
     else:
         n = len(chrs)
-        return ''.join([chrs[randrange(n)] for _ in xrange(length)])
+        return ''.join([chrs[randrange(n)] for _ in range(length)])
 
 def const_eq(s1, s2):
     if len(s1) != len(s2):

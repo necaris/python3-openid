@@ -1,7 +1,7 @@
 # -*- test-case-name: openid.test.test_yadis_discover -*-
 __all__ = ['discover', 'DiscoveryResult', 'DiscoveryFailure']
 
-from StringIO import StringIO
+from io import StringIO
 
 from openid import fetchers
 

@@ -445,7 +445,7 @@ class SRegResponseTest(unittest.TestCase):
         sreg_resp = sreg.SRegResponse.fromSuccessResponse(success_resp,
                                                           signed_only=False)
         self.failUnlessEqual([('nickname', 'The Mad Stork')],
-                             sreg_resp.items())
+                             list(sreg_resp.items()))
 
 class SendFieldsTest(unittest.TestCase):
     def test(self):

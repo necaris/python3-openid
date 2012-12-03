@@ -3,7 +3,7 @@ from openid import message
 from openid import oidutil
 from openid.extensions import sreg
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import cgi
 import unittest
 
@@ -494,7 +494,7 @@ class OpenID2MessageTest(unittest.TestCase):
     def _test_urlencoded(self, s):
         expected = ('openid.error=unit+test&openid.mode=error&'
                     'openid.ns=%s&xey=value' % (
-            urllib.quote(message.OPENID2_NS, ''),))
+            urllib.parse.quote(message.OPENID2_NS, ''),))
         self.failUnlessEqual(s, expected)
 
 
@@ -666,10 +666,10 @@ class OpenID2MessageTest(unittest.TestCase):
         m = message.Message.fromOpenIDArgs(openid_args)
 
         self.failUnless(('http://openid.net/extensions/sreg/1.1', 'sreg') in
-                        list(m.namespaces.iteritems()))
+                        list(m.namespaces.items()))
         missing = []
         for k in openid_args['signed'].split(','):
-            if not ("openid."+k) in m.toPostArgs().keys():
+            if not ("openid."+k) in list(m.toPostArgs().keys()):
                 missing.append(k)
         self.assertEqual([], missing, missing)
         self.assertEqual(openid_args, m.toArgs())
@@ -694,7 +694,7 @@ class OpenID2MessageTest(unittest.TestCase):
         m = message.Message.fromPostArgs(args)
         missing = []
         for k in args['openid.signed'].split(','):
-            if not ("openid."+k) in m.toPostArgs().keys():
+            if not ("openid."+k) in list(m.toPostArgs().keys()):
                 missing.append(k)
         self.assertEqual([], missing, missing)
         self.assertEqual(args, m.toPostArgs())
@@ -706,7 +706,7 @@ class OpenID2MessageTest(unittest.TestCase):
           }
         m = message.Message.fromOpenIDArgs(openid_args)
         self.failUnless((sreg.ns_uri, 'sreg') in
-                        list(m.namespaces.iteritems()))
+                        list(m.namespaces.items()))
         self.assertEqual('a@b.com', m.getArg(sreg.ns_uri, 'email'))
         self.assertEqual(openid_args, m.toArgs())
         self.failUnless(m.isOpenID1())
@@ -795,13 +795,13 @@ class MessageTest(unittest.TestCase):
         form = input_tree.getroot()
 
         # Check required form attributes
-        for k, v in self.required_form_attrs.iteritems():
+        for k, v in self.required_form_attrs.items():
             assert form.attrib[k] == v, \
                    "Expected '%s' for required form attribute '%s', got '%s'" % \
                    (v, k, form.attrib[k])
 
         # Check extra form attributes
-        for k, v in form_tag_attrs.iteritems():
+        for k, v in form_tag_attrs.items():
 
             # Skip attributes that already passed the required
             # attribute check, since they should be ignored by the
@@ -820,7 +820,7 @@ class MessageTest(unittest.TestCase):
 
         # For each post arg, make sure there is a hidden with that
         # value.  Make sure there are no other hiddens.
-        for name, value in message_.toPostArgs().iteritems():
+        for name, value in message_.toPostArgs().items():
             for e in hiddens:
                 if e.attrib['name'] == name:
                     assert e.attrib['value'] == value, \
@@ -831,7 +831,7 @@ class MessageTest(unittest.TestCase):
                 self.fail("Post arg '%s' not found in form" % (name,))
 
         for e in hiddens:
-            assert e.attrib['name'] in message_.toPostArgs().keys(), \
+            assert e.attrib['name'] in list(message_.toPostArgs().keys()), \
                    "Form element for '%s' not in " + \
                    "original message" % (e.attrib['name'])
 
@@ -918,7 +918,7 @@ class MessageTest(unittest.TestCase):
             # Good guess!  But wrong.
             'http://openid.net/signon/2.0',
             # What?
-            u'http://specs%\\\r2Eopenid.net/auth/2.0',
+            'http://specs%\\\r2Eopenid.net/auth/2.0',
             # Too much escapings!
             'http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0',
             # This is a Type URI, not a openid.ns value.
@@ -975,15 +975,15 @@ class MessageTest(unittest.TestCase):
         # An example of the stuff that some Drupal installations send us,
         # which includes openid.ns but is 1.1.
         query = {
-            u'openid.assoc_handle': u'',
-            u'openid.claimed_id': u'http://foobar.invalid/',
-            u'openid.identity': u'http://foobar.myopenid.com',
-            u'openid.mode': u'checkid_setup',
-            u'openid.ns': u'http://openid.net/signon/1.1',
-            u'openid.ns.sreg': u'http://openid.net/extensions/sreg/1.1',
-            u'openid.return_to': u'http://drupal.invalid/return_to',
-            u'openid.sreg.required': u'nickname,email',
-            u'openid.trust_root': u'http://drupal.invalid',
+            'openid.assoc_handle': '',
+            'openid.claimed_id': 'http://foobar.invalid/',
+            'openid.identity': 'http://foobar.myopenid.com',
+            'openid.mode': 'checkid_setup',
+            'openid.ns': 'http://openid.net/signon/1.1',
+            'openid.ns.sreg': 'http://openid.net/extensions/sreg/1.1',
+            'openid.return_to': 'http://drupal.invalid/return_to',
+            'openid.sreg.required': 'nickname,email',
+            'openid.trust_root': 'http://drupal.invalid',
             }
         m = message.Message.fromPostArgs(query)
         self.failUnless(m.isOpenID1())
@@ -1009,14 +1009,14 @@ class NamespaceMapTest(unittest.TestCase):
             self.failUnless(nsm.isDefined(uripat%(n-1)))
             nsm.add(uripat%n)
 
-        for (uri, alias) in nsm.iteritems():
+        for (uri, alias) in nsm.items():
             self.failUnless(uri[22:]==alias[3:])
 
         i=0
         it = nsm.iterAliases()
         try:
             while True:
-                it.next()
+                next(it)
                 i += 1
         except StopIteration:
             self.failUnless(i == 23)
@@ -1025,7 +1025,7 @@ class NamespaceMapTest(unittest.TestCase):
         it = nsm.iterNamespaceURIs()
         try:
             while True:
-                it.next()
+                next(it)
                 i += 1
         except StopIteration:
             self.failUnless(i == 23)

@@ -53,7 +53,7 @@ class Request(Extension):
         self.preferred_auth_policies = preferred_auth_policies
         self.max_auth_age = max_auth_age
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.preferred_auth_policies or
                     self.max_auth_age is not None)
 
@@ -144,8 +144,8 @@ class Request(Extension):
 
         @returntype: [str]
         """
-        return filter(self.preferred_auth_policies.__contains__,
-                      supported_types)
+        return list(filter(self.preferred_auth_policies.__contains__,
+                      supported_types))
 
 Request.ns_uri = ns_uri
 
@@ -261,7 +261,7 @@ class Response(Extension):
                 }
 
         if self.nist_auth_level is not None:
-            if self.nist_auth_level not in range(0, 5):
+            if self.nist_auth_level not in list(range(0, 5)):
                 raise ValueError('nist_auth_level must be an integer between '
                                  'zero and four, inclusive')
             ns_args['nist_auth_level'] = str(self.nist_auth_level)

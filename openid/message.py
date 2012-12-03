@@ -6,7 +6,7 @@ __all__ = ['Message', 'NamespaceMap', 'no_default', 'registerNamespaceAlias',
 
 import copy
 import warnings
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from openid import oidutil
 from openid import kvform
@@ -100,13 +100,11 @@ def registerNamespaceAlias(namespace_uri, alias):
     if registered_aliases.get(alias) == namespace_uri:
         return
 
-    if namespace_uri in registered_aliases.values():
-        raise NamespaceAliasRegistrationError, \
-              'Namespace uri %r already registered' % (namespace_uri,)
+    if namespace_uri in list(registered_aliases.values()):
+        raise NamespaceAliasRegistrationError('Namespace uri %r already registered' % (namespace_uri,))
 
     if alias in registered_aliases:
-        raise NamespaceAliasRegistrationError, \
-              'Alias %r already registered' % (alias,)
+        raise NamespaceAliasRegistrationError('Alias %r already registered' % (alias,))
 
     registered_aliases[alias] = namespace_uri
 
@@ -148,7 +146,7 @@ class Message(object):
 
         # Partition into "openid." args and bare args
         openid_args = {}
-        for key, value in args.items():
+        for key, value in list(args.items()):
             if isinstance(value, list):
                 raise TypeError("query dict must have one value for each key, "
                                 "not lists of values.  Query is %r" % (args,))
@@ -186,7 +184,7 @@ class Message(object):
         ns_args = []
 
         # Resolve namespaces
-        for rest, value in openid_args.iteritems():
+        for rest, value in openid_args.items():
             try:
                 ns_alias, ns_key = rest.split('.', 1)
             except ValueError:
@@ -266,7 +264,7 @@ class Message(object):
         args = {}
 
         # Add namespace definitions to the output
-        for ns_uri, alias in self.namespaces.iteritems():
+        for ns_uri, alias in self.namespaces.items():
             if self.namespaces.isImplicit(ns_uri):
                 continue
             if alias == NULL_NAMESPACE:
@@ -275,7 +273,7 @@ class Message(object):
                 ns_key = 'openid.ns.' + alias
             args[ns_key] = oidutil.toUnicode(ns_uri).encode('UTF-8')
 
-        for (ns_uri, ns_key), value in self.args.iteritems():
+        for (ns_uri, ns_key), value in self.args.items():
             key = self.getKey(ns_uri, ns_key)
             # Ensure the resulting value is an UTF-8 encoded bytestring.
             args[key] = oidutil.toUnicode(value).encode('UTF-8')
@@ -288,7 +286,7 @@ class Message(object):
         # FIXME - undocumented exception
         post_args = self.toPostArgs()
         kvargs = {}
-        for k, v in post_args.iteritems():
+        for k, v in post_args.items():
             if not k.startswith('openid.'):
                 raise ValueError(
                     'This message can only be encoded as a POST, because it '
@@ -299,7 +297,7 @@ class Message(object):
         return kvargs
 
     def toFormMarkup(self, action_url, form_tag_attrs=None,
-                     submit_text=u"Continue"):
+                     submit_text="Continue"):
         """Generate HTML form markup that contains the values in this
         message, to be HTTP POSTed as x-www-form-urlencoded UTF-8.
 
@@ -325,25 +323,25 @@ class Message(object):
 
         assert action_url is not None
 
-        form = ElementTree.Element(u'form')
+        form = ElementTree.Element('form')
 
         if form_tag_attrs:
-            for name, attr in form_tag_attrs.iteritems():
+            for name, attr in form_tag_attrs.items():
                 form.attrib[name] = attr
 
-        form.attrib[u'action'] = oidutil.toUnicode(action_url)
-        form.attrib[u'method'] = u'post'
-        form.attrib[u'accept-charset'] = u'UTF-8'
-        form.attrib[u'enctype'] = u'application/x-www-form-urlencoded'
+        form.attrib['action'] = oidutil.toUnicode(action_url)
+        form.attrib['method'] = 'post'
+        form.attrib['accept-charset'] = 'UTF-8'
+        form.attrib['enctype'] = 'application/x-www-form-urlencoded'
 
-        for name, value in self.toPostArgs().iteritems():
-            attrs = {u'type': u'hidden',
-                     u'name': oidutil.toUnicode(name),
-                     u'value': oidutil.toUnicode(value)}
-            form.append(ElementTree.Element(u'input', attrs))
+        for name, value in self.toPostArgs().items():
+            attrs = {'type': 'hidden',
+                     'name': oidutil.toUnicode(name),
+                     'value': oidutil.toUnicode(value)}
+            form.append(ElementTree.Element('input', attrs))
 
-        submit = ElementTree.Element(u'input',
-            {u'type':'submit', u'value':oidutil.toUnicode(submit_text)})
+        submit = ElementTree.Element('input',
+            {'type':'submit', 'value':oidutil.toUnicode(submit_text)})
         form.append(submit)
 
         return ElementTree.tostring(form, encoding='utf-8')
@@ -362,9 +360,9 @@ class Message(object):
 
     def toURLEncoded(self):
         """Generate an x-www-urlencoded string"""
-        args = self.toPostArgs().items()
+        args = list(self.toPostArgs().items())
         args.sort()
-        return urllib.urlencode(args)
+        return urllib.parse.urlencode(args)
 
     def _fixNS(self, namespace):
         """Convert an input value into the internally used values of
@@ -379,7 +377,7 @@ class Message(object):
             else:
                 namespace = self._openid_ns_uri
 
-        if namespace != BARE_NS and type(namespace) not in [str, unicode]:
+        if namespace != BARE_NS and type(namespace) not in [str, str]:
             raise TypeError(
                 "Namespace must be BARE_NS, OPENID_NS or a string. got %r"
                 % (namespace,))
@@ -457,7 +455,7 @@ class Message(object):
         return dict([
             (ns_key, value)
             for ((pair_ns, ns_key), value)
-            in self.args.iteritems()
+            in self.args.items()
             if pair_ns == namespace
             ])
 
@@ -468,7 +466,7 @@ class Message(object):
         @type updates: {unicode:unicode}
         """
         namespace = self._fixNS(namespace)
-        for k, v in updates.iteritems():
+        for k, v in updates.items():
             self.setArg(namespace, k, v)
 
     def setArg(self, namespace, key, value):
@@ -552,7 +550,7 @@ class NamespaceMap(object):
 
         @returns: iterator of (namespace_uri, alias)
         """
-        return self.namespace_to_alias.iteritems()
+        return iter(self.namespace_to_alias.items())
 
     def addAlias(self, namespace_uri, desired_alias, implicit=False):
         """Add an alias from this namespace URI to the desired alias
@@ -564,7 +562,7 @@ class NamespaceMap(object):
 
         # Check that desired_alias does not contain a period as per
         # the spec.
-        if type(desired_alias) in [str, unicode]:
+        if type(desired_alias) in [str, str]:
             assert '.' not in desired_alias, \
                    "%r must not contain a dot" % (desired_alias,)
 
@@ -593,7 +591,7 @@ class NamespaceMap(object):
             raise KeyError(fmt % (namespace_uri, desired_alias, alias))
 
         assert (desired_alias == NULL_NAMESPACE or
-                type(desired_alias) in [str, unicode]), repr(desired_alias)
+                type(desired_alias) in [str, str]), repr(desired_alias)
         assert namespace_uri not in self.implicit_namespaces
         self.alias_to_namespace[desired_alias] = namespace_uri
         self.namespace_to_alias[namespace_uri] = desired_alias

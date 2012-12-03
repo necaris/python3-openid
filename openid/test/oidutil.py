@@ -22,7 +22,7 @@ def test_base64():
         '\x00',
         '\x01',
         '\x00' * 100,
-        ''.join(map(chr, range(256))),
+        ''.join(map(chr, list(range(256)))),
         ]
 
     for s in cases:
@@ -32,9 +32,9 @@ def test_base64():
         assert s_prime == s, (s, b64, s_prime)
 
     # Randomized test
-    for _ in xrange(50):
+    for _ in range(50):
         n = random.randrange(2048)
-        s = ''.join(map(chr, map(lambda _: random.randrange(256), range(n))))
+        s = ''.join(map(chr, [random.randrange(256) for _ in range(n)]))
         b64 = oidutil.toBase64(s)
         checkEncoded(b64)
         s_prime = oidutil.fromBase64(b64)
@@ -58,13 +58,13 @@ class TestUnicodeConversion(unittest.TestCase):
 
     def test_toUnicode(self):
         # Unicode objects pass through
-        self.failUnless(isinstance(oidutil.toUnicode(u'fööbär'), unicode))
-        self.assertEquals(oidutil.toUnicode(u'fööbär'), u'fööbär')
+        self.failUnless(isinstance(oidutil.toUnicode('fööbär'), str))
+        self.assertEquals(oidutil.toUnicode('fööbär'), 'fööbär')
         # UTF-8 encoded string are decoded
-        self.failUnless(isinstance(oidutil.toUnicode('fööbär'), unicode))
-        self.assertEquals(oidutil.toUnicode('fööbär'), u'fööbär')
+        self.failUnless(isinstance(oidutil.toUnicode('fööbär'), str))
+        self.assertEquals(oidutil.toUnicode('fööbär'), 'fööbär')
         # Other encodings raise exceptions
-        self.assertRaises(UnicodeDecodeError, lambda: oidutil.toUnicode(u'fööbär'.encode('latin-1')))
+        self.assertRaises(UnicodeDecodeError, lambda: oidutil.toUnicode('fööbär'.encode('latin-1')))
 
 class TestSymbol(unittest.TestCase):
     def testCopyHash(self):

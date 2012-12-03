@@ -15,14 +15,14 @@ class UrinormTest(unittest.TestCase):
     def runTest(self):
         try:
             actual = openid.urinorm.urinorm(self.case)
-        except ValueError, why:
+        except ValueError as why:
             self.assertEqual(self.expected, 'fail', why)
         else:
             self.assertEqual(actual, self.expected)
 
     def parse(cls, full_case):
         desc, case, expected = full_case.split('\n')
-        case = unicode(case, 'utf-8')
+        case = str(case, 'utf-8')
 
         return cls(desc, case, expected)
 
@@ -44,7 +44,7 @@ def parseTests(test_data):
 def pyUnitTests():
     here = os.path.dirname(os.path.abspath(__file__))
     test_data_file_name = os.path.join(here, 'urinorm.txt')
-    test_data_file = file(test_data_file_name)
+    test_data_file = open(test_data_file_name)
     test_data = test_data_file.read()
     test_data_file.close()
 

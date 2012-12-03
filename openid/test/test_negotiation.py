@@ -1,6 +1,6 @@
 
 import unittest
-from support import CatchLogs
+from .support import CatchLogs
 
 from openid.message import Message, OPENID2_NS, OPENID1_NS, OPENID_NS
 from openid import association

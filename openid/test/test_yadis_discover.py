@@ -7,7 +7,7 @@
 """
 
 import unittest
-import urlparse
+import urllib.parse
 import re
 import types
 
@@ -15,7 +15,7 @@ from openid.yadis.discover import discover, DiscoveryFailure
 
 from openid import fetchers
 
-import discoverdata
+from . import discoverdata
 
 status_header_re = re.compile(r'Status: (\d+) .*?$', re.MULTILINE)
 
@@ -48,7 +48,7 @@ class TestFetcher(object):
     def fetch(self, url, headers, body):
         current_url = url
         while True:
-            parsed = urlparse.urlparse(current_url)
+            parsed = urllib.parse.urlparse(current_url)
             path = parsed[2][1:]
             try:
                 data = discoverdata.generateSample(path, self.base_url)

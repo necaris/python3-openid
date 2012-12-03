@@ -229,7 +229,7 @@ class FetchRequest(AXMessage):
 
         ax_args = self._newArgs()
 
-        for type_uri, attribute in self.requested_attributes.iteritems():
+        for type_uri, attribute in self.requested_attributes.items():
             if attribute.alias is None:
                 alias = aliases.add(type_uri)
             else:
@@ -275,7 +275,7 @@ class FetchRequest(AXMessage):
         @rtype: [str]
         """
         required = []
-        for type_uri, attribute in self.requested_attributes.iteritems():
+        for type_uri, attribute in self.requested_attributes.items():
             if attribute.required:
                 required.append(type_uri)
 
@@ -304,7 +304,7 @@ class FetchRequest(AXMessage):
         self = cls()
         try:
             self.parseExtensionArgs(ax_args)
-        except NotAXMessage, err:
+        except NotAXMessage as err:
             return None
 
         if self.update_url:
@@ -349,7 +349,7 @@ class FetchRequest(AXMessage):
 
         aliases = NamespaceMap()
 
-        for key, value in ax_args.iteritems():
+        for key, value in ax_args.items():
             if key.startswith('type.'):
                 alias = key[5:]
                 type_uri = value
@@ -392,7 +392,7 @@ class FetchRequest(AXMessage):
         """Iterate over the AttrInfo objects that are
         contained in this fetch_request.
         """
-        return self.requested_attributes.itervalues()
+        return iter(self.requested_attributes.values())
 
     def __iter__(self):
         """Iterate over the attribute type URIs in this fetch_request
@@ -467,7 +467,7 @@ class AXKeyValueMessage(AXMessage):
 
         ax_args = {}
 
-        for type_uri, values in self.data.iteritems():
+        for type_uri, values in self.data.items():
             alias = aliases.add(type_uri)
 
             ax_args['type.' + alias] = type_uri
@@ -499,20 +499,20 @@ class AXKeyValueMessage(AXMessage):
 
         aliases = NamespaceMap()
 
-        for key, value in ax_args.iteritems():
+        for key, value in ax_args.items():
             if key.startswith('type.'):
                 type_uri = value
                 alias = key[5:]
                 checkAlias(alias)
                 aliases.addAlias(type_uri, alias)
 
-        for type_uri, alias in aliases.iteritems():
+        for type_uri, alias in aliases.items():
             try:
                 count_s = ax_args['count.' + alias]
             except KeyError:
                 value = ax_args['value.' + alias]
 
-                if value == u'':
+                if value == '':
                     values = []
                 else:
                     values = [value]
@@ -709,7 +709,7 @@ class FetchResponse(AXKeyValueMessage):
 
         try:
             self.parseExtensionArgs(ax_args)
-        except NotAXMessage, err:
+        except NotAXMessage as err:
             return None
         else:
             return self

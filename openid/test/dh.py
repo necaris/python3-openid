@@ -24,8 +24,8 @@ def test_strxor():
         ('', 'a'),
         ('foo', 'ba'),
         (NUL * 3, NUL * 4),
-        (''.join(map(chr, xrange(256))),
-         ''.join(map(chr, xrange(128)))),
+        (''.join(map(chr, range(256))),
+         ''.join(map(chr, range(128)))),
         ]
 
     for aa, bb in exc_cases:
@@ -50,14 +50,14 @@ def test_exchange():
     assert s1 != s2
 
 def test_public():
-    f = file(os.path.join(os.path.dirname(__file__), 'dhpriv'))
+    f = open(os.path.join(os.path.dirname(__file__), 'dhpriv'))
     dh = DiffieHellman.fromDefaults()
     try:
         for line in f:
             parts = line.strip().split(' ')
-            dh._setPrivate(long(parts[0]))
+            dh._setPrivate(int(parts[0]))
 
-            assert dh.public == long(parts[1])
+            assert dh.public == int(parts[1])
     finally:
         f.close()
 
