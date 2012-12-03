@@ -76,6 +76,8 @@ except ImportError:
         return bytes(b)
 
     def binaryToLong(s):
+        if isinstance(s, str):
+            s = s.encode("utf-8")
         b = bytearray(s)
         b.reverse()
         return pickle.decode_long(bytes(b))
