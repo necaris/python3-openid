@@ -1,10 +1,11 @@
+import logging
+
 __all__ = ['seqToKV', 'kvToSeq', 'dictToKV', 'kvToDict']
 
-import types
-import logging
 
 class KVFormError(ValueError):
     pass
+
 
 def seqToKV(seq, strict=False):
     """Represent a sequence of pairs of strings as newline-terminated
@@ -26,7 +27,7 @@ def seqToKV(seq, strict=False):
     lines = []
     for k, v in seq:
         if isinstance(k, bytes):
-            k = k.decode('UTF8')
+            k = k.decode('utf-8')
         elif not isinstance(k, str):
             err('Converting key to string: %r' % k)
             k = str(k)
@@ -57,7 +58,8 @@ def seqToKV(seq, strict=False):
 
         lines.append(k + ':' + v + '\n')
 
-    return ''.join(lines).encode('UTF8')
+    return ''.join(lines).encode('utf-8')
+
 
 def kvToSeq(data, strict=False):
     """
@@ -73,6 +75,9 @@ def kvToSeq(data, strict=False):
             raise KVFormError(formatted)
         else:
             logging.warn(formatted)
+
+    if isinstance(data, bytes):
+        data = bytes.decode("utf-8")
 
     lines = data.split('\n')
     if lines[-1]:
@@ -107,16 +112,16 @@ def kvToSeq(data, strict=False):
                        'whitespace in value %r')
                 err(fmt % (line_num, v))
 
-            pairs.append((k_s.decode('UTF8'), v_s.decode('UTF8')))
+            pairs.append((k_s, v_s))
         else:
             err('Line %d does not contain a colon' % line_num)
 
     return pairs
 
+
 def dictToKV(d):
-    seq = list(d.items())
-    seq.sort()
-    return seqToKV(seq)
+    return seqToKV(sorted(d.items()))
+
 
 def kvToDict(s):
     return dict(kvToSeq(s))
