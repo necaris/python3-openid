@@ -36,7 +36,7 @@ def toUnicode(value):
 
     @returns: Unicode object representing the input value.
     """
-    if isinstance(value, str):
+    if isinstance(value, bytes):
         return value.decode('utf-8')
     return str(value)
 
