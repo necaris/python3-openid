@@ -28,6 +28,7 @@ elementtree_modules = [
     'elementtree.ElementTree',
     ]
 
+
 def toUnicode(value):
     """Returns the given argument as a unicode object.
 
@@ -39,6 +40,7 @@ def toUnicode(value):
     if isinstance(value, bytes):
         return value.decode('utf-8')
     return str(value)
+
 
 def autoSubmitHTML(form, title='OpenID transaction in progress'):
     return """
@@ -57,6 +59,7 @@ for (var i = 0; i < elements.length; i++) {
 </body>
 </html>
 """ % (title, form)
+
 
 def importElementTree(module_names=None):
     """Find a working ElementTree implementation, trying the standard
@@ -94,6 +97,7 @@ def importElementTree(module_names=None):
                           'Tried importing %r' % (module_names,)
                           )
 
+
 def log(message, level=0):
     """Handle a log message from the OpenID library.
 
@@ -114,6 +118,7 @@ def log(message, level=0):
 
     logging.error("This is a legacy log message, please use the "
       "logging module. Message: %s", message)
+
 
 def appendArgs(url, args):
     """Append query arguments to a HTTP(s) URL. If the URL already has
@@ -163,9 +168,11 @@ def appendArgs(url, args):
 
     return '%s%s%s' % (url, sep, urlencode(args))
 
+
 def toBase64(s):
     """Represent string s as base64, omitting newlines"""
     return binascii.b2a_base64(s)[:-1]
+
 
 def fromBase64(s):
     try:
@@ -173,6 +180,7 @@ def fromBase64(s):
     except binascii.Error as why:
         # Convert to a common exception type
         raise ValueError(str(why))
+
 
 class Symbol(object):
     """This class implements an object that compares equal to others
