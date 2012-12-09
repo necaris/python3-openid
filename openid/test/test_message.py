@@ -3,9 +3,12 @@ from openid import message
 from openid import oidutil
 from openid.extensions import sreg
 
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import cgi
 import unittest
+
 
 def mkGetArgTest(ns, key, expected=None):
     def test(self):
@@ -23,6 +26,7 @@ def mkGetArgTest(ns, key, expected=None):
                 self.msg.getArg(ns, key, message.no_default), expected)
 
     return test
+
 
 class EmptyMessageTest(unittest.TestCase):
     def setUp(self):
@@ -94,7 +98,7 @@ class EmptyMessageTest(unittest.TestCase):
                                             'openid.test.flub': 'bogus'})
         actual_uri = msg.getAliasedArg('ns.test', message.no_default)
         self.assertEquals("urn://foo", actual_uri)
-    
+
     def test_getAliasedArgFailure(self):
         msg = message.Message.fromPostArgs({'openid.test.flub': 'bogus'})
         self.assertRaises(KeyError,
@@ -136,13 +140,13 @@ class EmptyMessageTest(unittest.TestCase):
     def test_updateArgs(self):
         self.failUnlessRaises(message.UndefinedOpenIDNamespace,
                               self.msg.updateArgs, message.OPENID_NS,
-                              {'does not':'matter'})
+                              {'does not': 'matter'})
 
     def _test_updateArgsNS(self, ns):
         update_args = {
-            'Camper van Beethoven':'David Lowery',
-            'Magnolia Electric Co.':'Jason Molina',
-            }
+            'Camper van Beethoven': 'David Lowery',
+            'Magnolia Electric Co.': 'Jason Molina',
+        }
 
         self.failUnlessEqual(self.msg.getArgs(ns), {})
         self.msg.updateArgs(ns, update_args)
@@ -249,8 +253,10 @@ class OpenID1MessageTest(unittest.TestCase):
         self.failUnlessEqual(actual[len(base_url)], '?')
         query = actual[len(base_url) + 1:]
         parsed = cgi.parse_qs(query)
-        self.failUnlessEqual(parsed, {'openid.mode':['error'],
-                                      'openid.error':['unit test']})
+        self.failUnlessEqual(parsed, {
+            'openid.mode': ['error'],
+            'openid.error': ['unit test']
+        })
 
     def test_getOpenID(self):
         self.failUnlessEqual(self.msg.getOpenIDNamespace(), message.OPENID1_NS)
@@ -297,19 +303,19 @@ class OpenID1MessageTest(unittest.TestCase):
     test_getArgNS3 = mkGetArgTest('urn:nothing-significant', 'mode')
 
     def test_getArgs(self):
-        self.failUnlessEqual(self.msg.getArgs(message.OPENID_NS),
-                             {'mode':'error',
-                              'error':'unit test',
-                              })
+        self.failUnlessEqual(self.msg.getArgs(message.OPENID_NS), {
+            'mode': 'error',
+            'error': 'unit test',
+        })
 
     def test_getArgsBARE(self):
         self.failUnlessEqual(self.msg.getArgs(message.BARE_NS), {})
 
     def test_getArgsNS1(self):
-        self.failUnlessEqual(self.msg.getArgs(message.OPENID1_NS),
-                             {'mode':'error',
-                              'error':'unit test',
-                              })
+        self.failUnlessEqual(self.msg.getArgs(message.OPENID1_NS), {
+            'mode': 'error',
+            'error': 'unit test',
+        })
 
     def test_getArgsNS2(self):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID2_NS), {})
@@ -321,8 +327,8 @@ class OpenID1MessageTest(unittest.TestCase):
         if before is None:
             before = {}
         update_args = {
-            'Camper van Beethoven':'David Lowery',
-            'Magnolia Electric Co.':'Jason Molina',
+            'Camper van Beethoven': 'David Lowery',
+            'Magnolia Electric Co.': 'Jason Molina',
             }
 
         self.failUnlessEqual(self.msg.getArgs(ns), before)
@@ -333,14 +339,14 @@ class OpenID1MessageTest(unittest.TestCase):
 
     def test_updateArgs(self):
         self._test_updateArgsNS(message.OPENID_NS,
-                                before={'mode':'error', 'error':'unit test'})
+                                before={'mode': 'error', 'error': 'unit test'})
 
     def test_updateArgsBARE(self):
         self._test_updateArgsNS(message.BARE_NS)
 
     def test_updateArgsNS1(self):
         self._test_updateArgsNS(message.OPENID1_NS,
-                                before={'mode':'error', 'error':'unit test'})
+                                before={'mode': 'error', 'error': 'unit test'})
 
     def test_updateArgsNS2(self):
         self._test_updateArgsNS(message.OPENID2_NS)
@@ -395,19 +401,20 @@ class OpenID1MessageTest(unittest.TestCase):
     def test_delArgNS3(self):
         self._test_delArgNS('urn:nothing-significant')
 
-
     def test_isOpenID1(self):
         self.failUnless(self.msg.isOpenID1())
 
     def test_isOpenID2(self):
         self.failIf(self.msg.isOpenID2())
 
+
 class OpenID1ExplicitMessageTest(unittest.TestCase):
     def setUp(self):
-        self.msg = message.Message.fromPostArgs({'openid.mode':'error',
-                                                 'openid.error':'unit test',
-                                                 'openid.ns':message.OPENID1_NS
-                                                 })
+        self.msg = message.Message.fromPostArgs({
+            'openid.mode': 'error',
+            'openid.error': 'unit test',
+            'openid.ns': message.OPENID1_NS
+        })
 
     def test_toPostArgs(self):
         self.failUnlessEqual(self.msg.toPostArgs(),
@@ -427,8 +434,9 @@ class OpenID1ExplicitMessageTest(unittest.TestCase):
                               %message.OPENID1_NS)
 
     def test_toURLEncoded(self):
-        self.failUnlessEqual(self.msg.toURLEncoded(),
-                             'openid.error=unit+test&openid.mode=error&openid.ns=http%3A%2F%2Fopenid.net%2Fsignon%2F1.0')
+        self.failUnlessEqual(
+            self.msg.toURLEncoded(),
+            'openid.error=unit+test&openid.mode=error&openid.ns=http%3A%2F%2Fopenid.net%2Fsignon%2F1.0')
 
     def test_toURL(self):
         base_url = 'http://base.url/'
@@ -438,20 +446,23 @@ class OpenID1ExplicitMessageTest(unittest.TestCase):
         self.failUnlessEqual(actual[len(base_url)], '?')
         query = actual[len(base_url) + 1:]
         parsed = cgi.parse_qs(query)
-        self.failUnlessEqual(parsed, {'openid.mode':['error'],
-                                      'openid.error':['unit test'],
-                                      'openid.ns':[message.OPENID1_NS]
-                                      })
+        self.failUnlessEqual(parsed, {
+            'openid.mode': ['error'],
+            'openid.error': ['unit test'],
+            'openid.ns': [message.OPENID1_NS]
+        })
 
     def test_isOpenID1(self):
         self.failUnless(self.msg.isOpenID1())
 
+
 class OpenID2MessageTest(unittest.TestCase):
     def setUp(self):
-        self.msg = message.Message.fromPostArgs({'openid.mode':'error',
-                                                 'openid.error':'unit test',
-                                                 'openid.ns':message.OPENID2_NS
-                                                 })
+        self.msg = message.Message.fromPostArgs({
+            'openid.mode': 'error',
+            'openid.error': 'unit test',
+            'openid.ns': message.OPENID2_NS
+        })
         self.msg.setArg(message.BARE_NS, "xey", "value")
 
     def test_toPostArgs(self):
@@ -463,9 +474,9 @@ class OpenID2MessageTest(unittest.TestCase):
                               })
 
     def test_toPostArgs_bug_with_utf8_encoded_values(self):
-        msg = message.Message.fromPostArgs({'openid.mode':'error',
-                                            'openid.error':'unit test',
-                                            'openid.ns':message.OPENID2_NS
+        msg = message.Message.fromPostArgs({'openid.mode': 'error',
+                                            'openid.error': 'unit test',
+                                            'openid.ns': message.OPENID2_NS
                                              })
         msg.setArg(message.BARE_NS, 'ünicöde_key', 'ünicöde_välüe')
         self.failUnlessEqual(msg.toPostArgs(),
@@ -474,7 +485,6 @@ class OpenID2MessageTest(unittest.TestCase):
                               'openid.ns':message.OPENID2_NS,
                               'ünicöde_key': 'ünicöde_välüe',
                               })
-
 
     def test_toArgs(self):
         # This method can't tolerate BARE_NS.
@@ -496,7 +506,6 @@ class OpenID2MessageTest(unittest.TestCase):
                     'openid.ns=%s&xey=value' % (
             urllib.parse.quote(message.OPENID2_NS, ''),))
         self.failUnlessEqual(s, expected)
-
 
     def test_toURLEncoded(self):
         self._test_urlencoded(self.msg.toURLEncoded())
@@ -557,10 +566,10 @@ class OpenID2MessageTest(unittest.TestCase):
     test_getArgNS3 = mkGetArgTest('urn:nothing-significant', 'mode')
 
     def test_getArgsOpenID(self):
-        self.failUnlessEqual(self.msg.getArgs(message.OPENID_NS),
-                             {'mode':'error',
-                              'error':'unit test',
-                              })
+        self.failUnlessEqual(self.msg.getArgs(message.OPENID_NS), {
+            'mode': 'error',
+            'error': 'unit test',
+        })
 
     def test_getArgsBARE(self):
         self.failUnlessEqual(self.msg.getArgs(message.BARE_NS),
@@ -570,10 +579,10 @@ class OpenID2MessageTest(unittest.TestCase):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID1_NS), {})
 
     def test_getArgsNS2(self):
-        self.failUnlessEqual(self.msg.getArgs(message.OPENID2_NS),
-                             {'mode':'error',
-                              'error':'unit test',
-                              })
+        self.failUnlessEqual(self.msg.getArgs(message.OPENID2_NS), {
+            'mode': 'error',
+            'error': 'unit test',
+        })
 
     def test_getArgsNS3(self):
         self.failUnlessEqual(self.msg.getArgs('urn:nothing-significant'), {})
@@ -582,9 +591,9 @@ class OpenID2MessageTest(unittest.TestCase):
         if before is None:
             before = {}
         update_args = {
-            'Camper van Beethoven':'David Lowery',
-            'Magnolia Electric Co.':'Jason Molina',
-            }
+            'Camper van Beethoven': 'David Lowery',
+            'Magnolia Electric Co.': 'Jason Molina',
+        }
 
         self.failUnlessEqual(self.msg.getArgs(ns), before)
         self.msg.updateArgs(ns, update_args)
@@ -594,18 +603,18 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_updateArgsOpenID(self):
         self._test_updateArgsNS(message.OPENID_NS,
-                                before={'mode':'error', 'error':'unit test'})
+                                before={'mode': 'error', 'error': 'unit test'})
 
     def test_updateArgsBARE(self):
         self._test_updateArgsNS(message.BARE_NS,
-                                before={'xey':'value'})
+                                before={'xey': 'value'})
 
     def test_updateArgsNS1(self):
         self._test_updateArgsNS(message.OPENID1_NS)
 
     def test_updateArgsNS2(self):
         self._test_updateArgsNS(message.OPENID2_NS,
-                                before={'mode':'error', 'error':'unit test'})
+                                before={'mode': 'error', 'error': 'unit test'})
 
     def test_updateArgsNS3(self):
         self._test_updateArgsNS('urn:nothing-significant')
@@ -669,7 +678,7 @@ class OpenID2MessageTest(unittest.TestCase):
                         list(m.namespaces.items()))
         missing = []
         for k in openid_args['signed'].split(','):
-            if not ("openid."+k) in list(m.toPostArgs().keys()):
+            if ("openid." + k) not in m.toPostArgs():
                 missing.append(k)
         self.assertEqual([], missing, missing)
         self.assertEqual(openid_args, m.toArgs())
@@ -694,7 +703,7 @@ class OpenID2MessageTest(unittest.TestCase):
         m = message.Message.fromPostArgs(args)
         missing = []
         for k in args['openid.signed'].split(','):
-            if not ("openid."+k) in list(m.toPostArgs().keys()):
+            if ("openid." + k) not in m.toPostArgs():
                 missing.append(k)
         self.assertEqual([], missing, missing)
         self.assertEqual(args, m.toPostArgs())
@@ -757,6 +766,7 @@ class OpenID2MessageTest(unittest.TestCase):
     def test_isOpenID2(self):
         self.failUnless(self.msg.isOpenID2())
 
+
 class MessageTest(unittest.TestCase):
     def setUp(self):
         self.postargs = {
@@ -779,13 +789,13 @@ class MessageTest(unittest.TestCase):
         ### Expected data regardless of input
 
         self.required_form_attrs = {
-            'accept-charset':'UTF-8',
-            'enctype':'application/x-www-form-urlencoded',
+            'accept-charset': 'UTF-8',
+            'enctype': 'application/x-www-form-urlencoded',
             'method': 'post',
             }
 
-    def _checkForm(self, html, message_, action_url,
-                   form_tag_attrs, submit_text):
+    def _checkForm(self, html, message_, action_url, form_tag_attrs,
+                   submit_text):
         E = oidutil.importElementTree()
 
         # Build element tree from HTML source
@@ -867,7 +877,7 @@ class MessageTest(unittest.TestCase):
             'openid.identity': 'http://bogus.example.invalid:port/',
             'openid.assoc_handle': 'FLUB',
             'openid.return_to': 'Neverland',
-            'ünicöde_key' : 'ünicöde_välüe',
+            'ünicöde_key': 'ünicöde_välüe',
             }
         m = message.Message.fromPostArgs(postargs)
         # Calling m.toFormMarkup with lxml used for ElementTree will throw
@@ -878,10 +888,12 @@ class MessageTest(unittest.TestCase):
         # encoded strings to be converted to XML character references,
         # "ünicöde_key" becomes "&#195;&#188;nic&#195;&#182;de_key" and
         # "ünicöde_välüe" becomes "&#195;&#188;nic&#195;&#182;de_v&#195;&#164;l&#195;&#188;e"
-        self.failIf('&#195;&#188;nic&#195;&#182;de_key' in html,
-                    'UTF-8 bytes should not convert to XML character references')
-        self.failIf('&#195;&#188;nic&#195;&#182;de_v&#195;&#164;l&#195;&#188;e' in html,
-                    'UTF-8 bytes should not convert to XML character references')
+        self.failIf(
+            '&#195;&#188;nic&#195;&#182;de_key' in html,
+            'UTF-8 bytes should not convert to XML character references')
+        self.failIf(
+            '&#195;&#188;nic&#195;&#182;de_v&#195;&#164;l&#195;&#188;e' in html,
+            'UTF-8 bytes should not convert to XML character references')
 
     def test_overrideMethod(self):
         """Be sure that caller cannot change form method to GET."""
@@ -909,7 +921,6 @@ class MessageTest(unittest.TestCase):
         self._checkForm(html, m, self.action_url,
                         tag_attrs, self.submit_text)
 
-
     def test_setOpenIDNamespace_invalid(self):
         m = message.Message()
         invalid_things = [
@@ -929,7 +940,6 @@ class MessageTest(unittest.TestCase):
             self.failUnlessRaises(message.InvalidOpenIDNamespace,
                                   m.setOpenIDNamespace, x, False)
 
-
     def test_isOpenID1(self):
         v1_namespaces = [
             # Yes, there are two of them.
@@ -942,8 +952,9 @@ class MessageTest(unittest.TestCase):
             self.failUnless(m.isOpenID1(), "%r not recognized as OpenID 1" %
                             (ns,))
             self.failUnlessEqual(ns, m.getOpenIDNamespace())
-            self.failUnless(m.namespaces.isImplicit(ns),
-                            m.namespaces.getNamespaceURI(message.NULL_NAMESPACE))
+            self.failUnless(
+                m.namespaces.isImplicit(ns),
+                m.namespaces.getNamespaceURI(message.NULL_NAMESPACE))
 
     def test_isOpenID2(self):
         ns = 'http://specs.openid.net/auth/2.0'
@@ -989,7 +1000,6 @@ class MessageTest(unittest.TestCase):
         self.failUnless(m.isOpenID1())
 
 
-
 class NamespaceMapTest(unittest.TestCase):
     def test_onealias(self):
         nsm = message.NamespaceMap()
@@ -1003,16 +1013,16 @@ class NamespaceMapTest(unittest.TestCase):
         nsm = message.NamespaceMap()
         uripat = 'http://example.com/foo%r'
 
-        nsm.add(uripat%0)
-        for n in range(1,23):
-            self.failUnless(uripat%(n-1) in nsm)
-            self.failUnless(nsm.isDefined(uripat%(n-1)))
-            nsm.add(uripat%n)
+        nsm.add(uripat % 0)
+        for n in range(1, 23):
+            self.failUnless(uripat % (n - 1) in nsm)
+            self.failUnless(nsm.isDefined(uripat % (n - 1)))
+            nsm.add(uripat % n)
 
         for (uri, alias) in nsm.items():
-            self.failUnless(uri[22:]==alias[3:])
+            self.failUnless(uri[22:] == alias[3:])
 
-        i=0
+        i = 0
         it = nsm.iterAliases()
         try:
             while True:
@@ -1021,7 +1031,7 @@ class NamespaceMapTest(unittest.TestCase):
         except StopIteration:
             self.failUnless(i == 23)
 
-        i=0
+        i = 0
         it = nsm.iterNamespaceURIs()
         try:
             while True:
