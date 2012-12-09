@@ -87,7 +87,9 @@ def test_longToBase64():
     try:
         for line in f:
             parts = line.strip().split(' ')
-            assert parts[0] == cryptutil.longToBase64(int(parts[1]))
+            p0 = bytes(parts[0], encoding="utf-8")
+            p1 = cryptutil.longToBase64(int(parts[1]))
+            assert p0 == p1, (p0, p1, parts)
     finally:
         f.close()
 
