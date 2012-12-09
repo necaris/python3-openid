@@ -132,10 +132,11 @@ def whereIsYadis(resp):
             # Decode body by encoding of file
             content_type = content_type or ''
             encoding = content_type.rsplit(';', 1)
-            if len(encoding) == 2 and encoding[1].strip().startswith('charset='):
+            if (len(encoding) == 2 and
+                    encoding[1].strip().startswith('charset=')):
                 encoding = encoding[1].split('=', 1)[1].strip()
             else:
-                encoding = 'UTF-8'
+                encoding = 'utf-8'
 
             try:
                 content = resp.body.decode(encoding)
@@ -147,9 +148,8 @@ def whereIsYadis(resp):
             try:
                 yadis_loc = findHTMLMeta(StringIO(content))
             except (MetaNotFound, UnicodeError):
-                # UnicodeError: Response body could not be encoded and xrds location
-                # could not be found before troubles occurs.
+                # UnicodeError: Response body could not be encoded and xrds
+                # location could not be found before troubles occur.
                 pass
 
         return yadis_loc
-
