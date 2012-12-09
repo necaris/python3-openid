@@ -65,7 +65,7 @@ def pyUnitTests():
     try:
         from openid.test import test_examples
     except ImportError:
-        e = sys.exc_info[1]
+        e = sys.exc_info()[1]
         if 'twill' in str(e):
             warnings.warn("Could not import twill; skipping test_examples.")
         else:
@@ -185,5 +185,5 @@ def test_suite():
     all_suite = unittest.TestSuite()
     all_suite.addTests(otherTests())
     all_suite.addTests(pyUnitTests())
-    all_suite.addTests(unittest.FunctionTestCase(django_tests))
+    all_suite.addTest(unittest.FunctionTestCase(django_tests))
     return all_suite
