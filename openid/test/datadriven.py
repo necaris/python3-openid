@@ -1,14 +1,14 @@
 import unittest
-import types
+
 
 class DataDrivenTestCase(unittest.TestCase):
     cases = []
 
+    @classmethod
     def generateCases(cls):
         return cls.cases
 
-    generateCases = classmethod(generateCases)
-
+    @classmethod
     def loadTests(cls):
         tests = []
         for case in cls.generateCases():
@@ -21,14 +21,13 @@ class DataDrivenTestCase(unittest.TestCase):
             tests.append(test)
         return tests
 
-    loadTests = classmethod(loadTests)
-
     def __init__(self, description):
-        unittest.TestCase.__init__(self, 'runOneTest')
+        super(DataDrivenTestCase, self).__init__(self, 'runOneTest')
         self.description = description
 
     def shortDescription(self):
         return '%s for %s' % (self.__class__.__name__, self.description)
+
 
 def loadTests(module_name):
     loader = unittest.defaultTestLoader
@@ -37,8 +36,7 @@ def loadTests(module_name):
     tests = []
     for name in dir(this_module):
         obj = getattr(this_module, name)
-        if (isinstance(obj, type) and
-            issubclass(obj, unittest.TestCase)):
+        if isinstance(obj, unittest.TestCase):
             if hasattr(obj, 'loadTests'):
                 tests.extend(obj.loadTests())
             else:

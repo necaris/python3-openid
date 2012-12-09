@@ -7,6 +7,7 @@ from openid import cryptutil
 # Most of the purpose of this test is to make sure that cryptutil can
 # find a good source of randomness on this machine.
 
+
 def test_cryptrand():
     # It's possible, but HIGHLY unlikely that a correct implementation
     # will fail by returning the same number twice
@@ -26,6 +27,7 @@ def test_cryptrand():
     # Make sure that we can generate random numbers that are larger
     # than platform int size
     cryptutil.randrange(int(sys.maxsize) + 1)
+
 
 def test_reversed():
     if hasattr(cryptutil, 'reversed'):
@@ -48,6 +50,7 @@ def test_reversed():
             assert actual == expected, (case, expected, actual)
             twice = list(cryptutil.reversed(actual))
             assert twice == list(case), (actual, case, twice)
+
 
 def test_binaryLongConvert():
     MAX = sys.maxsize
@@ -78,6 +81,7 @@ def test_binaryLongConvert():
         assert n == n_prime, (s, n, n_prime)
         assert s == s_prime, (n, s, s_prime)
 
+
 def test_longToBase64():
     f = open(os.path.join(os.path.dirname(__file__), 'n2b64'))
     try:
@@ -86,6 +90,7 @@ def test_longToBase64():
             assert parts[0] == cryptutil.longToBase64(int(parts[1]))
     finally:
         f.close()
+
 
 def test_base64ToLong():
     f = open(os.path.join(os.path.dirname(__file__), 'n2b64'))
