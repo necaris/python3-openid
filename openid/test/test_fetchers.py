@@ -11,22 +11,22 @@ from openid import fetchers
 # XXX: make these separate test cases
 
 
-def _assertEqual(v1, v2):
+def _assertEqual(v1, v2, extra):
     try:
         assert v1 == v2
     except AssertionError:
-        raise AssertionError("%r != %r" % (v1, v2))
+        raise AssertionError("%r != %r ; context %r" % (v1, v2, extra))
 
 
-def failUnlessResponseExpected(expected, actual):
-    _assertEqual(expected.final_url, actual.final_url)
-    _assertEqual(expected.status, actual.status)
-    _assertEqual(expected.body, actual.body)
+def failUnlessResponseExpected(expected, actual, extra):
+    _assertEqual(expected.final_url, actual.final_url, extra)
+    _assertEqual(expected.status, actual.status, extra)
+    _assertEqual(expected.body, actual.body, extra)
     got_headers = dict(actual.headers)
     del got_headers['date']
     del got_headers['server']
     for k, v in expected.headers.items():
-        assert got_headers[k] == v, (k, v, got_headers[k])
+        assert got_headers[k] == v, (k, v, got_headers[k], extra)
 
 
 def test_fetcher(fetcher, exc, server):
@@ -44,7 +44,7 @@ def test_fetcher(fetcher, exc, server):
         return (path, expected)
 
     expect_success = fetchers.HTTPResponse(
-        geturl('/success'), 200, expected_headers, '/success')
+        geturl('/success'), 200, expected_headers, b'/success')
     cases = [
         ('/success', expect_success),
         ('/301redirect', expect_success),
@@ -68,27 +68,27 @@ def test_fetcher(fetcher, exc, server):
             print(fetcher, fetch_url)
             raise
         else:
-            failUnlessResponseExpected(expected, actual)
+            failUnlessResponseExpected(expected, actual, extra=locals())
 
-    for err_url in [geturl('/closed'),
-                    'http://invalid.janrain.com/',
-                    'not:a/url',
-                    'ftp://janrain.com/pub/']:
+    for err_url in [geturl('/closed'), 'http://invalid.janrain.com/',
+                    'not:a/url', 'ftp://janrain.com/pub/']:
         try:
             result = fetcher.fetch(err_url)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except fetchers.HTTPError as why:
+        except fetchers.HTTPError:
             # This is raised by the Curl fetcher for bad cases
             # detected by the fetchers module, but it's a subclass of
             # HTTPFetchingError, so we have to catch it explicitly.
             assert exc
-        except fetchers.HTTPFetchingError as why:
+        except fetchers.HTTPFetchingError:
             assert not exc, (fetcher, exc, server)
         except:
             assert exc
         else:
-            assert False, 'An exception was expected for %r (%r)' % (fetcher, result)
+            assert False, 'An exception was expected for %r (%r)' % (
+                fetcher, result)
+
 
 def run_fetcher_tests(server):
     exc_fetchers = []
@@ -109,7 +109,8 @@ def run_fetcher_tests(server):
                         'the library did not import.' % (library_name,))
                     pass
                 else:
-                    assert False, ('%s present but not detected' % (library_name,))
+                    assert False, ('%s present but not detected' % (
+                        library_name,))
             else:
                 raise
 
@@ -125,18 +126,19 @@ def run_fetcher_tests(server):
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+
 class FetcherTestHandler(BaseHTTPRequestHandler):
     cases = {
-        '/success':(200, None),
-        '/301redirect':(301, '/success'),
-        '/302redirect':(302, '/success'),
-        '/303redirect':(303, '/success'),
-        '/307redirect':(307, '/success'),
-        '/notfound':(404, None),
-        '/badreq':(400, None),
-        '/forbidden':(403, None),
-        '/error':(500, None),
-        '/server_error':(503, None),
+        '/success': (200, None),
+        '/301redirect': (301, '/success'),
+        '/302redirect': (302, '/success'),
+        '/303redirect': (303, '/success'),
+        '/307redirect': (307, '/success'),
+        '/notfound': (404, None),
+        '/badreq': (400, None),
+        '/forbidden': (403, None),
+        '/error': (500, None),
+        '/server_error': (503, None),
         }
 
     def log_request(self, *args):
@@ -193,7 +195,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
         for k, v in extra_headers:
             self.send_header(k, v)
         self.end_headers()
-        self.wfile.write(body)
+        self.wfile.write(bytes(body, encoding="utf-8"))
         self.wfile.close()
 
     def finish(self):
@@ -201,6 +203,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
             self.wfile.flush()
         self.wfile.close()
         self.rfile.close()
+
 
 def test():
     import socket
@@ -220,11 +223,13 @@ def test():
 
     run_fetcher_tests(server)
 
+
 class FakeFetcher(object):
     sentinel = object()
 
     def fetch(self, *args, **kwargs):
         return self.sentinel
+
 
 class DefaultFetcherTest(unittest.TestCase):
     def setUp(self):
