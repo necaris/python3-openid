@@ -1,6 +1,6 @@
 import re
 
-from openid import codecutil  # registers 'percent_escape' encoding handler
+from openid import codecutil  # registers 'oid_percent_escape' encoding handler
 
 # from appendix B of rfc 3986 (http://www.ietf.org/rfc/rfc3986.txt)
 uri_pattern = r'^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?'
@@ -22,46 +22,6 @@ authority_re = re.compile(authority_pattern)
 
 pct_encoded_pattern = r'%([0-9A-Fa-f]{2})'
 pct_encoded_re = re.compile(pct_encoded_pattern)
-
-try:
-    chr(0x10000)
-except ValueError:
-    # narrow python build
-    UCSCHAR = [
-        (0xA0, 0xD7FF),
-        (0xF900, 0xFDCF),
-        (0xFDF0, 0xFFEF),
-        ]
-
-    IPRIVATE = [
-        (0xE000, 0xF8FF),
-        ]
-else:
-    UCSCHAR = [
-        (0xA0, 0xD7FF),
-        (0xF900, 0xFDCF),
-        (0xFDF0, 0xFFEF),
-        (0x10000, 0x1FFFD),
-        (0x20000, 0x2FFFD),
-        (0x30000, 0x3FFFD),
-        (0x40000, 0x4FFFD),
-        (0x50000, 0x5FFFD),
-        (0x60000, 0x6FFFD),
-        (0x70000, 0x7FFFD),
-        (0x80000, 0x8FFFD),
-        (0x90000, 0x9FFFD),
-        (0xA0000, 0xAFFFD),
-        (0xB0000, 0xBFFFD),
-        (0xC0000, 0xCFFFD),
-        (0xD0000, 0xDFFFD),
-        (0xE1000, 0xEFFFD),
-        ]
-
-    IPRIVATE = [
-        (0xE000, 0xF8FF),
-        (0xF0000, 0xFFFFD),
-        (0x100000, 0x10FFFD),
-        ]
 
 
 _unreserved = [False] * 256
@@ -135,7 +95,7 @@ def urinorm(uri):
     # TODO: use urllib.parse instead of these complex regular expressions
 
     if isinstance(uri, str):
-        uri = uri.encode('ascii', errors='percent_escape').decode()
+        uri = uri.encode('ascii', errors='oid_percent_escape').decode('utf-8')
         # _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
 
     illegal_mo = uri_illegal_char_re.search(uri)
