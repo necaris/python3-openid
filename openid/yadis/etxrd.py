@@ -245,9 +245,7 @@ def prioSort(elements):
     # elements are load-balanced.
     random.shuffle(elements)
 
-    prio_elems = [(getPriority(e), e) for e in elements]
-    prio_elems.sort()
-    sorted_elems = [s for (_, s) in prio_elems]
+    sorted_elems = sorted(elements, key=getPriority)
     return sorted_elems
 
 def iterServices(xrd_tree):
