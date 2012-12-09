@@ -215,14 +215,15 @@ def _test_success(server_url, user_url, delegate_url, links, immediate=False):
 
 import unittest
 
-http_server_url = 'http://server.example.com/'
-consumer_url = 'http://consumer.example.com/'
-https_server_url = 'https://server.example.com/'
+http_server_url = b'http://server.example.com/'
+consumer_url = b'http://consumer.example.com/'
+https_server_url = b'https://server.example.com/'
+
 
 class TestSuccess(unittest.TestCase, CatchLogs):
     server_url = http_server_url
-    user_url = 'http://www.example.com/user.html'
-    delegate_url = 'http://consumer.example.com/user'
+    user_url = b'http://www.example.com/user.html'
+    delegate_url = b'http://consumer.example.com/user'
 
     def setUp(self):
         CatchLogs.setUp(self)
@@ -1258,22 +1259,24 @@ class TestCheckAuth(unittest.TestCase, CatchLogs):
            self.failUnless(args.getAliasedArg(signed_arg), signed_arg)
 
     def test_112(self):
-        args = {'openid.assoc_handle': 'fa1f5ff0-cde4-11dc-a183-3714bfd55ca8',
-                'openid.claimed_id': 'http://binkley.lan/user/test01',
-                'openid.identity': 'http://test01.binkley.lan/',
-                'openid.mode': 'id_res',
-                'openid.ns': 'http://specs.openid.net/auth/2.0',
-                'openid.ns.pape': 'http://specs.openid.net/extensions/pape/1.0',
-                'openid.op_endpoint': 'http://binkley.lan/server',
-                'openid.pape.auth_policies': 'none',
-                'openid.pape.auth_time': '2008-01-28T20:42:36Z',
-                'openid.pape.nist_auth_level': '0',
-                'openid.response_nonce': '2008-01-28T21:07:04Z99Q=',
-                'openid.return_to': 'http://binkley.lan:8001/process?janrain_nonce=2008-01-28T21%3A07%3A02Z0tMIKx',
-                'openid.sig': 'YJlWH4U6SroB1HoPkmEKx9AyGGg=',
-                'openid.signed': 'assoc_handle,identity,response_nonce,return_to,claimed_id,op_endpoint,pape.auth_time,ns.pape,pape.nist_auth_level,pape.auth_policies'
-                }
-        self.failUnlessEqual(OPENID2_NS, args['openid.ns'])
+        args = {
+            'openid.assoc_handle': b'fa1f5ff0-cde4-11dc-a183-3714bfd55ca8',
+            'openid.claimed_id': b'http://binkley.lan/user/test01',
+            'openid.identity': b'http://test01.binkley.lan/',
+            'openid.mode': b'id_res',
+            'openid.ns': b'http://specs.openid.net/auth/2.0',
+            'openid.ns.pape': b'http://specs.openid.net/extensions/pape/1.0',
+            'openid.op_endpoint': b'http://binkley.lan/server',
+            'openid.pape.auth_policies': b'none',
+            'openid.pape.auth_time': b'2008-01-28T20:42:36Z',
+            'openid.pape.nist_auth_level': b'0',
+            'openid.response_nonce': b'2008-01-28T21:07:04Z99Q=',
+            'openid.return_to': b'http://binkley.lan:8001/process?janrain_nonce=2008-01-28T21%3A07%3A02Z0tMIKx',
+            'openid.sig': b'YJlWH4U6SroB1HoPkmEKx9AyGGg=',
+            'openid.signed': b'assoc_handle,identity,response_nonce,return_to,claimed_id,op_endpoint,pape.auth_time,ns.pape,pape.nist_auth_level,pape.auth_policies'
+        }
+        self.failUnlessEqual(OPENID2_NS, str(args['openid.ns'],
+                                             encoding="utf-8"))
         incoming = Message.fromPostArgs(args)
         self.failUnless(incoming.isOpenID2())
         car = self.consumer._createCheckAuthRequest(incoming)
@@ -1872,12 +1875,14 @@ class TestCreateAssociationRequest(unittest.TestCase):
 
         # OK, session_type is set here and not for no-encryption
         # compatibility
-        expected = Message.fromOpenIDArgs({'mode':'associate',
-                                           'session_type':'DH-SHA1',
-                                           'assoc_type':self.assoc_type,
-                                           'dh_modulus': 'BfvStQ==',
-                                           'dh_gen': 'Ag==',
-                                           })
+        expected = Message.fromOpenIDArgs({
+            'mode': 'associate',
+            'session_type': 'DH-SHA1',
+            'assoc_type': self.assoc_type,
+            # DH does byte-manipulation and returns bytes
+            'dh_modulus': b'BfvStQ==',
+            'dh_gen': b'Ag==',
+        })
 
         self.failUnlessEqual(expected, args)
 
