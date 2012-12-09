@@ -115,11 +115,10 @@ class TestProtocolError(unittest.TestCase):
             })
         e = server.ProtocolError(args, "waffles")
         self.failIf(e.hasReturnTo())
-        expected = """error:waffles
+        expected = b"""error:waffles
 mode:error
 """
         self.failUnlessEqual(e.encodeToKVForm(), expected)
-
 
     def test_noMessage(self):
         e = server.ProtocolError(None, "no moar pancakes")
