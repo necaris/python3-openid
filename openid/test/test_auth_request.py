@@ -1,9 +1,9 @@
-import cgi
 import unittest
 
 from openid.consumer import consumer
 from openid import message
 from openid.test import support
+
 
 class DummyEndpoint(object):
     preferred_namespace = None
@@ -20,8 +20,10 @@ class DummyEndpoint(object):
     def isOPIdentifier(self):
         return self.is_op_identifier
 
+
 class DummyAssoc(object):
     handle = "assoc-handle"
+
 
 class TestAuthRequestMixin(support.OpenIDTestMixin):
     """Mixin for AuthRequest tests for OpenID 1 and 2; DON'T add
