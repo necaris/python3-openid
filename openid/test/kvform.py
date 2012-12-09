@@ -53,9 +53,9 @@ class KVSeqTest(KVBaseTest):
         and end of each value of each pair"""
         clean = []
         for k, v in self.seq:
-            if type(k) is str:
+            if isinstance(k, bytes):
                 k = k.decode('utf8')
-            if type(v) is str:
+            if isinstance(v, bytes):
                 v = v.decode('utf8')
             clean.append((k.strip(), v.strip()))
         return clean
@@ -63,8 +63,8 @@ class KVSeqTest(KVBaseTest):
     def runTest(self):
         # seq serializes to expected kvform
         actual = kvform.seqToKV(self.seq)
-        self.failUnlessEqual(self.kvform, actual)
-        self.failUnless(type(actual) is str)
+        self.failUnlessEqual(bytes(self.kvform, 'utf-8'), actual)
+        self.failUnless(isinstance(actual, bytes))
 
         # Parse back to sequence. Expected to be unchanged, except
         # stripping whitespace from start and end of values
@@ -160,8 +160,8 @@ class GeneralTest(KVBaseTest):
     kvform = '<None>'
 
     def test_convert(self):
-        result = kvform.seqToKV([(1,1)])
-        self.failUnlessEqual(result, '1:1\n')
+        result = kvform.seqToKV([(1, 1)])
+        self.failUnlessEqual(result, b'1:1\n')
         self.checkWarnings(2)
 
 
