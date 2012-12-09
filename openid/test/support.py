@@ -5,7 +5,7 @@ import logging
 class TestHandler(BufferingHandler):
     def __init__(self, messages):
         BufferingHandler.__init__(self, 0)
-	self.messages = messages
+        self.messages = messages
 
     def shouldFlush(self):
         return False
@@ -33,20 +33,20 @@ class OpenIDTestMixin(object):
 
 class CatchLogs(object):
     def setUp(self):
-	self.messages = []
-	root_logger = logging.getLogger()
-	self.old_log_level = root_logger.getEffectiveLevel()
-	root_logger.setLevel(logging.DEBUG)
+        self.messages = []
+        root_logger = logging.getLogger()
+        self.old_log_level = root_logger.getEffectiveLevel()
+        root_logger.setLevel(logging.DEBUG)
 
-	self.handler = TestHandler(self.messages)
-	formatter = logging.Formatter("%(message)s [%(asctime)s - %(name)s - %(levelname)s]")
-	self.handler.setFormatter(formatter)
-	root_logger.addHandler(self.handler)
+        self.handler = TestHandler(self.messages)
+        formatter = logging.Formatter("%(message)s [%(asctime)s - %(name)s - %(levelname)s]")
+        self.handler.setFormatter(formatter)
+        root_logger.addHandler(self.handler)
 
     def tearDown(self):
         root_logger = logging.getLogger()
-	root_logger.removeHandler(self.handler)
-	root_logger.setLevel(self.old_log_level)
+        root_logger.removeHandler(self.handler)
+        root_logger.setLevel(self.old_log_level)
 
     def failUnlessLogMatches(self, *prefixes):
         """
@@ -55,8 +55,8 @@ class CatchLogs(object):
         number of prefixes is different than the number of log
         messages.
         """
-	messages = [r['msg'] for r in self.messages]
-	assert len(prefixes) == len(messages), \
+        messages = [r['msg'] for r in self.messages]
+        assert len(prefixes) == len(messages), \
                "Expected log prefixes %r, got %r" % (prefixes,
                                                      messages)
 
