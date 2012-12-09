@@ -60,7 +60,7 @@ def test_binaryLongConvert():
             n += int(random.randrange(MAX))
 
         s = cryptutil.longToBinary(n)
-        assert type(s) is str
+        assert isinstance(s, bytes)
         n_prime = cryptutil.binaryToLong(s)
         assert n == n_prime, (n, n_prime)
 
