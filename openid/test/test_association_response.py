@@ -3,24 +3,24 @@
 This duplicates some things that are covered by test_consumer, but
 this works for now.
 """
-from openid import oidutil
 from openid.test.test_consumer import CatchLogs
-from openid.message import Message, OPENID2_NS, OPENID_NS, no_default
+from openid.message import Message, OPENID2_NS, OPENID_NS
 from openid.server.server import DiffieHellmanSHA1ServerSession
-from openid.consumer.consumer import GenericConsumer, \
-     DiffieHellmanSHA1ConsumerSession, ProtocolError
-from openid.consumer.discover import OpenIDServiceEndpoint, OPENID_1_1_TYPE, OPENID_2_0_TYPE
+from openid.consumer.consumer import GenericConsumer, ProtocolError
+from openid.consumer.discover import OpenIDServiceEndpoint, OPENID_1_1_TYPE,\
+    OPENID_2_0_TYPE
 from openid.store import memstore
 import unittest
 
 # Some values we can use for convenience (see mkAssocResponse)
 association_response_values = {
     'expires_in': '1000',
-    'assoc_handle':'a handle',
-    'assoc_type':'a type',
-    'session_type':'a session type',
-    'ns':OPENID2_NS,
-    }
+    'assoc_handle': 'a handle',
+    'assoc_type': 'a type',
+    'session_type': 'a session type',
+    'ns': OPENID2_NS,
+}
+
 
 def mkAssocResponse(*keys):
     """Build an association response message that contains the
@@ -31,6 +31,7 @@ def mkAssocResponse(*keys):
     we don't care what the values are."""
     args = dict([(key, association_response_values[key]) for key in keys])
     return Message.fromOpenIDArgs(args)
+
 
 class BaseAssocTest(CatchLogs, unittest.TestCase):
     def setUp(self):
@@ -47,6 +48,7 @@ class BaseAssocTest(CatchLogs, unittest.TestCase):
             self.failUnless(e[0].startswith(str_prefix), message)
         else:
             self.fail('Expected ProtocolError, got %r' % (result,))
+
 
 def mkExtractAssocMissingTest(keys):
     """Factory function for creating test methods for generating
@@ -77,6 +79,7 @@ def mkExtractAssocMissingTest(keys):
 
     return test
 
+
 class TestExtractAssociationMissingFieldsOpenID2(BaseAssocTest):
     """Test for returning an error upon missing fields in association
     responses for OpenID 2"""
@@ -95,6 +98,7 @@ class TestExtractAssociationMissingFieldsOpenID2(BaseAssocTest):
     test_missingSessionType_openid2 = mkExtractAssocMissingTest(
         ['expires_in', 'assoc_handle', 'assoc_type', 'ns'])
 
+
 class TestExtractAssociationMissingFieldsOpenID1(BaseAssocTest):
     """Test for returning an error upon missing fields in association
     responses for OpenID 2"""
@@ -110,10 +114,12 @@ class TestExtractAssociationMissingFieldsOpenID1(BaseAssocTest):
     test_missingAssocType_openid1 = mkExtractAssocMissingTest(
         ['expires_in', 'assoc_handle'])
 
+
 class DummyAssocationSession(object):
     def __init__(self, session_type, allowed_assoc_types=()):
         self.session_type = session_type
         self.allowed_assoc_types = allowed_assoc_types
+
 
 class ExtractAssociationSessionTypeMismatch(BaseAssocTest):
     def mkTest(requested_session_type, response_session_type, openid1=False):
@@ -233,6 +239,7 @@ class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
         expected_session_type='DH-SHA256',
         )
 
+
 class DummyAssociationSession(object):
     secret = "shh! don't tell!"
     extract_secret_called = False
@@ -244,6 +251,7 @@ class DummyAssociationSession(object):
     def extractSecret(self, message):
         self.extract_secret_called = True
         return self.secret
+
 
 class TestInvalidFields(BaseAssocTest):
     def setUp(self):
@@ -258,10 +266,10 @@ class TestInvalidFields(BaseAssocTest):
         # These arguments should all be valid
         self.assoc_response = Message.fromOpenIDArgs({
             'expires_in': '1000',
-            'assoc_handle':self.assoc_handle,
-            'assoc_type':self.assoc_type,
-            'session_type':self.session_type,
-            'ns':OPENID2_NS,
+            'assoc_handle': self.assoc_handle,
+            'assoc_type': self.assoc_type,
+            'session_type': self.session_type,
+            'ns': OPENID2_NS,
             })
 
         self.assoc_session = DummyAssociationSession()
