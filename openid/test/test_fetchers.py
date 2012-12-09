@@ -28,13 +28,14 @@ def failUnlessResponseExpected(expected, actual):
     for k, v in expected.headers.items():
         assert got_headers[k] == v, (k, v, got_headers[k])
 
+
 def test_fetcher(fetcher, exc, server):
     def geturl(path):
         return 'http://%s:%s%s' % (socket.getfqdn(server.server_name),
                                    server.socket.getsockname()[1],
                                    path)
 
-    expected_headers = {'content-type':'text/plain'}
+    expected_headers = {'content-type': 'text/plain'}
 
     def plain(path, code):
         path = '/' + path
