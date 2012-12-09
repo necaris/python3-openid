@@ -22,7 +22,7 @@ class UrinormTest(unittest.TestCase):
 
     def parse(cls, full_case):
         desc, case, expected = full_case.split('\n')
-        case = str(case, 'utf-8')
+        case = str(case, 'utf-8') if isinstance(case, bytes) else case
 
         return cls(desc, case, expected)
 
@@ -41,6 +41,7 @@ def parseTests(test_data):
 
     return result
 
+
 def pyUnitTests():
     here = os.path.dirname(os.path.abspath(__file__))
     test_data_file_name = os.path.join(here, 'urinorm.txt')
@@ -50,3 +51,7 @@ def pyUnitTests():
 
     tests = parseTests(test_data)
     return unittest.TestSuite(tests)
+
+if __name__ == '__main__':
+    runner = unittest.TextTestRunner()
+    runner.run(pyUnitTests())
