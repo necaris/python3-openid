@@ -43,7 +43,7 @@ def toUnicode(value):
 
 
 def autoSubmitHTML(form, title='OpenID transaction in progress'):
-    return """
+    return b"""
 <html>
 <head>
   <title>%s</title>
