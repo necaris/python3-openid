@@ -2,6 +2,7 @@ from openid import kvform
 from openid.test.support import CatchLogs
 import unittest
 
+
 class KVBaseTest(unittest.TestCase, CatchLogs):
     def shortDescription(self):
         return '%s test for %r' % (self.__class__.__name__, self.kvform)
@@ -14,6 +15,7 @@ class KVBaseTest(unittest.TestCase, CatchLogs):
 
     def tearDown(self):
         CatchLogs.tearDown(self)
+
 
 class KVDictTest(KVBaseTest):
     def __init__(self, kv, dct, warnings):
@@ -37,6 +39,7 @@ class KVDictTest(KVBaseTest):
         kv = kvform.dictToKV(d)
         d2 = kvform.kvToDict(kv)
         self.failUnlessEqual(d, d2)
+
 
 class KVSeqTest(KVBaseTest):
     def __init__(self, seq, kv, expected_warnings):
@@ -140,6 +143,7 @@ kvexc_cases = [
     [('foo', 'bar'), ('bad:', 'seed')],
     ]
 
+
 class KVExcTest(unittest.TestCase):
     def __init__(self, seq):
         unittest.TestCase.__init__(self)
@@ -151,6 +155,7 @@ class KVExcTest(unittest.TestCase):
     def runTest(self):
         self.failUnlessRaises(ValueError, kvform.seqToKV, self.seq)
 
+
 class GeneralTest(KVBaseTest):
     kvform = '<None>'
 
@@ -158,6 +163,7 @@ class GeneralTest(KVBaseTest):
         result = kvform.seqToKV([(1,1)])
         self.failUnlessEqual(result, '1:1\n')
         self.checkWarnings(2)
+
 
 def pyUnitTests():
     tests = [KVDictTest(*case) for case in kvdict_cases]
