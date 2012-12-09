@@ -15,7 +15,7 @@ def seqToKV(seq, strict=False):
     @type seq: [(str, (unicode|str))]
 
     @return: A string representation of the sequence
-    @rtype: str
+    @rtype: bytes
     """
     def err(msg):
         formatted = 'seqToKV warning: %s: %r' % (msg, seq)
@@ -44,7 +44,7 @@ def seqToKV(seq, strict=False):
             err('Key has whitespace at beginning or end: %r' % (k,))
 
         if isinstance(v, bytes):
-            v = v.decode('UTF8')
+            v = v.decode('utf-8')
         elif not isinstance(v, str):
             err('Converting value to string: %r' % (v,))
             v = str(v)
@@ -68,6 +68,8 @@ def kvToSeq(data, strict=False):
 
         seq = kvToSeq(s)
         seqToKV(kvToSeq(seq)) == seq
+
+    @return str
     """
     def err(msg):
         formatted = 'kvToSeq warning: %s: %r' % (msg, data)
