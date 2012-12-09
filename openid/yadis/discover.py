@@ -138,11 +138,9 @@ def whereIsYadis(resp):
             else:
                 encoding = 'utf-8'
 
-            try:
+            if isinstance(resp.body, bytes):
                 content = resp.body.decode(encoding)
-            except UnicodeError:
-                # Keep encoded version in case yadis location can be found before encoding shut this up.
-                # Possible errors will be caught lower.
+            else:
                 content = resp.body
 
             try:
