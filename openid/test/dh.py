@@ -1,19 +1,20 @@
 import os.path
 from openid.dh import DiffieHellman, strxor
 
+
 def test_strxor():
-    NUL = '\x00'
+    NUL = b'\x00'
 
     cases = [
         (NUL, NUL, NUL),
-        ('\x01', NUL, '\x01'),
+        ('\x01', NUL, b'\x01'),
         ('a', 'a', NUL),
-        ('a', NUL, 'a'),
-        ('abc', NUL * 3, 'abc'),
-        ('x' * 10, NUL * 10, 'x' * 10),
-        ('\x01', '\x02', '\x03'),
-        ('\xf0', '\x0f', '\xff'),
-        ('\xff', '\x0f', '\xf0'),
+        ('a', NUL, b'a'),
+        ('abc', NUL * 3, b'abc'),
+        ('x' * 10, NUL * 10, b'x' * 10),
+        ('\x01', '\x02', b'\x03'),
+        ('\xf0', '\x0f', b'\xff'),
+        ('\xff', '\x0f', b'\xf0'),
         ]
 
     for aa, bb, expected in cases:
