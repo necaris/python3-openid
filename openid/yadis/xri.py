@@ -7,6 +7,8 @@
 import re
 from functools import reduce
 
+from openid import codecutil  # registers 'percent_escape' encoding handler
+
 XRI_AUTHORITIES = ['!', '=', '@', '+', '$', '(']
 
 try:
@@ -48,10 +50,6 @@ else:
         (0xF0000, 0xFFFFD),
         (0x100000, 0x10FFFD),
         ]
-
-
-_escapeme_re = re.compile('[%s]' % (''.join(
-    ['%s-%s' % (chr(m_n[0]), chr(m_n[1])) for m_n in UCSCHAR + IPRIVATE]),))
 
 
 def identifierScheme(identifier):
@@ -98,15 +96,10 @@ def toURINormal(xri):
     return iriToURI(toIRINormal(xri))
 
 
-def _percentEscapeUnicode(char_match):
-    c = char_match.group()
-    return ''.join(['%%%X' % (ord(octet),) for octet in c.encode('utf-8')])
-
-
 def iriToURI(iri):
     """Transform an IRI to a URI by escaping unicode."""
     # According to RFC 3987, section 3.1, "Mapping of IRIs to URIs"
-    return _escapeme_re.sub(_percentEscapeUnicode, iri)
+    return iri.encode('ascii', errors='percent_escape').decode()
 
 
 def providerIsAuthoritative(providerID, canonicalID):

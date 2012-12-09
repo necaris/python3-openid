@@ -1,5 +1,7 @@
 import re
 
+from openid import codecutil  # registers 'percent_escape' encoding handler
+
 # from appendix B of rfc 3986 (http://www.ietf.org/rfc/rfc3986.txt)
 uri_pattern = r'^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?'
 uri_re = re.compile(uri_pattern)
@@ -72,15 +74,6 @@ _unreserved[ord('_')] = True
 _unreserved[ord('~')] = True
 
 
-_escapeme_re = re.compile('[%s]' % (''.join(
-    ['%s-%s' % (chr(m_n[0]), chr(m_n[1])) for m_n in UCSCHAR + IPRIVATE]),))
-
-
-def _pct_escape_unicode(char_match):
-    c = char_match.group()
-    return ''.join(['%%%X' % (ord(octet),) for octet in c.encode('utf-8')])
-
-
 def _pct_encoded_replace_unreserved(mo):
     try:
         i = int(mo.group(1), 16)
@@ -137,7 +130,8 @@ def remove_dot_segments(path):
 
 def urinorm(uri):
     if isinstance(uri, str):
-        uri = _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
+        uri = uri.encode('ascii', errors='percent_escape').decode()
+        # _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
 
     illegal_mo = uri_illegal_char_re.search(uri)
     if illegal_mo:
