@@ -1102,7 +1102,7 @@ class WebResponse(object):
     @type body: str
     """
 
-    def __init__(self, code=HTTP_OK, headers=None, body=""):
+    def __init__(self, code=HTTP_OK, headers=None, body=b""):
         """Construct me.
 
         These parameters are assigned directly as class attributes, see
@@ -1113,6 +1113,8 @@ class WebResponse(object):
             self.headers = headers
         else:
             self.headers = {}
+        if isinstance(body, bytes):
+            body = str(body, encoding="utf-8")
         self.body = body
 
 
