@@ -260,7 +260,9 @@ class Message(object):
         return copy.deepcopy(self)
 
     def toPostArgs(self):
-        """Return all arguments with openid. in front of namespaced arguments.
+        """
+        Return all arguments with openid. in front of namespaced arguments.
+        @return bytes
         """
         args = {}
 
@@ -272,12 +274,12 @@ class Message(object):
                 ns_key = 'openid.ns'
             else:
                 ns_key = 'openid.ns.' + alias
-            args[ns_key] = oidutil.toUnicode(ns_uri).encode('UTF-8')
+            args[ns_key] = oidutil.toUnicode(ns_uri).encode('utf-8')
 
         for (ns_uri, ns_key), value in self.args.items():
             key = self.getKey(ns_uri, ns_key)
-            # Ensure the resulting value is an UTF-8 encoded bytestring.
-            args[key] = oidutil.toUnicode(value).encode('UTF-8')
+            # Ensure the resulting value is an UTF-8 encoded *bytestring*.
+            args[key] = oidutil.toUnicode(value).encode('utf-8')
 
         return args
 
