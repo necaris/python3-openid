@@ -112,32 +112,22 @@ def pyUnitTests():
     return s
 
 
-def splitDir(d, count):
-    # in python2.4 and above, it's easier to spell this as
-    # d.rsplit(os.sep, count)
-    for i in range(count):
-        d = os.path.dirname(d)
-    return d
-
-
 def _import_djopenid():
     """Import djopenid from examples/
 
     It's not in sys.path, and I don't really want to put it in sys.path.
     """
     import types
-    thisfile = os.path.abspath(sys.modules[__name__].__file__)
-    topDir = splitDir(thisfile, 2)
+    parentDir = os.path.join(__file__, "..", "..")
+    topDir = os.path.abspath(os.path.join(parentDir, ".."))
     djdir = os.path.join(topDir, 'examples', 'djopenid')
 
     djinit = os.path.join(djdir, '__init__.py')
 
     djopenid = types.ModuleType('djopenid')
-    if sys.version_info[0] >= 3:
-        with open(djinit, 'r') as f:
-            exec(compile(f.read(), "__init__.py"), "exec", djinit.__dict__)
-    else:
-        exec(compile(open(djinit).read(), djinit, 'exec'), djopenid.__dict__)
+    with open(djinit, 'r') as f:
+        exec(compile(f.read(), "__init__.py", "exec"), {})
+
     djopenid.__file__ = djinit
 
     # __path__ is the magic that makes child modules of the djopenid package
