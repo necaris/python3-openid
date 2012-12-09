@@ -508,6 +508,7 @@ class TestDecode(unittest.TestCase):
 
 
 class TestEncode(unittest.TestCase):
+
     def setUp(self):
         self.encoder = server.Encoder()
         self.encode = self.encoder.encode
@@ -550,11 +551,11 @@ class TestEncode(unittest.TestCase):
         returned.
         """
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
@@ -570,15 +571,16 @@ class TestEncode(unittest.TestCase):
         self.failUnless(len(response.encodeToURL()) > OPENID1_URL_LIMIT)
         self.failUnless(response.whichEncoding() == server.ENCODE_HTML_FORM)
         webresponse = self.encode(response)
-        self.failUnlessEqual(webresponse.body, response.toFormMarkup())
+        self.failUnlessEqual(webresponse.body,
+                             response.toFormMarkup())
 
     def test_toFormMarkup(self):
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
@@ -590,7 +592,7 @@ class TestEncode(unittest.TestCase):
             'return_to': 'x' * OPENID1_URL_LIMIT,
             })
 
-        form_markup = response.toFormMarkup({'foo':'bar'})
+        form_markup = response.toFormMarkup({'foo': 'bar'})
         self.failUnless(' foo="bar"' in form_markup)
 
     def test_toHTML(self):
@@ -625,11 +627,11 @@ class TestEncode(unittest.TestCase):
         place to preserve the status quo for OpenID 1.
         """
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
@@ -643,15 +645,16 @@ class TestEncode(unittest.TestCase):
         self.failUnless(len(response.encodeToURL()) > OPENID1_URL_LIMIT)
         self.failUnless(response.whichEncoding() == server.ENCODE_URL)
         webresponse = self.encode(response)
-        self.failUnlessEqual(webresponse.headers['location'], response.encodeToURL())
+        self.failUnlessEqual(webresponse.headers['location'],
+                             response.encodeToURL())
 
     def test_id_res(self):
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
@@ -670,16 +673,20 @@ class TestEncode(unittest.TestCase):
                                                        request.return_to))
         # argh.
         q2 = dict(cgi.parse_qsl(urlparse(location)[4]))
+        # bytes-ify the values to ensure they're comparable, since toPostArgs()
+        # returns bytes values
+        for k in q2:
+            q2[k] = bytes(q2[k], encoding="utf-8")
         expected = response.fields.toPostArgs()
         self.failUnlessEqual(q2, expected)
 
     def test_cancel(self):
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
@@ -692,11 +699,11 @@ class TestEncode(unittest.TestCase):
 
     def test_cancelToForm(self):
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
@@ -815,12 +822,12 @@ class TestSigningEncode(unittest.TestCase):
 
     def test_cancel(self):
         request = server.CheckIDRequest(
-            identity = 'http://bombom.unittest/',
-            trust_root = 'http://burr.unittest/',
-            return_to = 'http://burr.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
-            )
+            identity='http://bombom.unittest/',
+            trust_root='http://burr.unittest/',
+            return_to='http://burr.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
+        )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields.setArg(OPENID_NS, 'mode', 'cancel')
@@ -848,17 +855,18 @@ class TestSigningEncode(unittest.TestCase):
         self.response.fields.setArg(OPENID_NS, 'sig', 'priorSig==')
         self.failUnlessRaises(server.AlreadySigned, self.encode, self.response)
 
+
 class TestCheckID(unittest.TestCase):
     def setUp(self):
         self.op_endpoint = 'http://endpoint.unittest/'
         self.store = memstore.MemoryStore()
         self.server = server.Server(self.store, self.op_endpoint)
         self.request = server.CheckIDRequest(
-            identity = 'http://bambam.unittest/',
-            trust_root = 'http://bar.unittest/',
-            return_to = 'http://bar.unittest/999',
-            immediate = False,
-            op_endpoint = self.server.op_endpoint,
+            identity='http://bambam.unittest/',
+            trust_root='http://bar.unittest/',
+            return_to='http://bar.unittest/999',
+            immediate=False,
+            op_endpoint=self.server.op_endpoint,
             )
         self.request.message = Message(OPENID2_NS)
 
