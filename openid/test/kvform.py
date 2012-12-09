@@ -111,7 +111,7 @@ kvseq_cases = [
     ([], '', 0),
 
     # Make sure that we handle non-ascii characters (also wider than 8 bits)
-    ([('\u03bbx', 'x')], '\xce\xbbx:x\n', 0),
+    ([('\u03bbx', 'x')], b'\xce\xbbx:x\n', 0),
 
     # If it's a UTF-8 str, make sure that it's equivalent to the same
     # string, decoded.
