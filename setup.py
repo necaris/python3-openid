@@ -20,7 +20,7 @@ the OpenID decentralized identity system in your application.  Want to enable
 single sign-on for your web site?  Use the openid.consumer package.  Want to
 run your own OpenID server? Check out openid.server.  Includes example code
 and support for a variety of storage back-ends.''',
-    url='http://github.com/openid/python-openid',
+    url='http://github.com/necaris/python3-openid',
     packages=['openid',
               'openid.consumer',
               'openid.server',
