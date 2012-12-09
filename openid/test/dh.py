@@ -37,6 +37,7 @@ def test_strxor():
         else:
             assert False, 'Expected ValueError, got %r' % (unexpected,)
 
+
 def test1():
     dh1 = DiffieHellman.fromDefaults()
     dh2 = DiffieHellman.fromDefaults()
@@ -45,10 +46,12 @@ def test1():
     assert secret1 == secret2
     return secret1
 
+
 def test_exchange():
     s1 = test1()
     s2 = test1()
     assert s1 != s2
+
 
 def test_public():
     f = open(os.path.join(os.path.dirname(__file__), 'dhpriv'))
@@ -61,6 +64,7 @@ def test_public():
             assert dh.public == int(parts[1])
     finally:
         f.close()
+
 
 def test():
     test_exchange()
