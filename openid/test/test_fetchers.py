@@ -1,18 +1,27 @@
 import warnings
 import unittest
 import sys
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 import socket
 
 from openid import fetchers
 
 # XXX: make these separate test cases
 
+
+def _assertEqual(v1, v2):
+    try:
+        assert v1 == v2
+    except AssertionError:
+        raise AssertionError("%r != %r" % (v1, v2))
+
+
 def failUnlessResponseExpected(expected, actual):
-    assert expected.final_url == actual.final_url, (
-        "%r != %r" % (expected.final_url, actual.final_url))
-    assert expected.status == actual.status
-    assert expected.body == actual.body
+    _assertEqual(expected.final_url, actual.final_url)
+    _assertEqual(expected.status, actual.status)
+    _assertEqual(expected.body, actual.body)
     got_headers = dict(actual.headers)
     del got_headers['date']
     del got_headers['server']
