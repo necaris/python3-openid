@@ -223,10 +223,13 @@ class EmptyMessageTest(unittest.TestCase):
     def test_isOpenID2(self):
         self.failIf(self.msg.isOpenID2())
 
+
 class OpenID1MessageTest(unittest.TestCase):
     def setUp(self):
-        self.msg = message.Message.fromPostArgs({'openid.mode':'error',
-                                                 'openid.error':'unit test'})
+        self.msg = message.Message.fromPostArgs({
+            'openid.mode': 'error',
+            'openid.error': 'unit test'
+        })
 
     def test_toPostArgs(self):
         self.failUnlessEqual(self.msg.toPostArgs(), {
