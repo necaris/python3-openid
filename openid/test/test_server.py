@@ -492,8 +492,8 @@ class TestDecode(unittest.TestCase):
         self.failUnlessRaises(server.ProtocolError, self.decode, args)
 
     def test_invalidns(self):
-	args = {'openid.ns': 'Tuesday',
-		'openid.mode': 'associate'}
+        args = {'openid.ns': 'Tuesday',
+                'openid.mode': 'associate'}
 
         try:
             r = self.decode(args)
@@ -1988,10 +1988,10 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         self.failIf(self.messages, self.messages)
 
     def test_getAssocExpired(self):
-	assoc_handle = self.makeAssoc(dumb=True, lifetime=-10)
+        assoc_handle = self.makeAssoc(dumb=True, lifetime=-10)
         assoc = self.signatory.getAssociation(assoc_handle, True)
         self.failIf(assoc, assoc)
-	self.failUnless(self.messages)
+        self.failUnless(self.messages)
 
     def test_getAssocInvalid(self):
         ah = 'no-such-handle'
@@ -2046,7 +2046,6 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         assoc = self.signatory.getAssociation(assoc_handle, dumb=True)
         self.failIf(assoc)
         self.failIf(self.messages, self.messages)
-
 
 
 if __name__ == '__main__':
