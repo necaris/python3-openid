@@ -5,7 +5,7 @@ import warnings
 
 from openid.message import Message, OPENID_NS, OPENID2_NS, IDENTIFIER_SELECT, \
      OPENID1_NS, BARE_NS
-from openid import cryptutil, dh, oidutil, kvform
+from openid import cryptutil, oidutil, kvform
 from openid.store.nonce import mkNonce, split as splitNonce
 from openid.consumer.discover import OpenIDServiceEndpoint, OPENID_2_0_TYPE, \
      OPENID_1_1_TYPE
@@ -33,11 +33,13 @@ assocs = [
     ('\x00' * 20, 'Zeros'),
     ]
 
+
 def mkSuccess(endpoint, q):
     """Convenience function to create a SuccessResponse with the given
     arguments, all signed."""
     signed_list = ['openid.' + k for k in list(q.keys())]
     return SuccessResponse(endpoint, Message.fromOpenIDArgs(q), signed_list)
+
 
 def parseQuery(qs):
     q = {}
@@ -46,6 +48,7 @@ def parseQuery(qs):
         q[k] = v
     return q
 
+
 def associate(qs, assoc_secret, assoc_handle):
     """Do the server's half of the associate call, using the given
     secret and handle."""
@@ -53,9 +56,9 @@ def associate(qs, assoc_secret, assoc_handle):
     assert q['openid.mode'] == 'associate'
     assert q['openid.assoc_type'] == 'HMAC-SHA1'
     reply_dict = {
-        'assoc_type':'HMAC-SHA1',
-        'assoc_handle':assoc_handle,
-        'expires_in':'600',
+        'assoc_type': 'HMAC-SHA1',
+        'assoc_handle': assoc_handle,
+        'expires_in': '600',
         }
 
     if q.get('openid.session_type') == 'DH-SHA1':
@@ -93,7 +96,9 @@ class GoodAssocStore(memstore.MemoryStore):
 class TestFetcher(object):
     def __init__(self, user_url, user_page, xxx_todo_changeme):
         (assoc_secret, assoc_handle) = xxx_todo_changeme
-        self.get_responses = {user_url:self.response(user_url, 200, user_page)}
+        self.get_responses = {
+            user_url: self.response(user_url, 200, user_page)
+        }
         self.assoc_secret = assoc_secret
         self.assoc_handle = assoc_handle
         self.num_assocs = 0
@@ -110,7 +115,7 @@ class TestFetcher(object):
             try:
                 body.index('openid.mode=associate')
             except ValueError:
-                pass # fall through
+                pass  # fall through
             else:
                 assert body.find('DH-SHA1') != -1
                 response = associate(
@@ -165,11 +170,11 @@ def _test_success(server_url, user_url, delegate_url, links, immediate=False):
         new_return_to = q['openid.return_to']
         del q['openid.return_to']
         assert q == {
-            'openid.mode':mode,
-            'openid.identity':delegate_url,
-            'openid.trust_root':trust_root,
-            'openid.assoc_handle':fetcher.assoc_handle,
-            }, (q, user_url, delegate_url, mode)
+            'openid.mode': mode,
+            'openid.identity': delegate_url,
+            'openid.trust_root': trust_root,
+            'openid.assoc_handle': fetcher.assoc_handle,
+        }, (q, user_url, delegate_url, mode)
 
         assert new_return_to.startswith(return_to)
         assert redirect_url.startswith(server_url)
@@ -177,11 +182,11 @@ def _test_success(server_url, user_url, delegate_url, links, immediate=False):
         parsed = urllib.parse.urlparse(new_return_to)
         query = parseQuery(parsed[4])
         query.update({
-            'openid.mode':'id_res',
-            'openid.return_to':new_return_to,
-            'openid.identity':delegate_url,
-            'openid.assoc_handle':fetcher.assoc_handle,
-            })
+            'openid.mode': 'id_res',
+            'openid.return_to': new_return_to,
+            'openid.identity': delegate_url,
+            'openid.assoc_handle': fetcher.assoc_handle,
+        })
 
         assoc = store.getAssociation(server_url, fetcher.assoc_handle)
 
@@ -1274,11 +1279,10 @@ class TestCheckAuth(unittest.TestCase, CatchLogs):
         car = self.consumer._createCheckAuthRequest(incoming)
         expected_args = args.copy()
         expected_args['openid.mode'] = 'check_authentication'
-        expected =Message.fromPostArgs(expected_args)
+        expected = Message.fromPostArgs(expected_args)
         self.failUnless(expected.isOpenID2())
         self.failUnlessEqual(expected, car)
         self.failUnlessEqual(expected_args, car.toPostArgs())
-
 
 
 class TestFetchAssoc(unittest.TestCase, CatchLogs):
@@ -1298,7 +1302,7 @@ class TestFetchAssoc(unittest.TestCase, CatchLogs):
         self.failUnlessRaises(
             fetchers.HTTPFetchingError,
             self.consumer._makeKVPost,
-            Message.fromPostArgs({'mode':'associate'}),
+            Message.fromPostArgs({'mode': 'associate'}),
             "http://server_url")
 
     def test_error_exception_unwrapped(self):
@@ -1878,6 +1882,7 @@ class TestCreateAssociationRequest(unittest.TestCase):
         self.failUnlessEqual(expected, args)
 
     # XXX: test the other types
+
 
 class TestDiffieHellmanResponseParameters(object):
     session_cls = None
