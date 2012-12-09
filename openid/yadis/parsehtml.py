@@ -90,7 +90,7 @@ class YadisHTMLParser(HTMLParser):
     TERMINATED = 4
 
     def __init__(self):
-        HTMLParser.__init__(self)
+        super(YadisHTMLParser, self).__init__(strict=False)
         self.phase = self.TOP
 
     def _terminate(self):
@@ -107,7 +107,7 @@ class YadisHTMLParser(HTMLParser):
         # if we ever see a start body tag, bail out right away, since
         # we want to prevent the meta tag from appearing in the body
         # [2]
-        if tag=='body':
+        if tag == 'body':
             self._terminate()
 
         if self.phase == self.TOP:
@@ -144,16 +144,17 @@ class YadisHTMLParser(HTMLParser):
                     self.phase = self.FOUND
                     raise ParseDone(yadis_loc)
 
-            elif tag in ['head', 'html']:
+            elif tag in ('head', 'html'):
                 # [5], [7]
                 self._terminate()
 
     def feed(self, chars):
         # [8]
-        if self.phase in [self.TERMINATED, self.FOUND]:
+        if self.phase in (self.TERMINATED, self.FOUND):
             self._terminate()
 
-        return HTMLParser.feed(self, chars)
+        return super(YadisHTMLParser, self).feed(chars)
+
 
 def findHTMLMeta(stream):
     """Look for a meta http-equiv tag with the YADIS header name.
@@ -185,10 +186,7 @@ def findHTMLMeta(stream):
             chunks.append(stream.read())
             break
         except ParseDone as why:
-            if hasattr(why, 'args'):
-                uri = why.args[0]
-            else:
-                uri = why[0]
+            uri = why.args[0]
             if uri is None:
                 # Parse finished, but we may need the rest of the file
                 chunks.append(stream.read())
