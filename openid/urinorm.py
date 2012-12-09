@@ -129,6 +129,11 @@ def remove_dot_segments(path):
 
 
 def urinorm(uri):
+    '''
+    Normalize a URI
+    '''
+    # TODO: use urllib.parse instead of these complex regular expressions
+
     if isinstance(uri, str):
         uri = uri.encode('ascii', errors='percent_escape').decode()
         # _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
