@@ -54,6 +54,7 @@ def _pct_escape_handler(err):
     '''
     Encoding error handler that does percent-escaping of Unicode, to be used
     with codecs.register_error
+    TODO: replace use of this with urllib.parse.quote as appropriate
     '''
     chunk = err.object[err.start:err.end]
     replacements = []
