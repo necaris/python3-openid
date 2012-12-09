@@ -20,6 +20,7 @@ __all__ = [
 
 import sys
 import random
+import functools
 
 from datetime import datetime
 from time import strptime
@@ -194,17 +195,19 @@ def getCanonicalID(iname, xrd_tree):
     return canonicalID
 
 
-
+@functools.total_ordering
 class _Max(object):
-    """Value that compares greater than any other value.
+    """
+    Value that compares greater than any other value.
 
     Should only be used as a singleton. Implemented for use as a
-    priority value for when a priority is not specified."""
-    def __cmp__(self, other):
-        if other is self:
-            return 0
+    priority value for when a priority is not specified.
+    """
+    def __lt__(self, other):
+        return isinstance(other, self.__class__)
 
-        return 1
+    def __eq__(self, other):
+        return isinstance(other, self.__class__)
 
 Max = _Max()
 
