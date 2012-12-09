@@ -1,7 +1,10 @@
-from openid.yadis.parsehtml import YadisHTMLParser, ParseDone
 from html.parser import HTMLParseError
+import os.path
+import unittest
+import sys
 
-import os.path, unittest, sys
+from openid.yadis.parsehtml import YadisHTMLParser, ParseDone
+
 
 class _TestCase(unittest.TestCase):
     reserved_values = ['None', 'EOF']
@@ -18,7 +21,7 @@ class _TestCase(unittest.TestCase):
         try:
             p.feed(self.case)
         except ParseDone as why:
-            found = str(why)
+            found = why.args[0]
 
             # make sure we protect outselves against accidental bogus
             # test cases
@@ -41,6 +44,7 @@ class _TestCase(unittest.TestCase):
             self.__class__.__module__,
             os.path.basename(self.filename))
 
+
 def parseCases(data):
     cases = []
     for chunk in data.split('\f\n'):
@@ -48,12 +52,14 @@ def parseCases(data):
         cases.append((expected, case))
     return cases
 
+
 def pyUnitTests():
     """Make a pyunit TestSuite from a file defining test cases."""
     s = unittest.TestSuite()
     for (filename, test_num, expected, case) in getCases():
         s.addTest(_TestCase(filename, str(test_num), expected, case))
     return s
+
 
 def test():
     runner = unittest.TextTestRunner()
@@ -66,6 +72,7 @@ base = os.path.dirname(__file__)
 for filename in filenames:
     full_name = os.path.join(base, filename)
     default_test_files.append(full_name)
+
 
 def getCases(test_files=default_test_files):
     cases = []
