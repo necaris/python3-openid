@@ -25,7 +25,10 @@ Content-Type: text/plain
 No such file %s
 """
 
-class QuitServer(Exception): pass
+
+class QuitServer(Exception):
+    pass
+
 
 def mkResponse(data):
     status_mo = status_header_re.match(data)
@@ -37,9 +40,8 @@ def mkResponse(data):
         v = v.strip()
         headers[k] = v
     status = int(status_mo.group(1))
-    return fetchers.HTTPResponse(status=status,
-                                 headers=headers,
-                                 body=body)
+    return fetchers.HTTPResponse(status=status, headers=headers, body=body)
+
 
 class TestFetcher(object):
     def __init__(self, base_url):
@@ -53,10 +55,8 @@ class TestFetcher(object):
             try:
                 data = discoverdata.generateSample(path, self.base_url)
             except KeyError:
-                return fetchers.HTTPResponse(status=404,
-                                             final_url=current_url,
-                                             headers={},
-                                             body='')
+                return fetchers.HTTPResponse(status=404, final_url=current_url,
+                                             headers={}, body='')
 
             response = mkResponse(data)
             if response.status in [301, 302, 303, 307]:
@@ -65,10 +65,12 @@ class TestFetcher(object):
                 response.final_url = current_url
                 return response
 
+
 class TestSecondGet(unittest.TestCase):
     class MockFetcher(object):
         def __init__(self):
             self.count = 0
+
         def fetch(self, uri, headers=None, body=None):
             self.count += 1
             if self.count == 1:
@@ -163,6 +165,7 @@ class _TestCase(unittest.TestCase):
             n,
             self.__class__.__module__)
 
+
 def pyUnitTests():
     s = unittest.TestSuite()
     for success, input_name, id_name, result_name in discoverdata.testlist:
@@ -170,6 +173,7 @@ def pyUnitTests():
         s.addTest(test)
 
     return s
+
 
 def test():
     runner = unittest.TextTestRunner()
