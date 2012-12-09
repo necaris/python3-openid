@@ -7,14 +7,14 @@ def test_strxor():
 
     cases = [
         (NUL, NUL, NUL),
-        ('\x01', NUL, b'\x01'),
-        ('a', 'a', NUL),
-        ('a', NUL, b'a'),
-        ('abc', NUL * 3, b'abc'),
-        ('x' * 10, NUL * 10, b'x' * 10),
-        ('\x01', '\x02', b'\x03'),
-        ('\xf0', '\x0f', b'\xff'),
-        ('\xff', '\x0f', b'\xf0'),
+        (b'\x01', NUL, b'\x01'),
+        (b'a', b'a', NUL),
+        (b'a', NUL, b'a'),
+        (b'abc', NUL * 3, b'abc'),
+        (b'x' * 10, NUL * 10, b'x' * 10),
+        (b'\x01', b'\x02', b'\x03'),
+        (b'\xf0', b'\x0f', b'\xff'),
+        (b'\xff', b'\x0f', b'\xf0'),
         ]
 
     for aa, bb, expected in cases:
