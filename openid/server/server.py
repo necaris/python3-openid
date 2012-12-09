@@ -116,7 +116,8 @@ From 1.1 to 2.0
 @group Response Encodings: ENCODE_KVFORM, ENCODE_HTML_FORM, ENCODE_URL
 """
 
-import time, warnings
+import time
+import warnings
 import logging
 from copy import deepcopy
 
@@ -142,6 +143,7 @@ ENCODE_URL = ('URL/redirect',)
 ENCODE_HTML_FORM = ('HTML form',)
 
 UNUSED = None
+
 
 class OpenIDRequest(object):
     """I represent an incoming OpenID request.
@@ -986,7 +988,6 @@ class OpenIDResponse(object):
             self.request.__class__.__name__,
             self.fields)
 
-
     def toFormMarkup(self, form_tag_attrs=None):
         """Returns the form markup for this response.
 
@@ -1024,7 +1025,6 @@ class OpenIDResponse(object):
         """
         return self.whichEncoding() == ENCODE_HTML_FORM
 
-
     def needsSigning(self):
         """Does this response require signing?
 
@@ -1032,9 +1032,7 @@ class OpenIDResponse(object):
         """
         return self.fields.getArg(OPENID_NS, 'mode') == 'id_res'
 
-
     # implements IEncodable
-
     def whichEncoding(self):
         """How should I be encoded?
 
@@ -1051,7 +1049,6 @@ class OpenIDResponse(object):
         else:
             return ENCODE_KVFORM
 
-
     def encodeToURL(self):
         """Encode a response as a URL for the user agent to GET.
 
@@ -1061,7 +1058,6 @@ class OpenIDResponse(object):
         @returntype: str
         """
         return self.fields.toURL(self.request.return_to)
-
 
     def addExtension(self, extension_response):
         """
@@ -1076,7 +1072,6 @@ class OpenIDResponse(object):
         """
         extension_response.toMessage(self.fields)
 
-
     def encodeToKVForm(self):
         """Encode a response in key-value colon/newline format.
 
@@ -1089,7 +1084,6 @@ class OpenIDResponse(object):
         @returntype: str
         """
         return self.fields.toKVForm()
-
 
 
 class WebResponse(object):
@@ -1122,7 +1116,6 @@ class WebResponse(object):
         self.body = body
 
 
-
 class Signatory(object):
     """I sign things.
 
@@ -1136,7 +1129,7 @@ class Signatory(object):
     @type SECRET_LIFETIME: int
     """
 
-    SECRET_LIFETIME = 14 * 24 * 60 * 60 # 14 days, in seconds
+    SECRET_LIFETIME = 14 * 24 * 60 * 60  # 14 days, in seconds
 
     # keys have a bogus server URL in them because the filestore
     # really does expect that key to be a URL.  This seems a little
@@ -1144,7 +1137,6 @@ class Signatory(object):
     # server URL.
     _normal_key = 'http://localhost/|normal'
     _dumb_key = 'http://localhost/|dumb'
-
 
     def __init__(self, store):
         """Create a new Signatory.
@@ -1154,7 +1146,6 @@ class Signatory(object):
         """
         assert store is not None
         self.store = store
-
 
     def verify(self, assoc_handle, message):
         """Verify that the signature for some data is valid.
@@ -1184,7 +1175,6 @@ class Signatory(object):
                                                                ex))
             return False
         return valid
-
 
     def sign(self, response):
         """Sign a response.
@@ -1219,7 +1209,8 @@ class Signatory(object):
                     # now do the clean-up that the disabled checkExpiration
                     # code didn't get to do.
                     self.invalidate(assoc_handle, dumb=False)
-                assoc = self.createAssociation(dumb=True, assoc_type=assoc_type)
+                assoc = self.createAssociation(dumb=True,
+                                               assoc_type=assoc_type)
         else:
             # dumb mode.
             assoc = self.createAssociation(dumb=True)
@@ -1229,7 +1220,6 @@ class Signatory(object):
         except kvform.KVFormError as err:
             raise EncodingError(response, explanation=str(err))
         return signed_response
-
 
     def createAssociation(self, dumb=True, assoc_type='HMAC-SHA1'):
         """Make a new association.
@@ -1257,7 +1247,6 @@ class Signatory(object):
             key = self._normal_key
         self.store.storeAssociation(key, assoc)
         return assoc
-
 
     def getAssociation(self, assoc_handle, dumb, checkExpiration=True):
         """Get the association with the specified handle.
@@ -1294,7 +1283,6 @@ class Signatory(object):
                 assoc = None
         return assoc
 
-
     def invalidate(self, assoc_handle, dumb):
         """Invalidates the association with the given handle.
 
@@ -1310,7 +1298,6 @@ class Signatory(object):
         self.store.removeAssociation(key, assoc_handle)
 
 
-
 class Encoder(object):
     """I encode responses in to L{WebResponses<WebResponse>}.
 
@@ -1321,7 +1308,6 @@ class Encoder(object):
     """
 
     responseFactory = WebResponse
-
 
     def encode(self, response):
         """Encode a response to a L{WebResponse}.
@@ -1339,14 +1325,12 @@ class Encoder(object):
             wr = self.responseFactory(code=HTTP_REDIRECT,
                                       headers={'location': location})
         elif encode_as == ENCODE_HTML_FORM:
-            wr = self.responseFactory(code=HTTP_OK,
-                                      body=response.toHTML())
+            wr = self.responseFactory(code=HTTP_OK, body=response.toHTML())
         else:
             # Can't encode this to a protocol message.  You should probably
             # render it to HTML and show it to the user.
             raise EncodingError(response)
         return wr
-
 
 
 class SigningEncoder(Encoder):
@@ -1360,7 +1344,6 @@ class SigningEncoder(Encoder):
         @type signatory: L{Signatory}
         """
         self.signatory = signatory
-
 
     def encode(self, response):
         """Encode a response to a L{WebResponse}, signing it first if appropriate.
@@ -1383,7 +1366,6 @@ class SigningEncoder(Encoder):
                 raise AlreadySigned(response)
             response = self.signatory.sign(response)
         return super(SigningEncoder, self).encode(response)
-
 
 
 class Decoder(object):
@@ -1454,7 +1436,6 @@ class Decoder(object):
         mode = message.getArg(OPENID_NS, 'mode')
         fmt = "Unrecognized OpenID mode %r"
         raise ProtocolError(message, text=fmt % (mode,))
-
 
 
 class Server(object):
@@ -1540,7 +1521,6 @@ class Server(object):
                           stacklevel=2)
         self.op_endpoint = op_endpoint
 
-
     def handleRequest(self, request):
         """Handle a request.
 
@@ -1562,14 +1542,12 @@ class Server(object):
                 "%s has no handler for a request of mode %r." %
                 (self, request.mode))
 
-
     def openid_check_authentication(self, request):
         """Handle and respond to C{check_authentication} requests.
 
         @returntype: L{OpenIDResponse}
         """
         return request.answer(self.signatory)
-
 
     def openid_associate(self, request):
         """Handle and respond to C{associate} requests.
@@ -1593,7 +1571,6 @@ class Server(object):
                 preferred_assoc_type,
                 preferred_session_type)
 
-
     def decodeRequest(self, query):
         """Transform query parameters into an L{OpenIDRequest}.
 
@@ -1613,7 +1590,6 @@ class Server(object):
         """
         return self.decoder.decode(query)
 
-
     def encodeResponse(self, response):
         """Encode a response to a L{WebResponse}, signing it first if appropriate.
 
@@ -1627,7 +1603,6 @@ class Server(object):
         @see: L{SigningEncoder.encode}
         """
         return self.encoder.encode(response)
-
 
 
 class ProtocolError(Exception):
@@ -1652,7 +1627,6 @@ class ProtocolError(Exception):
         self.contact = contact
         assert type(message) not in [str, str]
         Exception.__init__(self, text)
-
 
     def getReturnTo(self):
         """Get the return_to argument from the request, if any.
@@ -1747,11 +1721,9 @@ class ProtocolError(Exception):
         return None
 
 
-
 class VersionError(Exception):
     """Raised when an operation was attempted that is not compatible with
     the protocol version being used."""
-
 
 
 class NoReturnToError(Exception):
@@ -1759,7 +1731,6 @@ class NoReturnToError(Exception):
     the request contains no return_to URL.
     """
     pass
-
 
 
 class EncodingError(Exception):
@@ -1790,7 +1761,6 @@ class AlreadySigned(EncodingError):
     """This response is already signed."""
 
 
-
 class UntrustedReturnURL(ProtocolError):
     """A return_to is outside the trust_root."""
 
@@ -1809,7 +1779,6 @@ class MalformedReturnURL(ProtocolError):
     def __init__(self, openid_message, return_to):
         self.return_to = return_to
         ProtocolError.__init__(self, openid_message)
-
 
 
 class MalformedTrustRoot(ProtocolError):
