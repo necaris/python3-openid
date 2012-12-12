@@ -23,8 +23,10 @@ def failUnlessResponseExpected(expected, actual, extra):
     _assertEqual(expected.status, actual.status, extra)
     _assertEqual(expected.body, actual.body, extra)
     got_headers = dict(actual.headers)
+
     del got_headers['date']
     del got_headers['server']
+
     for k, v in expected.headers.items():
         assert got_headers[k] == v, (k, v, got_headers[k], extra)
 
@@ -40,7 +42,8 @@ def test_fetcher(fetcher, exc, server):
     def plain(path, code):
         path = '/' + path
         expected = fetchers.HTTPResponse(
-            geturl(path), code, expected_headers, path)
+            geturl(path), code, expected_headers,
+            bytes(path, encoding="utf-8"))
         return (path, expected)
 
     expect_success = fetchers.HTTPResponse(
