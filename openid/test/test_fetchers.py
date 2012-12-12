@@ -149,7 +149,8 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/closed':
-            self.wfile.close()
+            # self.wfile.close()
+            pass
         else:
             try:
                 http_code, location = self.cases[self.path]
@@ -200,11 +201,11 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(body, encoding="utf-8"))
 
-    def finish(self):
-        if not self.wfile.closed:
-            self.wfile.flush()
-            self.wfile.close()
-        self.rfile.close()
+    # def finish(self):
+    #     if not self.wfile.closed:
+    #         self.wfile.flush()
+    #         # self.wfile.close()
+    #     # self.rfile.close()
 
 
 def test():
@@ -224,6 +225,8 @@ def test():
     server_thread.start()
 
     run_fetcher_tests(server)
+
+    server.shutdown()
 
 
 class FakeFetcher(object):
