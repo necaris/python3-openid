@@ -281,12 +281,12 @@ class Message(object):
                 ns_key = 'openid.ns'
             else:
                 ns_key = 'openid.ns.' + alias
-            args[ns_key] = oidutil.toUnicode(ns_uri).encode('utf-8')
+            args[ns_key] = oidutil.toUnicode(ns_uri)
 
         for (ns_uri, ns_key), value in self.args.items():
             key = self.getKey(ns_uri, ns_key)
             # Ensure the resulting value is an UTF-8 encoded *bytestring*.
-            args[key] = oidutil.toUnicode(value).encode('utf-8')
+            args[key] = oidutil.toUnicode(value)
 
         return args
 
@@ -473,8 +473,8 @@ class Message(object):
                     k = str(ns_key, encoding="utf-8")
                 else:
                     k = ns_key
-                if isinstance(value, str):
-                    v = bytes(value, encoding="utf-8")
+                if isinstance(value, bytes):
+                    v = str(value, encoding="utf-8")
                 else:
                     v = value
                 args.append((k, v))
@@ -495,6 +495,9 @@ class Message(object):
         assert key is not None
         assert value is not None
         namespace = self._fixNS(namespace)
+        # try to ensure that internally it's consistent, at least: str -> str
+        if isinstance(value, bytes):
+            value = str(value, encoding="utf-8")
         self.args[(namespace, key)] = value
         if not (namespace is BARE_NS):
             self.namespaces.add(namespace)
