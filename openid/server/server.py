@@ -191,7 +191,7 @@ class CheckAuthRequest(OpenIDRequest):
         self.invalidate_handle = invalidate_handle
         self.namespace = OPENID2_NS
 
-
+    @classmethod
     def fromMessage(klass, message, op_endpoint=UNUSED):
         """Construct me from an OpenID Message.
 
@@ -224,8 +224,6 @@ class CheckAuthRequest(OpenIDRequest):
 
         return self
 
-    fromMessage = classmethod(fromMessage)
-
     def answer(self, signatory):
         """Respond to this request.
 
@@ -248,12 +246,12 @@ class CheckAuthRequest(OpenIDRequest):
         response.fields.setArg(OPENID_NS, 'is_valid', valid_str)
 
         if self.invalidate_handle:
-            assoc = signatory.getAssociation(self.invalidate_handle, dumb=False)
+            assoc = signatory.getAssociation(self.invalidate_handle,
+                                             dumb=False)
             if not assoc:
                 response.fields.setArg(
                     OPENID_NS, 'invalidate_handle', self.invalidate_handle)
         return response
-
 
     def __str__(self):
         if self.invalidate_handle:
@@ -370,10 +368,12 @@ class DiffieHellmanSHA1ServerSession(object):
             'enc_mac_key': oidutil.toBase64(mac_key),
             }
 
+
 class DiffieHellmanSHA256ServerSession(DiffieHellmanSHA1ServerSession):
     session_type = 'DH-SHA256'
     hash_func = staticmethod(cryptutil.sha256)
     allowed_assoc_types = ['HMAC-SHA256']
+
 
 class AssociateRequest(OpenIDRequest):
     """A request to establish an X{association}.
@@ -411,7 +411,6 @@ class AssociateRequest(OpenIDRequest):
         self.assoc_type = assoc_type
         self.namespace = OPENID2_NS
 
-
     def fromMessage(klass, message, op_endpoint=UNUSED):
         """Construct me from an OpenID Message.
 
@@ -443,7 +442,7 @@ class AssociateRequest(OpenIDRequest):
             session = session_class.fromMessage(message)
         except ValueError as why:
             raise ProtocolError(message, 'Error parsing %s session: %s' %
-                                (session_class.session_type,))
+                                (session_class.session_type, why))
 
         assoc_type = message.getArg(OPENID_NS, 'assoc_type', 'HMAC-SHA1')
         if assoc_type not in session.allowed_assoc_types:
@@ -505,6 +504,7 @@ class AssociateRequest(OpenIDRequest):
                 OPENID_NS, 'session_type', preferred_session_type)
 
         return response
+
 
 class CheckIDRequest(OpenIDRequest):
     """A request to confirm the identity of a user.
@@ -791,10 +791,10 @@ class CheckIDRequest(OpenIDRequest):
         if allow:
             mode = 'id_res'
         elif self.message.isOpenID1():
-             if self.immediate:
-                 mode = 'id_res'
-             else:
-                 mode = 'cancel'
+            if self.immediate:
+                mode = 'id_res'
+            else:
+                mode = 'cancel'
         else:
             if self.immediate:
                 mode = 'setup_needed'
@@ -881,11 +881,10 @@ class CheckIDRequest(OpenIDRequest):
 
         return response
 
-
     def encodeToURL(self, server_url):
         """Encode this request as a URL to GET.
 
-        @param server_url: The URL of the OpenID server to make this request of.
+        @param server_url: URL of the OpenID server to make this request of.
         @type server_url: str
 
         @returntype: str
@@ -915,7 +914,6 @@ class CheckIDRequest(OpenIDRequest):
         response.updateArgs(OPENID_NS, q)
         return response.toURL(server_url)
 
-
     def getCancelURL(self):
         """Get the URL to cancel this request.
 
@@ -942,14 +940,12 @@ class CheckIDRequest(OpenIDRequest):
         response.setArg(OPENID_NS, 'mode', 'cancel')
         return response.toURL(self.return_to)
 
-
     def __repr__(self):
         return '<%s id:%r im:%s tr:%r ah:%r>' % (self.__class__.__name__,
                                                  self.identity,
                                                  self.immediate,
                                                  self.trust_root,
                                                  self.assoc_handle)
-
 
 
 class OpenIDResponse(object):
