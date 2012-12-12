@@ -560,8 +560,7 @@ class TestEncode(unittest.TestCase):
         self.assertTrue(len(response.encodeToURL()) > OPENID1_URL_LIMIT)
         self.assertTrue(response.whichEncoding() == server.ENCODE_HTML_FORM)
         webresponse = self.encode(response)
-        self.assertEqual(webresponse.body,
-                             response.toFormMarkup())
+        self.assertTrue(response.toFormMarkup() in webresponse.body)
 
     def test_toFormMarkup(self):
         request = server.CheckIDRequest(
