@@ -93,10 +93,11 @@ def urinorm(uri):
     Normalize a URI
     '''
     # TODO: use urllib.parse instead of these complex regular expressions
+    if isinstance(uri, bytes):
+        uri = str(uri, encoding='utf-8')
 
-    if isinstance(uri, str):
-        uri = uri.encode('ascii', errors='oid_percent_escape').decode('utf-8')
-        # _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
+    uri = uri.encode('ascii', errors='oid_percent_escape').decode('utf-8')
+    # _escapeme_re.sub(_pct_escape_unicode, uri).encode('ascii').decode()
 
     illegal_mo = uri_illegal_char_re.search(uri)
     if illegal_mo:
