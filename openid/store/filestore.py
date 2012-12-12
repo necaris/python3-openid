@@ -19,24 +19,8 @@ from openid.store import nonce
 from openid import cryptutil, oidutil
 
 _filename_allowed = string.ascii_letters + string.digits + '.'
-try:
-    # 2.4
-    set
-except NameError:
-    try:
-        # 2.3
-        import sets
-    except ImportError:
-        # Python < 2.2
-        d = {}
-        for c in _filename_allowed:
-            d[c] = None
-        _isFilenameSafe = d.has_key
-        del d
-    else:
-        _isFilenameSafe = sets.Set(_filename_allowed).__contains__
-else:
-    _isFilenameSafe = set(_filename_allowed).__contains__
+_isFilenameSafe = set(_filename_allowed).__contains__
+
 
 def _safe64(s):
     h64 = oidutil.toBase64(cryptutil.sha1(s))
@@ -53,6 +37,7 @@ def _filenameEscape(s):
         else:
             filename_chunks.append('_%02X' % ord(c))
     return ''.join(filename_chunks)
+
 
 def _removeIfPresent(filename):
     """Attempt to remove a file, returning whether the file existed at
