@@ -45,18 +45,30 @@ sha256_module = HashContainer(hashlib.sha256)
 
 
 def hmacSha1(key, text):
+    if isinstance(key, str):
+        key = bytes(key, encoding="utf-8")
+    if isinstance(text, str):
+        text = bytes(text, encoding="utf-8")
     return hmac.new(key, text, sha1_module).digest()
 
 
 def sha1(s):
+    if isinstance(s, str):
+        s = bytes(s, encoding="utf-8")
     return sha1_module.new(s).digest()
 
 
 def hmacSha256(key, text):
+    if isinstance(key, str):
+        key = bytes(key, encoding="utf-8")
+    if isinstance(text, str):
+        text = bytes(text, encoding="utf-8")
     return hmac.new(key, text, sha256_module).digest()
 
 
 def sha256(s):
+    if isinstance(s, str):
+        s = bytes(s, encoding="utf-8")
     return sha256_module.new(s).digest()
 
 
