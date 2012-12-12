@@ -55,6 +55,7 @@ def pyUnitTests():
         'pape_draft5',
         'rpverify',
         'extension',
+        'codecutil',
         ]
 
     pyunit_modules = [
