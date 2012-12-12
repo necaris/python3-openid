@@ -44,8 +44,9 @@ class BaseAssocTest(CatchLogs, unittest.TestCase):
         try:
             result = func(*args, **kwargs)
         except ProtocolError as e:
-            message = 'Expected prefix %r, got %r' % (str_prefix, e[0])
-            self.failUnless(e[0].startswith(str_prefix), message)
+            e_arg = e.args[0]
+            message = 'Expected prefix %r, got %r' % (str_prefix, e_arg)
+            self.failUnless(e_arg.startswith(str_prefix), message)
         else:
             self.fail('Expected ProtocolError, got %r' % (result,))
 
