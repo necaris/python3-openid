@@ -140,6 +140,9 @@ def appendArgs(url, args):
     else:
         args = list(args)
 
+    if not isinstance(url, str):
+        url = str(url, encoding="utf-8")
+
     if not args:
         return url
 
