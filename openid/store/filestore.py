@@ -24,10 +24,13 @@ _isFilenameSafe = set(_filename_allowed).__contains__
 
 def _safe64(s):
     h64 = oidutil.toBase64(cryptutil.sha1(s))
-    h64 = h64.replace('+', '_')
-    h64 = h64.replace('/', '.')
-    h64 = h64.replace('=', '')
-    return h64
+    # to be able to manipulate it, make it a bytearray
+    h64 = bytearray(h64)
+    h64 = h64.replace(b'+', b'_')
+    h64 = h64.replace(b'/', b'.')
+    h64 = h64.replace(b'=', b'')
+    return bytes(h64)
+
 
 def _filenameEscape(s):
     filename_chunks = []
