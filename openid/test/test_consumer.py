@@ -1291,23 +1291,22 @@ class TestCheckAuth(unittest.TestCase, CatchLogs):
 
     def test_112(self):
         args = {
-            'openid.assoc_handle': b'fa1f5ff0-cde4-11dc-a183-3714bfd55ca8',
-            'openid.claimed_id': b'http://binkley.lan/user/test01',
-            'openid.identity': b'http://test01.binkley.lan/',
-            'openid.mode': b'id_res',
-            'openid.ns': b'http://specs.openid.net/auth/2.0',
-            'openid.ns.pape': b'http://specs.openid.net/extensions/pape/1.0',
-            'openid.op_endpoint': b'http://binkley.lan/server',
-            'openid.pape.auth_policies': b'none',
-            'openid.pape.auth_time': b'2008-01-28T20:42:36Z',
-            'openid.pape.nist_auth_level': b'0',
-            'openid.response_nonce': b'2008-01-28T21:07:04Z99Q=',
-            'openid.return_to': b'http://binkley.lan:8001/process?janrain_nonce=2008-01-28T21%3A07%3A02Z0tMIKx',
-            'openid.sig': b'YJlWH4U6SroB1HoPkmEKx9AyGGg=',
-            'openid.signed': b'assoc_handle,identity,response_nonce,return_to,claimed_id,op_endpoint,pape.auth_time,ns.pape,pape.nist_auth_level,pape.auth_policies'
+            'openid.assoc_handle': 'fa1f5ff0-cde4-11dc-a183-3714bfd55ca8',
+            'openid.claimed_id': 'http://binkley.lan/user/test01',
+            'openid.identity': 'http://test01.binkley.lan/',
+            'openid.mode': 'id_res',
+            'openid.ns': 'http://specs.openid.net/auth/2.0',
+            'openid.ns.pape': 'http://specs.openid.net/extensions/pape/1.0',
+            'openid.op_endpoint': 'http://binkley.lan/server',
+            'openid.pape.auth_policies': 'none',
+            'openid.pape.auth_time': '2008-01-28T20:42:36Z',
+            'openid.pape.nist_auth_level': '0',
+            'openid.response_nonce': '2008-01-28T21:07:04Z99Q=',
+            'openid.return_to': 'http://binkley.lan:8001/process?janrain_nonce=2008-01-28T21%3A07%3A02Z0tMIKx',
+            'openid.sig': 'YJlWH4U6SroB1HoPkmEKx9AyGGg=',
+            'openid.signed': 'assoc_handle,identity,response_nonce,return_to,claimed_id,op_endpoint,pape.auth_time,ns.pape,pape.nist_auth_level,pape.auth_policies'
         }
-        self.assertEqual(OPENID2_NS, str(args['openid.ns'],
-                                             encoding="utf-8"))
+        self.assertEqual(OPENID2_NS, args['openid.ns'])
         incoming = Message.fromPostArgs(args)
         self.assertTrue(incoming.isOpenID2())
         car = self.consumer._createCheckAuthRequest(incoming)
@@ -1316,6 +1315,9 @@ class TestCheckAuth(unittest.TestCase, CatchLogs):
         expected = Message.fromPostArgs(expected_args)
         self.assertTrue(expected.isOpenID2())
         self.assertEqual(expected, car)
+        car_args = car.toPostArgs()
+        self.assertEqual(set(expected_args.keys()), set(car_args.keys()))
+        self.assertEqual(set(expected_args.values()), set(car_args.values()))
         self.assertEqual(expected_args, car.toPostArgs())
 
 
