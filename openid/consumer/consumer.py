@@ -187,10 +187,9 @@ USING THIS LIBRARY
     objects.
 """
 
-import cgi
 import copy
 import logging
-from urllib.parse import urlparse, urldefrag
+from urllib.parse import urlparse, urldefrag, parse_qsl
 
 from openid import fetchers
 
@@ -858,7 +857,7 @@ class GenericConsumer(object):
 
         parsed_url = urlparse(return_to)
         rt_query = parsed_url[4]
-        parsed_args = cgi.parse_qsl(rt_query)
+        parsed_args = parse_qsl(rt_query)
 
         # NOTE -- parsed_args will be a dict of {bytes: bytes}, however it
         # will be checked against return values from Message methods which are

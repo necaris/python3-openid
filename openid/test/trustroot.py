@@ -35,7 +35,7 @@ class _MatchTest(unittest.TestCase):
 
     def runTest(self):
         tr = TrustRoot.parse(self.tr)
-        self.failIf(tr is None, self.tr)
+        self.assertFalse(tr is None, self.tr)
 
         match = tr.validateURL(self.rt)
         if self.match:

@@ -49,10 +49,10 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
             self.failIfOpenIDKeyExists(msg, key)
 
     def failUnlessHasRequiredFields(self, msg):
-        self.failUnlessEqual(self.preferred_namespace,
+        self.assertEqual(self.preferred_namespace,
                              self.authreq.message.getOpenIDNamespace())
 
-        self.failUnlessEqual(self.preferred_namespace,
+        self.assertEqual(self.preferred_namespace,
                              msg.getOpenIDNamespace())
 
         self.failUnlessOpenIDValueEquals(msg, 'mode',
@@ -82,8 +82,8 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
     def test_addExtensionArg(self):
         self.authreq.addExtensionArg('bag:', 'color', 'brown')
         self.authreq.addExtensionArg('bag:', 'material', 'paper')
-        self.failUnless('bag:' in self.authreq.message.namespaces)
-        self.failUnlessEqual(self.authreq.message.getArgs('bag:'),
+        self.assertTrue('bag:' in self.authreq.message.namespaces)
+        self.assertEqual(self.authreq.message.getArgs('bag:'),
                              {'color': b'brown',
                               'material': b'paper'})
         msg = self.authreq.getMessage(self.realm, self.return_to,
@@ -93,8 +93,8 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         # namespaces. Really it doesn't care that it has alias "0",
         # but that is tested anyway
         post_args = msg.toPostArgs()
-        self.failUnlessEqual(b'brown', post_args['openid.ext0.color'])
-        self.failUnlessEqual(b'paper', post_args['openid.ext0.material'])
+        self.assertEqual(b'brown', post_args['openid.ext0.color'])
+        self.assertEqual(b'paper', post_args['openid.ext0.material'])
 
     def test_standard(self):
         msg = self.authreq.getMessage(self.realm, self.return_to,
@@ -117,7 +117,7 @@ class TestAuthRequestOpenID2(TestAuthRequestMixin, unittest.TestCase):
         identity_present = msg.hasKey(message.OPENID_NS, 'identity')
         claimed_present = msg.hasKey(message.OPENID_NS, 'claimed_id')
 
-        self.failUnlessEqual(claimed_present, identity_present)
+        self.assertEqual(claimed_present, identity_present)
 
     def failUnlessHasIdentifiers(self, msg, op_specific_id, claimed_id):
         self.failUnlessOpenIDValueEquals(msg, 'identity', op_specific_id)
@@ -127,7 +127,7 @@ class TestAuthRequestOpenID2(TestAuthRequestMixin, unittest.TestCase):
 
     def test_setAnonymousWorksForOpenID2(self):
         """OpenID AuthRequests should be able to set 'anonymous' to true."""
-        self.failUnless(self.authreq.message.isOpenID2())
+        self.assertTrue(self.authreq.message.isOpenID2())
         self.authreq.setAnonymous(True)
         self.authreq.setAnonymous(False)
 
@@ -169,7 +169,7 @@ class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
 
     def failUnlessIdentifiersPresent(self, msg):
         self.failIfOpenIDKeyExists(msg, 'claimed_id')
-        self.failUnless(msg.hasKey(message.OPENID_NS, 'identity'))
+        self.assertTrue(msg.hasKey(message.OPENID_NS, 'identity'))
 
     def failUnlessHasRealm(self, msg):
         # check presence of proper realm key and absence of the wrong
@@ -181,8 +181,8 @@ class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
 
     def test_setAnonymousFailsForOpenID1(self):
         """OpenID 1 requests MUST NOT be able to set anonymous to True"""
-        self.failUnless(self.authreq.message.isOpenID1())
-        self.failUnlessRaises(ValueError, self.authreq.setAnonymous, True)
+        self.assertTrue(self.authreq.message.isOpenID1())
+        self.assertRaises(ValueError, self.authreq.setAnonymous, True)
         self.authreq.setAnonymous(False)
 
     def test_identifierSelect(self):
@@ -195,7 +195,7 @@ class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
         msg = self.authreq.getMessage(self.realm, self.return_to,
                                       self.immediate)
         self.failUnlessHasRequiredFields(msg)
-        self.failUnlessEqual(message.IDENTIFIER_SELECT,
+        self.assertEqual(message.IDENTIFIER_SELECT,
                              msg.getArg(message.OPENID1_NS, 'identity'))
 
 

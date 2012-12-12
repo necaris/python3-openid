@@ -15,7 +15,7 @@ class BadLinksTestCase(datadriven.DataDrivenTestCase):
     def runOneTest(self):
         actual = OpenIDServiceEndpoint.fromHTML('http://unused.url/', self.data)
         expected = []
-        self.failUnlessEqual(expected, actual)
+        self.assertEqual(expected, actual)
 
 def pyUnitTests():
     return datadriven.loadTests(__name__)

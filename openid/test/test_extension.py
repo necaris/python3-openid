@@ -16,11 +16,11 @@ class ToMessageTest(unittest.TestCase):
         ext = DummyExtension()
         ext.toMessage(oid1_msg)
         namespaces = oid1_msg.namespaces
-        self.failUnless(namespaces.isImplicit(DummyExtension.ns_uri))
-        self.failUnlessEqual(
+        self.assertTrue(namespaces.isImplicit(DummyExtension.ns_uri))
+        self.assertEqual(
             DummyExtension.ns_uri,
             namespaces.getNamespaceURI(DummyExtension.ns_alias))
-        self.failUnlessEqual(DummyExtension.ns_alias,
+        self.assertEqual(DummyExtension.ns_alias,
                              namespaces.getAlias(DummyExtension.ns_uri))
 
     def test_OpenID2(self):
@@ -28,9 +28,9 @@ class ToMessageTest(unittest.TestCase):
         ext = DummyExtension()
         ext.toMessage(oid2_msg)
         namespaces = oid2_msg.namespaces
-        self.failIf(namespaces.isImplicit(DummyExtension.ns_uri))
-        self.failUnlessEqual(
+        self.assertFalse(namespaces.isImplicit(DummyExtension.ns_uri))
+        self.assertEqual(
             DummyExtension.ns_uri,
             namespaces.getNamespaceURI(DummyExtension.ns_alias))
-        self.failUnlessEqual(DummyExtension.ns_alias,
+        self.assertEqual(DummyExtension.ns_alias,
                              namespaces.getAlias(DummyExtension.ns_uri))

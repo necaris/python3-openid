@@ -22,7 +22,7 @@ class TestBuildDiscoveryURL(unittest.TestCase):
         """
         realm_obj = trustroot.TrustRoot.parse(realm)
         actual_discovery_url = realm_obj.buildDiscoveryURL()
-        self.failUnlessEqual(expected_discovery_url, actual_discovery_url)
+        self.assertEqual(expected_discovery_url, actual_discovery_url)
 
     def test_trivial(self):
         """There is no wildcard and the realm is the same as the return_to URL
@@ -62,11 +62,11 @@ class TestExtractReturnToURLs(unittest.TestCase):
         actual_return_urls = list(trustroot.getAllowedReturnURLs(
             self.disco_url))
 
-        self.failUnlessEqual(expected_return_urls, actual_return_urls)
+        self.assertEqual(expected_return_urls, actual_return_urls)
 
     def failUnlessDiscoveryFailure(self, text):
         self.data = text
-        self.failUnlessRaises(
+        self.assertRaises(
             DiscoveryFailure, trustroot.getAllowedReturnURLs, self.disco_url)
 
     def test_empty(self):
@@ -164,15 +164,15 @@ class TestExtractReturnToURLs(unittest.TestCase):
 
 class TestReturnToMatches(unittest.TestCase):
     def test_noEntries(self):
-        self.failIf(trustroot.returnToMatches([], 'anything'))
+        self.assertFalse(trustroot.returnToMatches([], 'anything'))
 
     def test_exactMatch(self):
         r = 'http://example.com/return.to'
-        self.failUnless(trustroot.returnToMatches([r], r))
+        self.assertTrue(trustroot.returnToMatches([r], r))
 
     def test_garbageMatch(self):
         r = 'http://example.com/return.to'
-        self.failUnless(trustroot.returnToMatches(
+        self.assertTrue(trustroot.returnToMatches(
             ['This is not a URL at all. In fact, it has characters, '
              'like "<" that are not allowed in URLs',
              r],
@@ -180,18 +180,18 @@ class TestReturnToMatches(unittest.TestCase):
 
     def test_descendant(self):
         r = 'http://example.com/return.to'
-        self.failUnless(trustroot.returnToMatches(
+        self.assertTrue(trustroot.returnToMatches(
             [r],
             'http://example.com/return.to/user:joe'))
 
     def test_wildcard(self):
-        self.failIf(trustroot.returnToMatches(
+        self.assertFalse(trustroot.returnToMatches(
             ['http://*.example.com/return.to'],
             'http://example.com/return.to'))
 
     def test_noMatch(self):
         r = 'http://example.com/return.to'
-        self.failIf(trustroot.returnToMatches(
+        self.assertFalse(trustroot.returnToMatches(
             [r],
             'http://example.com/xss_exploit'))
 
@@ -204,17 +204,17 @@ class TestVerifyReturnTo(unittest.TestCase, CatchLogs):
         CatchLogs.tearDown(self)
     
     def test_bogusRealm(self):
-        self.failIf(trustroot.verifyReturnTo('', 'http://example.com/'))
+        self.assertFalse(trustroot.verifyReturnTo('', 'http://example.com/'))
 
     def test_verifyWithDiscoveryCalled(self):
         realm = 'http://*.example.com/'
         return_to = 'http://www.example.com/foo'
 
         def vrfy(disco_url):
-            self.failUnlessEqual('http://www.example.com/', disco_url)
+            self.assertEqual('http://www.example.com/', disco_url)
             return [return_to]
 
-        self.failUnless(
+        self.assertTrue(
             trustroot.verifyReturnTo(realm, return_to, _vrfy=vrfy))
         self.failUnlessLogEmpty()
 
@@ -223,10 +223,10 @@ class TestVerifyReturnTo(unittest.TestCase, CatchLogs):
         return_to = 'http://www.example.com/foo'
 
         def vrfy(disco_url):
-            self.failUnlessEqual('http://www.example.com/', disco_url)
+            self.assertEqual('http://www.example.com/', disco_url)
             return ['http://something-else.invalid/']
 
-        self.failIf(
+        self.assertFalse(
             trustroot.verifyReturnTo(realm, return_to, _vrfy=vrfy))
         self.failUnlessLogMatches("Failed to validate return_to")
 
@@ -238,7 +238,7 @@ class TestVerifyReturnTo(unittest.TestCase, CatchLogs):
             raise trustroot.RealmVerificationRedirected(
                 disco_url, "http://redirected.invalid")
 
-        self.failIf(
+        self.assertFalse(
             trustroot.verifyReturnTo(realm, return_to, _vrfy=vrfy))
         self.failUnlessLogMatches("Attempting to verify")
 

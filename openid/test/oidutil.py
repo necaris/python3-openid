@@ -54,17 +54,21 @@ class AppendArgsTest(unittest.TestCase):
     def shortDescription(self):
         return self.desc
 
+
 class TestUnicodeConversion(unittest.TestCase):
 
     def test_toUnicode(self):
         # Unicode objects pass through
-        self.failUnless(isinstance(oidutil.toUnicode('fööbär'), str))
-        self.assertEquals(oidutil.toUnicode('fööbär'), 'fööbär')
+        self.assertTrue(isinstance(oidutil.toUnicode('fööbär'), str))
+        self.assertEqual(oidutil.toUnicode('fööbär'), 'fööbär')
         # UTF-8 encoded string are decoded
-        self.failUnless(isinstance(oidutil.toUnicode('fööbär'), str))
-        self.assertEquals(oidutil.toUnicode('fööbär'), 'fööbär')
+        self.assertTrue(isinstance(oidutil.toUnicode('fööbär'), str))
+        self.assertEqual(oidutil.toUnicode('fööbär'), 'fööbär')
         # Other encodings raise exceptions
-        self.assertRaises(UnicodeDecodeError, lambda: oidutil.toUnicode('fööbär'.encode('latin-1')))
+        self.assertRaises(
+            UnicodeDecodeError,
+            lambda: oidutil.toUnicode('fööbär'.encode('latin-1')))
+
 
 class TestSymbol(unittest.TestCase):
     def testCopyHash(self):
@@ -72,10 +76,10 @@ class TestSymbol(unittest.TestCase):
         s = oidutil.Symbol("Foo")
         d = {s: 1}
         d_prime = copy.deepcopy(d)
-        self.failUnless(s in d_prime, "%r isn't in %r" % (s, d_prime))
+        self.assertTrue(s in d_prime, "%r isn't in %r" % (s, d_prime))
 
         t = oidutil.Symbol("Bar")
-        self.failIfEqual(hash(s), hash(t))
+        self.assertNotEqual(hash(s), hash(t))
 
 
 def buildAppendTests():

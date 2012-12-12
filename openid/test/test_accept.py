@@ -90,7 +90,7 @@ class MatchAcceptTest(unittest.TestCase):
     def runTest(self):
         accepted = accept.parseAcceptHeader(self.accept_header)
         actual = accept.matchTypes(accepted, self.available)
-        self.failUnlessEqual(self.expected, actual)
+        self.assertEqual(self.expected, actual)
 
 def pyUnitTests():
     lines = getTestData()

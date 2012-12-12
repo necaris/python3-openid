@@ -52,7 +52,7 @@ class TestDiscoveryFailure(datadriven.DataDrivenTestCase):
         try:
             discover.discover(self.url)
         except DiscoveryFailure as why:
-            self.failUnlessEqual(why.http_response.status, expected_status)
+            self.assertEqual(why.http_response.status, expected_status)
         else:
             self.fail('Did not raise DiscoveryFailure')
 
@@ -113,9 +113,9 @@ class TestFetchException(datadriven.DataDrivenTestCase):
             exc = sys.exc_info()[1]
             if exc is None:
                 # str exception
-                self.failUnless(self.exc is sys.exc_info()[0])
+                self.assertTrue(self.exc is sys.exc_info()[0])
             else:
-                self.failUnless(self.exc is exc, exc)
+                self.assertTrue(self.exc is exc, exc)
         else:
             self.fail('Expected %r', self.exc)
 
@@ -179,25 +179,25 @@ class BaseTestDiscovery(unittest.TestCase):
                       used_yadis=False,
                       display_identifier=None
                       ):
-        self.failUnlessEqual(server_url, s.server_url)
+        self.assertEqual(server_url, s.server_url)
         if types == ['2.0 OP']:
-            self.failIf(claimed_id)
-            self.failIf(local_id)
-            self.failIf(s.claimed_id)
-            self.failIf(s.local_id)
-            self.failIf(s.getLocalID())
-            self.failIf(s.compatibilityMode())
-            self.failUnless(s.isOPIdentifier())
-            self.failUnlessEqual(s.preferredNamespace(),
+            self.assertFalse(claimed_id)
+            self.assertFalse(local_id)
+            self.assertFalse(s.claimed_id)
+            self.assertFalse(s.local_id)
+            self.assertFalse(s.getLocalID())
+            self.assertFalse(s.compatibilityMode())
+            self.assertTrue(s.isOPIdentifier())
+            self.assertEqual(s.preferredNamespace(),
                                  discover.OPENID_2_0_MESSAGE_NS)
         else:
-            self.failUnlessEqual(claimed_id, s.claimed_id)
-            self.failUnlessEqual(local_id, s.getLocalID())
+            self.assertEqual(claimed_id, s.claimed_id)
+            self.assertEqual(local_id, s.getLocalID())
 
         if used_yadis:
-            self.failUnless(s.used_yadis, "Expected to use Yadis")
+            self.assertTrue(s.used_yadis, "Expected to use Yadis")
         else:
-            self.failIf(s.used_yadis,
+            self.assertFalse(s.used_yadis,
                         "Expected to use old-style discovery")
 
         openid_types = {
@@ -208,16 +208,16 @@ class BaseTestDiscovery(unittest.TestCase):
             }
 
         type_uris = [openid_types[t] for t in types]
-        self.failUnlessEqual(type_uris, s.type_uris)
-        self.failUnlessEqual(canonical_id, s.canonicalID)
+        self.assertEqual(type_uris, s.type_uris)
+        self.assertEqual(canonical_id, s.canonicalID)
 
         if s.canonicalID:
-            self.failUnless(s.getDisplayIdentifier() != claimed_id)
-            self.failUnless(s.getDisplayIdentifier() is not None)
-            self.failUnlessEqual(display_identifier, s.getDisplayIdentifier())
-            self.failUnlessEqual(s.claimed_id, s.canonicalID)
+            self.assertTrue(s.getDisplayIdentifier() != claimed_id)
+            self.assertTrue(s.getDisplayIdentifier() is not None)
+            self.assertEqual(display_identifier, s.getDisplayIdentifier())
+            self.assertEqual(s.claimed_id, s.canonicalID)
 
-        self.failUnlessEqual(s.display_identifier or s.claimed_id, s.getDisplayIdentifier())
+        self.assertEqual(s.display_identifier or s.claimed_id, s.getDisplayIdentifier())
 
     def setUp(self):
         self.documents = self.documents.copy()
@@ -241,12 +241,12 @@ class TestDiscovery(BaseTestDiscovery):
 
         self.documents[self.id_url] = (content_type, data)
         id_url, services = discover.discover(self.id_url)
-        self.failUnlessEqual(expected_services, len(services))
-        self.failUnlessEqual(expected_id, id_url)
+        self.assertEqual(expected_services, len(services))
+        self.assertEqual(expected_id, id_url)
         return services
 
     def test_404(self):
-        self.failUnlessRaises(DiscoveryFailure,
+        self.assertRaises(DiscoveryFailure,
                               discover.discover, self.id_url + '/404')
 
     def test_unicode(self):
@@ -263,7 +263,7 @@ class TestDiscovery(BaseTestDiscovery):
         Check page with unicode and HTML entities that can not be decoded
         """
         data = readDataFile('unicode2.html')
-        self.failUnlessRaises(UnicodeDecodeError, data.decode, 'utf-8')
+        self.assertRaises(UnicodeDecodeError, data.decode, 'utf-8')
         self._discover(content_type='text/html;charset=utf-8',
             data=data, expected_services=0)
 
@@ -276,7 +276,7 @@ class TestDiscovery(BaseTestDiscovery):
             'application/xrds+xml', readDataFile('yadis_idp.xml'))
 
         data = readDataFile('unicode3.html')
-        self.failUnlessRaises(UnicodeDecodeError, data.decode, 'utf-8')
+        self.assertRaises(UnicodeDecodeError, data.decode, 'utf-8')
         self._discover(content_type='text/html;charset=utf-8',
             data=data, expected_services=1)
 
@@ -328,8 +328,8 @@ class TestDiscovery(BaseTestDiscovery):
         expected_id = self.id_url
         self.id_url = self.id_url + '#fragment'
         id_url, services = discover.discover(self.id_url)
-        self.failUnlessEqual(expected_services, len(services))
-        self.failUnlessEqual(expected_id, id_url)
+        self.assertEqual(expected_services, len(services))
+        self.assertEqual(expected_id, id_url)
 
         self._checkService(
             services[0],
@@ -483,7 +483,7 @@ class TestDiscovery(BaseTestDiscovery):
             )
 
     def test_yadis2BadLocalID(self):
-        self.failUnlessRaises(DiscoveryFailure, self._discover,
+        self.assertRaises(DiscoveryFailure, self._discover,
             content_type='application/xrds+xml',
             data=readDataFile('yadis_2_bad_local_id.xml'),
             expected_services=1,
@@ -507,7 +507,7 @@ class TestDiscovery(BaseTestDiscovery):
             )
 
     def test_yadis1And2BadLocalID(self):
-        self.failUnlessRaises(DiscoveryFailure, self._discover,
+        self.assertRaises(DiscoveryFailure, self._discover,
             content_type='application/xrds+xml',
             data=readDataFile('openid_1_and_2_xrds_bad_delegate.xml'),
             expected_services=1,
@@ -608,7 +608,7 @@ class TestXRIDiscovery(BaseTestDiscovery):
 
     def test_xriNoCanonicalID(self):
         user_xri, services = discover.discoverXRI('=smoker*bad')
-        self.failIf(services)
+        self.assertFalse(services)
 
     def test_useCanonicalID(self):
         """When there is no delegate, the CanonicalID should be used with XRI.
@@ -616,7 +616,7 @@ class TestXRIDiscovery(BaseTestDiscovery):
         endpoint = discover.OpenIDServiceEndpoint()
         endpoint.claimed_id = XRI("=!1000")
         endpoint.canonicalID = XRI("=!1000")
-        self.failUnlessEqual(endpoint.getLocalID(), XRI("=!1000"))
+        self.assertEqual(endpoint.getLocalID(), XRI("=!1000"))
 
 
 class TestXRIDiscoveryIDP(BaseTestDiscovery):
@@ -627,8 +627,8 @@ class TestXRIDiscoveryIDP(BaseTestDiscovery):
 
     def test_xri(self):
         user_xri, services = discover.discoverXRI('=smoker')
-        self.failUnless(services, "Expected services, got zero")
-        self.failUnlessEqual(services[0].server_url,
+        self.assertTrue(services, "Expected services, got zero")
+        self.assertEqual(services[0].server_url,
                              "http://www.livejournal.com/openid/server.bml")
 
 
@@ -643,7 +643,7 @@ class TestPreferredNamespace(datadriven.DataDrivenTestCase):
         endpoint = discover.OpenIDServiceEndpoint()
         endpoint.type_uris = self.type_uris
         actual_ns = endpoint.preferredNamespace()
-        self.failUnlessEqual(actual_ns, self.expected_ns)
+        self.assertEqual(actual_ns, self.expected_ns)
 
     cases = [
         (message.OPENID1_NS, []),
@@ -663,34 +663,34 @@ class TestIsOPIdentifier(unittest.TestCase):
         self.endpoint = discover.OpenIDServiceEndpoint()
 
     def test_none(self):
-        self.failIf(self.endpoint.isOPIdentifier())
+        self.assertFalse(self.endpoint.isOPIdentifier())
 
     def test_openid1_0(self):
         self.endpoint.type_uris = [discover.OPENID_1_0_TYPE]
-        self.failIf(self.endpoint.isOPIdentifier())
+        self.assertFalse(self.endpoint.isOPIdentifier())
 
     def test_openid1_1(self):
         self.endpoint.type_uris = [discover.OPENID_1_1_TYPE]
-        self.failIf(self.endpoint.isOPIdentifier())
+        self.assertFalse(self.endpoint.isOPIdentifier())
 
     def test_openid2(self):
         self.endpoint.type_uris = [discover.OPENID_2_0_TYPE]
-        self.failIf(self.endpoint.isOPIdentifier())
+        self.assertFalse(self.endpoint.isOPIdentifier())
 
     def test_openid2OP(self):
         self.endpoint.type_uris = [discover.OPENID_IDP_2_0_TYPE]
-        self.failUnless(self.endpoint.isOPIdentifier())
+        self.assertTrue(self.endpoint.isOPIdentifier())
 
     def test_multipleMissing(self):
         self.endpoint.type_uris = [discover.OPENID_2_0_TYPE,
                                    discover.OPENID_1_0_TYPE]
-        self.failIf(self.endpoint.isOPIdentifier())
+        self.assertFalse(self.endpoint.isOPIdentifier())
 
     def test_multiplePresent(self):
         self.endpoint.type_uris = [discover.OPENID_2_0_TYPE,
                                    discover.OPENID_1_0_TYPE,
                                    discover.OPENID_IDP_2_0_TYPE]
-        self.failUnless(self.endpoint.isOPIdentifier())
+        self.assertTrue(self.endpoint.isOPIdentifier())
 
 class TestFromOPEndpointURL(unittest.TestCase):
     def setUp(self):
@@ -699,20 +699,20 @@ class TestFromOPEndpointURL(unittest.TestCase):
             self.op_endpoint_url)
 
     def test_isOPEndpoint(self):
-        self.failUnless(self.endpoint.isOPIdentifier())
+        self.assertTrue(self.endpoint.isOPIdentifier())
 
     def test_noIdentifiers(self):
-        self.failUnlessEqual(self.endpoint.getLocalID(), None)
-        self.failUnlessEqual(self.endpoint.claimed_id, None)
+        self.assertEqual(self.endpoint.getLocalID(), None)
+        self.assertEqual(self.endpoint.claimed_id, None)
 
     def test_compatibility(self):
-        self.failIf(self.endpoint.compatibilityMode())
+        self.assertFalse(self.endpoint.compatibilityMode())
 
     def test_canonicalID(self):
-        self.failUnlessEqual(self.endpoint.canonicalID, None)
+        self.assertEqual(self.endpoint.canonicalID, None)
 
     def test_serverURL(self):
-        self.failUnlessEqual(self.endpoint.server_url, self.op_endpoint_url)
+        self.assertEqual(self.endpoint.server_url, self.op_endpoint_url)
 
 class TestDiscoverFunction(unittest.TestCase):
     def setUp(self):
@@ -733,16 +733,16 @@ class TestDiscoverFunction(unittest.TestCase):
         return 'URI'
 
     def test_uri(self):
-        self.failUnlessEqual('URI', discover.discover('http://woo!'))
+        self.assertEqual('URI', discover.discover('http://woo!'))
 
     def test_uriForBogus(self):
-        self.failUnlessEqual('URI', discover.discover('not a URL or XRI'))
+        self.assertEqual('URI', discover.discover('not a URL or XRI'))
 
     def test_xri(self):
-        self.failUnlessEqual('XRI', discover.discover('xri://=something'))
+        self.assertEqual('XRI', discover.discover('xri://=something'))
 
     def test_xriChar(self):
-        self.failUnlessEqual('XRI', discover.discover('=something'))
+        self.assertEqual('XRI', discover.discover('=something'))
 
 class TestEndpointSupportsType(unittest.TestCase):
     def setUp(self):
@@ -757,10 +757,10 @@ class TestEndpointSupportsType(unittest.TestCase):
             discover.OPENID_IDP_2_0_TYPE,
             ]:
             if t in types:
-                self.failUnless(self.endpoint.supportsType(t),
+                self.assertTrue(self.endpoint.supportsType(t),
                                 "Must support %r" % (t,))
             else:
-                self.failIf(self.endpoint.supportsType(t),
+                self.assertFalse(self.endpoint.supportsType(t),
                             "Shouldn't support %r" % (t,))
 
     def test_supportsNothing(self):
@@ -803,7 +803,7 @@ class TestEndpointDisplayIdentifier(unittest.TestCase):
     def test_strip_fragment(self):
         endpoint = discover.OpenIDServiceEndpoint()
         endpoint.claimed_id = 'http://recycled.invalid/#123'
-        self.failUnlessEqual('http://recycled.invalid/', endpoint.getDisplayIdentifier())
+        self.assertEqual('http://recycled.invalid/', endpoint.getDisplayIdentifier())
 
 
 def pyUnitTests():

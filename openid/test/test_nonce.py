@@ -13,30 +13,30 @@ nonce_re = re.compile(r'\A\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ')
 class NonceTest(unittest.TestCase):
     def test_mkNonce(self):
         nonce = mkNonce()
-        self.failUnless(nonce_re.match(nonce))
-        self.failUnless(len(nonce) == 26)
+        self.assertTrue(nonce_re.match(nonce))
+        self.assertTrue(len(nonce) == 26)
 
     def test_mkNonce_when(self):
         nonce = mkNonce(0)
-        self.failUnless(nonce_re.match(nonce))
-        self.failUnless(nonce.startswith('1970-01-01T00:00:00Z'))
-        self.failUnless(len(nonce) == 26)
+        self.assertTrue(nonce_re.match(nonce))
+        self.assertTrue(nonce.startswith('1970-01-01T00:00:00Z'))
+        self.assertTrue(len(nonce) == 26)
 
     def test_splitNonce(self):
         s = '1970-01-01T00:00:00Z'
         expected_t = 0
         expected_salt = ''
         actual_t, actual_salt = splitNonce(s)
-        self.failUnlessEqual(expected_t, actual_t)
-        self.failUnlessEqual(expected_salt, actual_salt)
+        self.assertEqual(expected_t, actual_t)
+        self.assertEqual(expected_salt, actual_salt)
 
     def test_mkSplit(self):
         t = 42
         nonce_str = mkNonce(t)
-        self.failUnless(nonce_re.match(nonce_str))
+        self.assertTrue(nonce_re.match(nonce_str))
         et, salt = splitNonce(nonce_str)
-        self.failUnlessEqual(len(salt), 6)
-        self.failUnlessEqual(et, t)
+        self.assertEqual(len(salt), 6)
+        self.assertEqual(et, t)
 
 class BadSplitTest(datadriven.DataDrivenTestCase):
     cases = [
@@ -54,7 +54,7 @@ class BadSplitTest(datadriven.DataDrivenTestCase):
         self.nonce_str = nonce_str
 
     def runOneTest(self):
-        self.failUnlessRaises(ValueError, splitNonce, self.nonce_str)
+        self.assertRaises(ValueError, splitNonce, self.nonce_str)
 
 class CheckTimestampTest(datadriven.DataDrivenTestCase):
     cases = [
@@ -93,7 +93,7 @@ class CheckTimestampTest(datadriven.DataDrivenTestCase):
 
     def runOneTest(self):
         actual = checkTimestamp(self.nonce_string, self.allowed_skew, self.now)
-        self.failUnlessEqual(bool(self.expected), bool(actual))
+        self.assertEqual(bool(self.expected), bool(actual))
 
 def pyUnitTests():
     return datadriven.loadTests(__name__)

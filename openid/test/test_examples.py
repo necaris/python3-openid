@@ -136,8 +136,8 @@ class TestServer(unittest.TestCase):
             c.code(302)
             headers = c.get_browser()._browser.response().info()
             finalURL = headers['Location']
-            self.failUnless('openid.mode=id_res' in finalURL, finalURL)
-            self.failUnless('openid.identity=' in finalURL, finalURL)
+            self.assertTrue('openid.mode=id_res' in finalURL, finalURL)
+            self.assertTrue('openid.identity=' in finalURL, finalURL)
         except twill.commands.TwillAssertionError as e:
             msg = '%s\nFinal page:\n%s' % (
                 str(e), c.get_browser().get_html())
@@ -165,7 +165,7 @@ class TestServer(unittest.TestCase):
             c.code(302)
             headers = c.get_browser()._browser.response().info()
             finalURL = headers['Location']
-            self.failUnless(finalURL.startswith(self.return_to))
+            self.assertTrue(finalURL.startswith(self.return_to))
         except twill.commands.TwillAssertionError as e:
             from traceback import format_exc
             msg = '%s\nTwill output:%s\nTwill errors:%s\nFinal page:\n%s' % (

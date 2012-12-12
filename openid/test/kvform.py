@@ -8,7 +8,7 @@ class KVBaseTest(unittest.TestCase, CatchLogs):
         return '%s test for %r' % (self.__class__.__name__, self.kvform)
 
     def checkWarnings(self, num_warnings):
-        self.failUnlessEqual(num_warnings, len(self.messages), repr(self.messages))
+        self.assertEqual(num_warnings, len(self.messages), repr(self.messages))
 
     def setUp(self):
         CatchLogs.setUp(self)
@@ -29,7 +29,7 @@ class KVDictTest(KVBaseTest):
         d = kvform.kvToDict(self.kvform)
 
         # make sure it parses to expected dict
-        self.failUnlessEqual(self.dict, d)
+        self.assertEqual(self.dict, d)
 
         # Check to make sure we got the expected number of warnings
         self.checkWarnings(self.expected_warnings)
@@ -38,7 +38,7 @@ class KVDictTest(KVBaseTest):
         # sure that *** dict -> kv -> dict is identity. ***
         kv = kvform.dictToKV(d)
         d2 = kvform.kvToDict(kv)
-        self.failUnlessEqual(d, d2)
+        self.assertEqual(d, d2)
 
 
 class KVSeqTest(KVBaseTest):
@@ -67,8 +67,8 @@ class KVSeqTest(KVBaseTest):
             kvform_bytes = bytes(self.kvform, encoding="utf-8")
         else:
             kvform_bytes = self.kvform
-        self.failUnlessEqual(kvform_bytes, actual)
-        self.failUnless(isinstance(actual, bytes))
+        self.assertEqual(kvform_bytes, actual)
+        self.assertTrue(isinstance(actual, bytes))
 
         # Parse back to sequence. Expected to be unchanged, except
         # stripping whitespace from start and end of values
@@ -76,7 +76,7 @@ class KVSeqTest(KVBaseTest):
         seq = kvform.kvToSeq(actual)
         clean_seq = self.cleanSeq(seq)
 
-        self.failUnlessEqual(seq, clean_seq)
+        self.assertEqual(seq, clean_seq)
         self.checkWarnings(self.expected_warnings)
 
 kvdict_cases = [
@@ -157,7 +157,7 @@ class KVExcTest(unittest.TestCase):
         return 'KVExcTest for %r' % (self.seq,)
 
     def runTest(self):
-        self.failUnlessRaises(ValueError, kvform.seqToKV, self.seq)
+        self.assertRaises(ValueError, kvform.seqToKV, self.seq)
 
 
 class GeneralTest(KVBaseTest):
@@ -165,7 +165,7 @@ class GeneralTest(KVBaseTest):
 
     def test_convert(self):
         result = kvform.seqToKV([(1, 1)])
-        self.failUnlessEqual(result, b'1:1\n')
+        self.assertEqual(result, b'1:1\n')
         self.checkWarnings(2)
 
 

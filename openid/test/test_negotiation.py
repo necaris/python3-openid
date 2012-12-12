@@ -123,7 +123,7 @@ class TestOpenID2SessionNegotiation(unittest.TestCase, CatchLogs):
             'handle', 'secret', 'issued', 10000, 'HMAC-SHA1')
 
         self.consumer.return_messages = [msg, assoc]
-        self.failUnless(self.consumer._negotiateAssociation(self.endpoint) is assoc)
+        self.assertTrue(self.consumer._negotiateAssociation(self.endpoint) is assoc)
 
         self.failUnlessLogMatches('Unsupported association type')
 
@@ -141,7 +141,7 @@ class TestOpenID2SessionNegotiation(unittest.TestCase, CatchLogs):
         self.consumer.return_messages = [msg,
              Message(self.endpoint.preferredNamespace())]
 
-        self.failUnlessEqual(self.consumer._negotiateAssociation(self.endpoint), None)
+        self.assertEqual(self.consumer._negotiateAssociation(self.endpoint), None)
 
         self.failUnlessLogMatches('Unsupported association type',
                                   'Server %s refused' % (self.endpoint.server_url))
@@ -155,7 +155,7 @@ class TestOpenID2SessionNegotiation(unittest.TestCase, CatchLogs):
             'handle', 'secret', 'issued', 10000, 'HMAC-SHA1')
 
         self.consumer.return_messages = [assoc]
-        self.failUnless(self.consumer._negotiateAssociation(self.endpoint) is assoc)
+        self.assertTrue(self.consumer._negotiateAssociation(self.endpoint) is assoc)
         self.failUnlessLogEmpty()
 
 class TestOpenID1SessionNegotiation(unittest.TestCase, CatchLogs):
@@ -233,7 +233,7 @@ class TestOpenID1SessionNegotiation(unittest.TestCase, CatchLogs):
             'handle', 'secret', 'issued', 10000, 'HMAC-SHA1')
 
         self.consumer.return_messages = [msg, assoc]
-        self.failUnless(self.consumer._negotiateAssociation(self.endpoint) is None)
+        self.assertTrue(self.consumer._negotiateAssociation(self.endpoint) is None)
 
         self.failUnlessLogMatches('Server error when requesting an association')
 
@@ -242,7 +242,7 @@ class TestOpenID1SessionNegotiation(unittest.TestCase, CatchLogs):
             'handle', 'secret', 'issued', 10000, 'HMAC-SHA1')
 
         self.consumer.return_messages = [assoc]
-        self.failUnless(self.consumer._negotiateAssociation(self.endpoint) is assoc)
+        self.assertTrue(self.consumer._negotiateAssociation(self.endpoint) is assoc)
         self.failUnlessLogEmpty()
 
 class TestNegotiatorBehaviors(unittest.TestCase, CatchLogs):
@@ -262,10 +262,10 @@ class TestNegotiatorBehaviors(unittest.TestCase, CatchLogs):
 
     def testAddAllowedTypeContents(self):
         assoc_type = 'HMAC-SHA1'
-        self.failUnless(self.n.addAllowedType(assoc_type) is None)
+        self.assertTrue(self.n.addAllowedType(assoc_type) is None)
 
         for typ in association.getSessionTypes(assoc_type):
-            self.failUnless((assoc_type, typ) in self.n.allowed_types)
+            self.assertTrue((assoc_type, typ) in self.n.allowed_types)
 
 if __name__ == '__main__':
     unittest.main()

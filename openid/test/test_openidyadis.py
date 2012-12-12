@@ -127,7 +127,7 @@ class OpenIDYadisTest(unittest.TestCase):
         # make sure there are the same number of endpoints as
         # URIs. This assumes that the type_uris contains at least one
         # OpenID type.
-        self.failUnlessEqual(len(self.uris), len(endpoints))
+        self.assertEqual(len(self.uris), len(endpoints))
 
         # So that we can check equality on the endpoint types
         type_uris = list(self.type_uris)
@@ -138,15 +138,15 @@ class OpenIDYadisTest(unittest.TestCase):
             seen_uris.append(endpoint.server_url)
 
             # All endpoints will have same yadis_url
-            self.failUnlessEqual(self.yadis_url, endpoint.claimed_id)
+            self.assertEqual(self.yadis_url, endpoint.claimed_id)
 
             # and local_id
-            self.failUnlessEqual(self.local_id, endpoint.local_id)
+            self.assertEqual(self.local_id, endpoint.local_id)
 
             # and types
             actual_types = list(endpoint.type_uris)
             actual_types.sort()
-            self.failUnlessEqual(actual_types, type_uris)
+            self.assertEqual(actual_types, type_uris)
 
         # So that they will compare equal, because we don't care what
         # order they are in
@@ -155,7 +155,7 @@ class OpenIDYadisTest(unittest.TestCase):
         uris.sort()
 
         # Make sure we saw all URIs, and saw each one once
-        self.failUnlessEqual(uris, seen_uris)
+        self.assertEqual(uris, seen_uris)
 
 def pyUnitTests():
     cases = []

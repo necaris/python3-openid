@@ -18,6 +18,6 @@ class TestGetServiceEndpoints(unittest.TestCase):
         return result
 
     def test_catchXRDSError(self):
-        self.failUnlessRaises(DiscoveryFailure,
+        self.assertRaises(DiscoveryFailure,
                               services.getServiceEndpoints,
                               "http://example.invalid/sometest")
