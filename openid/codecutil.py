@@ -58,11 +58,13 @@ def _pct_escape_handler(err):
     '''
     chunk = err.object[err.start:err.end]
     replacements = []
-    for octet in chunk.encode("utf-8"):
-        if _in_escape_range(octet):
-            replacements.append("%%%X" % octet)
+    for character in chunk:
+        codepoint = ord(character)
+        if _in_escape_range(codepoint):
+            for char in chr(codepoint).encode("utf-8"):
+                replacements.append("%%%X" % char)
         else:
-            replacements.append(chr(octet))
+            replacements.append(chr(codepoint))
     return ("".join(replacements), err.end)
 
 codecs.register_error("oid_percent_escape", _pct_escape_handler)
