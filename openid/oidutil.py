@@ -5,19 +5,14 @@ For users of this library, the C{L{log}} function is probably the most
 interesting.
 """
 
-__all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML', 'toUnicode']
+__all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML',
+           'toUnicode']
 
 import binascii
-import sys
 import logging
 
-try:
-    import urllib.parse
-    from urllib.parse import urlencode
-except ImportError:
-    # Python 3.x
-    import urllib.parse as urlparse
-    from urllib.parse import urlencode
+import urllib.parse as urlparse
+from urllib.parse import urlencode
 
 
 elementtree_modules = [
@@ -87,7 +82,8 @@ def importElementTree(module_names=None):
             except (SystemExit, MemoryError, AssertionError):
                 raise
             except:
-                logging.exception('Not using ElementTree library %r because it failed to '
+                logging.exception(
+                    'Not using ElementTree library %r because it failed to '
                     'parse a trivial document: %s' % mod_name)
             else:
                 return ElementTree
