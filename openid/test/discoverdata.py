@@ -46,7 +46,8 @@ def getDataName(*components):
 
 def getExampleXRDS():
     filename = getDataName('example-xrds.xml')
-    return open(filename).read()
+    with open(filename) as f:
+        return f.read()
 
 example_xrds = getExampleXRDS()
 default_test_file = getDataName('test1-discover.txt')
@@ -55,7 +56,8 @@ discover_tests = {}
 
 
 def readTests(filename):
-    data = open(filename).read()
+    with open(filename) as f:
+        data = f.read()
     tests = {}
     for case in data.split('\f\n'):
         (name, content) = case.split('\n', 1)

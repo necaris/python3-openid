@@ -32,7 +32,8 @@ def simpleOpenIDTransformer(endpoint):
 
 class TestServiceParser(unittest.TestCase):
     def setUp(self):
-        self.xmldoc = open(XRD_FILE).read()
+        with open(XRD_FILE) as f:
+            self.xmldoc = f.read()
         self.yadis_url = 'http://unittest.url/'
 
     def _getServices(self, flt=None):
@@ -103,8 +104,9 @@ class TestServiceParser(unittest.TestCase):
     def testNoXRDS(self):
         """Make sure that we get an exception when an XRDS element is
         not present"""
-        self.xmldoc = open(NOXRDS_FILE).read()
-        self.failUnlessRaises(
+        with open(NOXRDS_FILE) as f:
+            self.xmldoc = f.read()
+        self.assertRaises(
             etxrd.XRDSError,
             services.applyFilter, self.yadis_url, self.xmldoc, None)
 
@@ -112,15 +114,16 @@ class TestServiceParser(unittest.TestCase):
         """Make sure that we get an exception when an XRDS element is
         not present"""
         self.xmldoc = ''
-        self.failUnlessRaises(
+        self.assertRaises(
             etxrd.XRDSError,
             services.applyFilter, self.yadis_url, self.xmldoc, None)
 
     def testNoXRD(self):
         """Make sure that we get an exception when there is no XRD
         element present."""
-        self.xmldoc = open(NOXRD_FILE).read()
-        self.failUnlessRaises(
+        with open(NOXRD_FILE) as f:
+            self.xmldoc = f.read()
+        self.assertRaises(
             etxrd.XRDSError,
             services.applyFilter, self.yadis_url, self.xmldoc, None)
 
@@ -134,7 +137,8 @@ class TestCanonicalID(unittest.TestCase):
         filename = datapath(filename)
 
         def test(self):
-            xrds = etxrd.parseXRDS(open(filename).read())
+            with open(filename) as f:
+                xrds = etxrd.parseXRDS(f.read())
             self._getCanonicalID(iname, xrds, expectedID)
         return test
 
