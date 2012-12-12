@@ -860,6 +860,22 @@ class GenericConsumer(object):
         rt_query = parsed_url[4]
         parsed_args = cgi.parse_qsl(rt_query)
 
+        # NOTE -- parsed_args will be a dict of {bytes: bytes}, however it
+        # will be checked against return values from Message methods which are
+        # {str: bytes}. We need to compare apples to apples.
+        new_parsed_args = []
+        for pair in parsed_args:
+            if isinstance(pair[0], bytes):
+                pair0 = str(pair[0], encoding="utf-8")
+            else:
+                pair0 = pair[0]
+            if isinstance(pair[1], str):
+                pair1 = bytes(pair[1], encoding="utf-8")
+            else:
+                pair1 = pair[1]
+            new_parsed_args.append((pair0, pair1))
+        parsed_args = new_parsed_args
+
         for rt_key, rt_value in parsed_args:
             try:
                 value = query[rt_key]
@@ -1105,7 +1121,8 @@ class GenericConsumer(object):
         try:
             response = self._makeKVPost(request, server_url)
         except (fetchers.HTTPFetchingError, ServerError) as e:
-            logging.exception('check_authentication failed: %s' % (e[0],))
+            e0 = e.args[0]
+            logging.exception('check_authentication failed: %s' % e0)
             return False
         else:
             return self._processCheckAuthResponse(response, server_url)
