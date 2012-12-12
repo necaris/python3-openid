@@ -14,14 +14,16 @@ def const(result):
 
     return constResult
 
+
 class DiscoveryVerificationTest(OpenIDTestMixin, TestIdRes):
     def failUnlessProtocolError(self, prefix, callable, *args, **kwargs):
         try:
             result = callable(*args, **kwargs)
         except consumer.ProtocolError as e:
+            e_arg = e.args[0]
             self.failUnless(
-                e[0].startswith(prefix),
-                'Expected message prefix %r, got message %r' % (prefix, e[0]))
+                e_arg.startswith(prefix),
+                'Expected message prefix %r, got message %r' % (prefix, e_arg))
         else:
             self.fail('Expected ProtocolError with prefix %r, '
                       'got successful return %r' % (prefix, result))
