@@ -103,6 +103,7 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         self.failUnlessHasIdentifiers(
             msg, self.endpoint.local_id, self.endpoint.claimed_id)
 
+
 class TestAuthRequestOpenID2(TestAuthRequestMixin, unittest.TestCase):
     preferred_namespace = message.OPENID2_NS
 
@@ -153,11 +154,12 @@ class TestAuthRequestOpenID2(TestAuthRequestMixin, unittest.TestCase):
         self.failUnlessHasIdentifiers(
             msg, message.IDENTIFIER_SELECT, message.IDENTIFIER_SELECT)
 
+
 class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
     preferred_namespace = message.OPENID1_NS
 
     def setUpEndpoint(self):
-        TestAuthRequestBase.setUpEndpoint(self)
+        super(TestAuthRequestOpenID1, self).setUpEndpoint()
         self.endpoint.preferred_namespace = message.OPENID1_NS
 
     def failUnlessHasIdentifiers(self, msg, op_specific_id, claimed_id):
@@ -196,9 +198,11 @@ class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
         self.failUnlessEqual(message.IDENTIFIER_SELECT,
                              msg.getArg(message.OPENID1_NS, 'identity'))
 
+
 class TestAuthRequestOpenID1Immediate(TestAuthRequestOpenID1):
     immediate = True
     expected_mode = 'checkid_immediate'
+
 
 class TestAuthRequestOpenID2Immediate(TestAuthRequestOpenID2):
     immediate = True
