@@ -459,15 +459,22 @@ class Message(object):
         """Get the arguments that are defined for this namespace URI
 
         @returns: mapping from namespaced keys to values
-        @returntype: dict
+        @returntype: dict of {str:bytes}
         """
         namespace = self._fixNS(namespace)
-        return dict([
-            (ns_key, value)
-            for ((pair_ns, ns_key), value)
-            in self.args.items()
-            if pair_ns == namespace
-            ])
+        args = []
+        for ((pair_ns, ns_key), value) in self.args.items():
+            if pair_ns == namespace:
+                if isinstance(ns_key, bytes):
+                    k = str(ns_key, encoding="utf-8")
+                else:
+                    k = ns_key
+                if isinstance(value, str):
+                    v = bytes(value, encoding="utf-8")
+                else:
+                    v = value
+                args.append((k, v))
+        return dict(args)
 
     def updateArgs(self, namespace, updates):
         """Set multiple key/value pairs in one call
