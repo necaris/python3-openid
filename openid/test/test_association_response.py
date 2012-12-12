@@ -222,8 +222,10 @@ class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
             expected_session_type='no-encryption',
             )
         self.failUnlessEqual(1, len(self.messages))
-        self.failUnless(self.messages[0].startswith(
-            'WARNING: OpenID server sent "no-encryption"'))
+        log_msg = self.messages[0]
+        self.failUnlessEqual(log_msg['levelname'], 'WARNING')
+        self.failUnless(log_msg['msg'].startswith(
+                'OpenID server sent "no-encryption"'))
 
     test_dhSHA1 = mkTest(
         session_type_value='DH-SHA1',
