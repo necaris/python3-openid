@@ -130,7 +130,7 @@ def urinorm(uri):
     if '%' in host:
         host = host.lower()
         host = pct_encoded_re.sub(_pct_encoded_replace, host)
-        host = str(host, 'utf-8').encode('idna').decode()
+        host = host.encode('idna').decode()
     else:
         host = host.lower()
 
