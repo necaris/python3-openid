@@ -241,6 +241,8 @@ class Message(object):
         @raises InvalidOpenIDNamespace: if the namespace is not in
             L{Message.allowed_openid_namespaces}
         """
+        if isinstance(openid_ns_uri, bytes):
+            openid_ns_uri = str(openid_ns_uri, encoding="utf-8")
         if openid_ns_uri not in self.allowed_openid_namespaces:
             raise InvalidOpenIDNamespace(openid_ns_uri)
 
@@ -325,7 +327,7 @@ class Message(object):
 
         @returns: A string containing (X)HTML markup for a form that
             encodes the values in this Message object.
-        @rtype: str or unicode
+        @rtype: str
         """
         if ElementTree is None:
             raise RuntimeError('This function requires ElementTree.')
@@ -354,7 +356,8 @@ class Message(object):
             {'type': 'submit', 'value': oidutil.toUnicode(submit_text)})
         form.append(submit)
 
-        return ElementTree.tostring(form, encoding='utf-8')
+        return str(ElementTree.tostring(form, encoding='utf-8'),
+                   encoding="utf-8")
 
     def toURL(self, base_url):
         """Generate a GET URL with the parameters in this message
@@ -381,13 +384,16 @@ class Message(object):
         @param namespace: The string or constant to convert
         @type namespace: str or unicode or BARE_NS or OPENID_NS
         """
+        if isinstance(namespace, bytes):
+            namespace = str(namespace, encoding="utf-8")
+
         if namespace == OPENID_NS:
             if self._openid_ns_uri is None:
                 raise UndefinedOpenIDNamespace('OpenID namespace not set')
             else:
                 namespace = self._openid_ns_uri
 
-        if namespace != BARE_NS and type(namespace) not in [str, str]:
+        if namespace != BARE_NS and not isinstance(namespace, str):
             raise TypeError(
                 "Namespace must be BARE_NS, OPENID_NS or a string. got %r"
                 % (namespace,))
@@ -571,6 +577,8 @@ class NamespaceMap(object):
     def addAlias(self, namespace_uri, desired_alias, implicit=False):
         """Add an alias from this namespace URI to the desired alias
         """
+        if isinstance(namespace_uri, bytes):
+            namespace_uri = str(namespace_uri, encoding="utf-8")
         # Check that desired_alias is not an openid protocol field as
         # per the spec.
         assert desired_alias not in OPENID_PROTOCOL_FIELDS, \
@@ -578,7 +586,7 @@ class NamespaceMap(object):
 
         # Check that desired_alias does not contain a period as per
         # the spec.
-        if type(desired_alias) in [str, str]:
+        if isinstance(desired_alias, str):
             assert '.' not in desired_alias, \
                    "%r must not contain a dot" % (desired_alias,)
 

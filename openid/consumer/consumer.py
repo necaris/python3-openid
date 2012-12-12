@@ -878,6 +878,8 @@ class GenericConsumer(object):
         for rt_key, rt_value in parsed_args:
             try:
                 value = query[rt_key]
+                if isinstance(value, str):
+                    value = bytes(value, encoding="utf-8")
                 if rt_value != value:
                     format = ("parameter %s value %r does not match "
                               "return_to's value %r")
@@ -1132,6 +1134,8 @@ class GenericConsumer(object):
         """
         signed = message.getArg(OPENID_NS, 'signed')
         if signed:
+            if isinstance(signed, bytes):
+                signed = str(signed, encoding="utf-8")
             for k in signed.split(','):
                 logging.info(k)
                 val = message.getAliasedArg(k)
