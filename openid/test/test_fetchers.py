@@ -295,6 +295,7 @@ class DefaultFetcherTest(unittest.TestCase):
         else:
             self.fail('Should have raised an exception')
 
+
 def pyUnitTests():
     case1 = unittest.FunctionTestCase(test)
     loadTests = unittest.defaultTestLoader.loadTestsFromTestCase

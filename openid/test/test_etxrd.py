@@ -2,11 +2,12 @@ import unittest
 from openid.yadis import services, etxrd, xri
 import os.path
 
+
 def datapath(filename):
     module_directory = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(module_directory, 'data', 'test_etxrd', filename)
 
-XRD_FILE =  datapath('valid-populated-xrds.xml')
+XRD_FILE = datapath('valid-populated-xrds.xml')
 NOXRDS_FILE = datapath('not-xrds.xml')
 NOXRD_FILE = datapath('no-xrd.xml')
 
@@ -15,6 +16,7 @@ NOXRD_FILE = datapath('no-xrd.xml')
 
 LID_2_0 = "http://lid.netmesh.org/sso/2.0b5"
 TYPEKEY_1_0 = "http://typekey.com/services/1.0"
+
 
 def simpleOpenIDTransformer(endpoint):
     """Function to extract information from an OpenID service element"""
@@ -26,6 +28,7 @@ def simpleOpenIDTransformer(endpoint):
     assert len(delegates) == 1
     delegate = delegates[0].text
     return (endpoint.uri, delegate)
+
 
 class TestServiceParser(unittest.TestCase):
     def setUp(self):
@@ -83,8 +86,8 @@ class TestServiceParser(unittest.TestCase):
 
     def testGetSeveralForOne(self):
         """Getting services for one Service with several Type elements."""
-        types = [ 'http://lid.netmesh.org/sso/2.0b5'
-                , 'http://lid.netmesh.org/2.0b5'
+        types = ['http://lid.netmesh.org/sso/2.0b5',
+                 'http://lid.netmesh.org/2.0b5'
                 ]
 
         uri = "http://mylid.net/josh"
@@ -129,6 +132,7 @@ class TestCanonicalID(unittest.TestCase):
         test for the given set of inputs"""
 
         filename = datapath(filename)
+
         def test(self):
             xrds = etxrd.parseXRDS(open(filename).read())
             self._getCanonicalID(iname, xrds, expectedID)

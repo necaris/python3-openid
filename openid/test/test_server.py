@@ -1,17 +1,16 @@
 """Tests for openid.server.
 """
+from base64 import b64decode
+import unittest
+import warnings
+from urllib.parse import urlparse, parse_qsl, parse_qs
+
 from openid.server import server
 from openid import association, cryptutil, oidutil
 from openid.message import Message, OPENID_NS, OPENID2_NS, OPENID1_NS, \
      IDENTIFIER_SELECT, no_default, OPENID1_URL_LIMIT
 from openid.store import memstore
 from openid.test.support import CatchLogs
-import cgi
-
-import unittest
-import warnings
-
-from urllib.parse import urlparse
 
 # In general, if you edit or add tests here, try to move in the direction
 # of testing smaller units.  For testing the external interfaces, we'll be

@@ -5,6 +5,7 @@ import string
 import random
 from openid import oidutil
 
+
 def test_base64():
     allowed_s = string.ascii_letters + string.digits + '+/='
     allowed_d = {}
@@ -166,11 +167,13 @@ def buildAppendTests():
 
     return unittest.TestSuite(tests)
 
+
 def pyUnitTests():
     some = buildAppendTests()
     some.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestSymbol))
     some.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestUnicodeConversion))
     return some
+
 
 def test_appendArgs():
     suite = buildAppendTests()
@@ -178,6 +181,7 @@ def test_appendArgs():
     runner = unittest.TextTestRunner()
     result = runner.run(suite)
     assert result.wasSuccessful()
+
 
 # XXX: there are more functions that could benefit from being better
 # specified and tested in oidutil.py These include, but are not

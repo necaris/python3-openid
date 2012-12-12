@@ -29,6 +29,7 @@ testlist = [
     (False, "500_server_response", None,             None),
     ]
 
+
 def getDataName(*components):
     sanitized = []
     for part in components:
@@ -42,6 +43,7 @@ def getDataName(*components):
 
     return os.path.join(data_path, *sanitized)
 
+
 def getExampleXRDS():
     filename = getDataName('example-xrds.xml')
     return open(filename).read()
@@ -51,6 +53,7 @@ default_test_file = getDataName('test1-discover.txt')
 
 discover_tests = {}
 
+
 def readTests(filename):
     data = open(filename).read()
     tests = {}
@@ -59,6 +62,7 @@ def readTests(filename):
         tests[name] = content
     return tests
 
+
 def getData(filename, name):
     global discover_tests
     try:
@@ -66,6 +70,7 @@ def getData(filename, name):
     except KeyError:
         file_tests = discover_tests[filename] = readTests(filename)
     return file_tests[name]
+
 
 def fillTemplate(test_name, template, base_url, example_xrds):
     mapping = [
@@ -80,6 +85,7 @@ def fillTemplate(test_name, template, base_url, example_xrds):
 
     return template
 
+
 def generateSample(test_name, base_url,
                    example_xrds=example_xrds,
                    filename=default_test_file):
@@ -93,6 +99,7 @@ def generateSample(test_name, base_url,
             raise
 
     return fillTemplate(test_name, template, base_url, example_xrds)
+
 
 def generateResult(base_url, input_name, id_name, result_name, success):
     input_url = urllib.parse.urljoin(base_url, input_name)

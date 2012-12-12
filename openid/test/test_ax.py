@@ -556,12 +556,13 @@ class FetchResponseTest(unittest.TestCase):
             'ns.ax': ax.AXMessage.ns_uri,
             'ax.update_url': 'http://example.com/realm/update_path',
             'ax.mode': 'fetch_response',
-            'ax.type.'+name: uri,
-            'ax.count.'+name: '1',
-            'ax.value.%s.1'%name: value,
+            'ax.type.' + name: uri,
+            'ax.count.' + name: '1',
+            'ax.value.%s.1' % name: value,
             }
         sf = ['openid.' + i for i in list(args.keys())]
         msg = Message.fromOpenIDArgs(args)
+
         class Endpoint:
             claimed_id = 'http://invalid.'
 
