@@ -59,6 +59,8 @@ def toURINormal(xri):
 def iriToURI(iri):
     """Transform an IRI to a URI by escaping unicode."""
     # According to RFC 3987, section 3.1, "Mapping of IRIs to URIs"
+    if isinstance(iri, bytes):
+        iri = str(iri, encoding="utf-8")
     return iri.encode('ascii', errors='oid_percent_escape').decode()
 
 
