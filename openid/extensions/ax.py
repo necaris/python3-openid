@@ -79,6 +79,8 @@ class AXMessage(extension.Extension):
         @raises AXError: When mode does not match.
         """
         mode = ax_args.get('mode')
+        if isinstance(mode, bytes):
+            mode = str(mode, encoding="utf-8")
         if mode != self.mode:
             if not mode:
                 raise NotAXMessage()

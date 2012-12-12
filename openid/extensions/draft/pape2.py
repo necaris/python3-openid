@@ -115,6 +115,8 @@ class Request(Extension):
 
         policies_str = args.get('preferred_auth_policies')
         if policies_str:
+            if isinstance(policies_str, bytes):
+                policies_str = str(policies_str, encoding="utf-8")
             for uri in policies_str.split(' '):
                 if uri not in self.preferred_auth_policies:
                     self.preferred_auth_policies.append(uri)
