@@ -851,7 +851,9 @@ class MessageTest(unittest.TestCase):
         for name, value in message_.toPostArgs().items():
             for e in hiddens:
                 if e.attrib['name'] == name:
-                    value = bytes(value, encoding="utf-8")
+                    # value will be bytes
+                    if isinstance(e.attrib['value'], str):
+                        value = str(value, encoding="utf-8")
                     assert e.attrib['value'] == value, \
                            "Expected value of hidden input '%s' to be '%s', got '%s'" % \
                            (e.attrib['name'], value, e.attrib['value'])

@@ -10,8 +10,8 @@ def test_base64():
     allowed_s = string.ascii_letters + string.digits + '+/='
     allowed_d = {}
     for c in allowed_s:
-        allowed_d[c] = None
-    isAllowed = allowed_d.has_key
+        allowed_d[ord(c)] = None
+    isAllowed = allowed_d.__contains__
 
     def checkEncoded(s):
         for c in s:
@@ -30,7 +30,7 @@ def test_base64():
         b64 = oidutil.toBase64(s)
         checkEncoded(b64)
         s_prime = oidutil.fromBase64(b64)
-        assert s_prime == s, (s, b64, s_prime)
+        assert str(s_prime, encoding="utf-8") == s, (s, b64, s_prime)
 
     # Randomized test
     for _ in range(50):
@@ -39,7 +39,8 @@ def test_base64():
         b64 = oidutil.toBase64(s)
         checkEncoded(b64)
         s_prime = oidutil.fromBase64(b64)
-        assert s_prime == s, (s, b64, s_prime)
+        assert str(s_prime, encoding="utf-8") == s, (s, b64, s_prime)
+
 
 class AppendArgsTest(unittest.TestCase):
     def __init__(self, desc, args, expected):
