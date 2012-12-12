@@ -146,6 +146,7 @@ class Message(object):
             implicit = openid_namespace in OPENID1_NAMESPACES
             self.setOpenIDNamespace(openid_namespace, implicit)
 
+    @classmethod
     def fromPostArgs(cls, args):
         """Construct a Message containing a set of POST arguments.
 
@@ -154,10 +155,11 @@ class Message(object):
 
         # Partition into "openid." args and bare args
         openid_args = {}
-        for key, value in list(args.items()):
+        for key, value in args.items():
             if isinstance(value, list):
-                raise TypeError("query dict must have one value for each key, "
-                                "not lists of values.  Query is %r" % (args,))
+                raise TypeError(
+                    "query dict must have one value for each key, "
+                    "not lists of values.  Query is %r" % (args,))
 
             try:
                 prefix, rest = key.split('.', 1)
@@ -173,8 +175,7 @@ class Message(object):
 
         return self
 
-    fromPostArgs = classmethod(fromPostArgs)
-
+    @classmethod
     def fromOpenIDArgs(cls, openid_args):
         """Construct a Message from a parsed KVForm message.
 
@@ -184,8 +185,6 @@ class Message(object):
         self = cls()
         self._fromOpenIDArgs(openid_args)
         return self
-
-    fromOpenIDArgs = classmethod(fromOpenIDArgs)
 
     def _fromOpenIDArgs(self, openid_args):
         ns_args = []
@@ -373,8 +372,7 @@ class Message(object):
 
     def toURLEncoded(self):
         """Generate an x-www-urlencoded string"""
-        args = list(self.toPostArgs().items())
-        args.sort()
+        args = sorted(self.toPostArgs().items())
         return urllib.parse.urlencode(args)
 
     def _fixNS(self, namespace):
