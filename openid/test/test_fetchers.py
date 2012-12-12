@@ -199,12 +199,11 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
             self.send_header(k, v)
         self.end_headers()
         self.wfile.write(bytes(body, encoding="utf-8"))
-        self.wfile.close()
 
     def finish(self):
         if not self.wfile.closed:
             self.wfile.flush()
-        self.wfile.close()
+            self.wfile.close()
         self.rfile.close()
 
 
