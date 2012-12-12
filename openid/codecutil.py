@@ -50,13 +50,7 @@ def _in_escape_range(octet):
     return False
 
 
-def _pct_escape_handler(err):
-    '''
-    Encoding error handler that does percent-escaping of Unicode, to be used
-    with codecs.register_error
-    TODO: replace use of this with urllib.parse.quote as appropriate
-    '''
-    chunk = err.object[err.start:err.end]
+def _pct_encoded_replacements(chunk):
     replacements = []
     for character in chunk:
         codepoint = ord(character)
@@ -65,6 +59,17 @@ def _pct_escape_handler(err):
                 replacements.append("%%%X" % char)
         else:
             replacements.append(chr(codepoint))
+    return replacements
+
+
+def _pct_escape_handler(err):
+    '''
+    Encoding error handler that does percent-escaping of Unicode, to be used
+    with codecs.register_error
+    TODO: replace use of this with urllib.parse.quote as appropriate
+    '''
+    chunk = err.object[err.start:err.end]
+    replacements = _pct_encoded_replacements(chunk)
     return ("".join(replacements), err.end)
 
 codecs.register_error("oid_percent_escape", _pct_escape_handler)
