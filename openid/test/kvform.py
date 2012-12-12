@@ -63,7 +63,11 @@ class KVSeqTest(KVBaseTest):
     def runTest(self):
         # seq serializes to expected kvform
         actual = kvform.seqToKV(self.seq)
-        self.failUnlessEqual(bytes(self.kvform, 'utf-8'), actual)
+        if isinstance(self.kvform, str):
+            kvform_bytes = bytes(self.kvform, encoding="utf-8")
+        else:
+            kvform_bytes = self.kvform
+        self.failUnlessEqual(kvform_bytes, actual)
         self.failUnless(isinstance(actual, bytes))
 
         # Parse back to sequence. Expected to be unchanged, except
