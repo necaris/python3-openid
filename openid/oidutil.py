@@ -38,7 +38,11 @@ def toUnicode(value):
 
 
 def autoSubmitHTML(form, title='OpenID transaction in progress'):
-    return b"""
+    if isinstance(form, bytes):
+        form = str(form, encoding="utf-8")
+    if isinstance(title, bytes):
+        title = str(title, encoding="utf-8")
+    html = """
 <html>
 <head>
   <title>%s</title>
@@ -54,6 +58,7 @@ for (var i = 0; i < elements.length; i++) {
 </body>
 </html>
 """ % (title, form)
+    return html
 
 
 def importElementTree(module_names=None):
