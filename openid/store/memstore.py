@@ -5,6 +5,7 @@ from openid.store import nonce
 import copy
 import time
 
+
 class ServerAssocs(object):
     def __init__(self):
         self.assocs = {}
@@ -46,7 +47,6 @@ class ServerAssocs(object):
         for handle in remove:
             del self.assocs[handle]
         return len(remove), len(self.assocs)
-
 
 
 class MemoryStore(object):

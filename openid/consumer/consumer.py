@@ -256,7 +256,6 @@ def _httpResponseToMessage(response, server_url):
     return response_message
 
 
-
 class Consumer(object):
     """An OpenID consumer implementation that performs discovery and
     does session management.
@@ -453,6 +452,7 @@ class Consumer(object):
         """
         self.consumer.negotiator = SessionNegotiator(association_preferences)
 
+
 class DiffieHellmanSHA1ConsumerSession(object):
     session_type = 'DH-SHA1'
     hash_func = staticmethod(cryptutil.sha1)
@@ -486,11 +486,13 @@ class DiffieHellmanSHA1ConsumerSession(object):
         enc_mac_key = oidutil.fromBase64(enc_mac_key64)
         return self.dh.xorSecret(dh_server_public, enc_mac_key, self.hash_func)
 
+
 class DiffieHellmanSHA256ConsumerSession(DiffieHellmanSHA1ConsumerSession):
     session_type = 'DH-SHA256'
     hash_func = staticmethod(cryptutil.sha256)
     secret_size = 32
     allowed_assoc_types = ['HMAC-SHA256']
+
 
 class PlainTextConsumerSession(object):
     session_type = 'no-encryption'
@@ -503,6 +505,7 @@ class PlainTextConsumerSession(object):
         mac_key64 = response.getArg(OPENID_NS, 'mac_key', no_default)
         return oidutil.fromBase64(mac_key64)
 
+
 class SetupNeededError(Exception):
     """Internally-used exception that indicates that an immediate-mode
     request cancelled."""
@@ -510,9 +513,11 @@ class SetupNeededError(Exception):
         Exception.__init__(self, user_setup_url)
         self.user_setup_url = user_setup_url
 
+
 class ProtocolError(ValueError):
     """Exception that indicates that a message violated the
     protocol. It is raised and caught internally to this file."""
+
 
 class TypeURIMismatch(ProtocolError):
     """A protocol error arising from type URIs mismatching
@@ -528,7 +533,6 @@ class TypeURIMismatch(ProtocolError):
             self.__class__.__module__, self.__class__.__name__,
             self.expected, self.endpoint.type_uris, self.endpoint)
         return s
-
 
 
 class ServerError(Exception):
@@ -550,6 +554,7 @@ class ServerError(Exception):
         return cls(error_text, error_code, message)
 
     fromMessage = classmethod(fromMessage)
+
 
 class GenericConsumer(object):
     """This is the implementation of the common logic for OpenID
@@ -578,9 +583,9 @@ class GenericConsumer(object):
     openid1_return_to_identifier_name = 'openid1_claimed_id'
 
     session_types = {
-        'DH-SHA1':DiffieHellmanSHA1ConsumerSession,
-        'DH-SHA256':DiffieHellmanSHA256ConsumerSession,
-        'no-encryption':PlainTextConsumerSession,
+        'DH-SHA1': DiffieHellmanSHA1ConsumerSession,
+        'DH-SHA256': DiffieHellmanSHA256ConsumerSession,
+        'no-encryption': PlainTextConsumerSession,
         }
 
     _discover = staticmethod(discover)
@@ -823,7 +828,7 @@ class GenericConsumer(object):
             OPENID2_NS: basic_sig_fields + ['response_nonce',
                                             'claimed_id',
                                             'assoc_handle',
-                                            'op_endpoint',],
+                                            'op_endpoint'],
             OPENID1_NS: basic_sig_fields,
             }
 
@@ -839,11 +844,12 @@ class GenericConsumer(object):
             if message.hasKey(OPENID_NS, field) and field not in signed_list:
                 raise ProtocolError('"%s" not signed' % (field,))
 
-
     def _verifyReturnToArgs(query):
         """Verify that the arguments in the return_to URL are present in this
         response.
         """
+        # NOTE -- query came from Message.toPostArgs, which returns a dict of
+        # {str: bytes}
         message = Message.fromPostArgs(query)
         return_to = message.getArg(OPENID_NS, 'return_to')
 
@@ -870,7 +876,8 @@ class GenericConsumer(object):
         bare_args = message.getArgs(BARE_NS)
         for pair in bare_args.items():
             if pair not in parsed_args:
-                raise ProtocolError("Parameter %s not in return_to URL" % (pair[0],))
+                raise ProtocolError(
+                    "Parameter %s not in return_to URL" % (pair[0],))
 
     _verifyReturnToArgs = staticmethod(_verifyReturnToArgs)
 
@@ -888,7 +895,6 @@ class GenericConsumer(object):
             return self._verifyDiscoveryResultsOpenID2(resp_msg, endpoint)
         else:
             return self._verifyDiscoveryResultsOpenID1(resp_msg, endpoint)
-
 
     def _verifyDiscoveryResultsOpenID2(self, resp_msg, endpoint):
         to_match = OpenIDServiceEndpoint()
@@ -947,7 +953,8 @@ class GenericConsumer(object):
         return endpoint
 
     def _verifyDiscoveryResultsOpenID1(self, resp_msg, endpoint):
-        claimed_id = resp_msg.getArg(BARE_NS, self.openid1_return_to_identifier_name)
+        claimed_id = resp_msg.getArg(BARE_NS,
+                                     self.openid1_return_to_identifier_name)
 
         if endpoint is None and claimed_id is None:
             raise RuntimeError(
@@ -977,8 +984,9 @@ class GenericConsumer(object):
                 except TypeURIMismatch:
                     self._verifyDiscoverySingle(endpoint, to_match_1_0)
             except ProtocolError as e:
-                logging.exception("Error attempting to use stored discovery information: " +
-                            str(e))
+                logging.exception(
+                    "Error attempting to use stored discovery information: " +
+                    str(e))
                 logging.info("Attempting discovery to verify endpoint")
             else:
                 return endpoint
@@ -1056,7 +1064,6 @@ class GenericConsumer(object):
                                    (claimed_id,), None)
         return self._verifyDiscoveredServices(claimed_id, services,
                                               to_match_endpoints)
-
 
     def _verifyDiscoveredServices(self, claimed_id, services, to_match_endpoints):
         """See @L{_discoverAndVerify}"""
@@ -1194,10 +1201,11 @@ class GenericConsumer(object):
                 except ServerError as why:
                     # Do not keep trying, since it rejected the
                     # association type that it told us to use.
-                    logging.error('Server %s refused its suggested association '
-                                'type: session_type=%s, assoc_type=%s'
-                                % (endpoint.server_url, session_type,
-                                   assoc_type))
+                    logging.error(
+                        'Server %s refused its suggested association '
+                        'type: session_type=%s, assoc_type=%s'
+                        % (endpoint.server_url, session_type,
+                           assoc_type))
                     return None
                 else:
                     return assoc
@@ -1246,7 +1254,6 @@ class GenericConsumer(object):
         else:
             return assoc_type, session_type
 
-
     def _requestAssociation(self, endpoint, assoc_type, session_type):
         """Make and process one association request to this endpoint's
         OP endpoint URL.
@@ -1268,8 +1275,9 @@ class GenericConsumer(object):
         try:
             assoc = self._extractAssociation(response, assoc_session)
         except KeyError as why:
-            logging.exception('Missing required parameter in response from %s: %s'
-                        % (endpoint.server_url, why))
+            logging.exception(
+                'Missing required parameter in response from %s: %s'
+                % (endpoint.server_url, why))
             return None
         except ProtocolError as why:
             logging.exception('Protocol error parsing response from %s: %s' % (
@@ -1439,6 +1447,7 @@ class GenericConsumer(object):
         return Association.fromExpiresIn(
             expires_in, assoc_handle, secret, assoc_type)
 
+
 class AuthRequest(object):
     """An object that holds the state necessary for generating an
     OpenID authentication request. This object holds the association
@@ -1571,12 +1580,11 @@ class AuthRequest(object):
         else:
             realm_key = 'realm'
 
-        message.updateArgs(OPENID_NS,
-            {
-            realm_key:realm,
-            'mode':mode,
-            'return_to':return_to,
-            })
+        message.updateArgs(OPENID_NS, {
+                realm_key: realm,
+                'mode': mode,
+                'return_to': return_to,
+                })
 
         if not self._anonymous:
             if self.endpoint.isOPIdentifier():
@@ -1687,6 +1695,7 @@ SUCCESS = 'success'
 CANCEL = 'cancel'
 SETUP_NEEDED = 'setup_needed'
 
+
 class Response(object):
     status = None
 
@@ -1717,18 +1726,21 @@ class Response(object):
             return self.endpoint.getDisplayIdentifier()
         return None
 
+
 class SuccessResponse(Response):
     """A response with a status of SUCCESS. Indicates that this request is a
     successful acknowledgement from the OpenID server that the
     supplied URL is, indeed controlled by the requesting agent.
 
-    @ivar identity_url: The identity URL that has been authenticated; the Claimed Identifier.
+    @ivar identity_url: The identity URL that has been authenticated;
+          the Claimed Identifier.
         See also L{getDisplayIdentifier}.
 
     @ivar endpoint: The endpoint that authenticated the identifier.  You
         may access other discovered information related to this endpoint,
         such as the CanonicalID of an XRI, through this object.
-    @type endpoint: L{OpenIDServiceEndpoint<openid.consumer.discover.OpenIDServiceEndpoint>}
+    @type endpoint:
+       L{OpenIDServiceEndpoint<openid.consumer.discover.OpenIDServiceEndpoint>}
 
     @ivar signed_fields: The arguments in the server's response that
         were signed and verified.
@@ -1780,8 +1792,9 @@ class SuccessResponse(Response):
 
         for key in msg_args.keys():
             if not self.isSigned(ns_uri, key):
-                logging.info("SuccessResponse.getSignedNS: (%s, %s) not signed."
-                            % (ns_uri, key))
+                logging.info(
+                    "SuccessResponse.getSignedNS: (%s, %s) not signed."
+                    % (ns_uri, key))
                 return None
 
         return msg_args
@@ -1877,6 +1890,7 @@ class CancelResponse(Response):
 
     def __init__(self, endpoint):
         self.setEndpoint(endpoint)
+
 
 class SetupNeededResponse(Response):
     """A response with a status of SETUP_NEEDED. Indicates that the

@@ -24,6 +24,7 @@ UNLIMITED_VALUES = "unlimited"
 # completeness.
 MINIMUM_SUPPORTED_ALIAS_LENGTH = 32
 
+
 def checkAlias(alias):
     """
     Check an alias for invalid characters; raise AXError if any are
@@ -66,8 +67,8 @@ class AXMessage(extension.Extension):
     #pylint:disable-msg=W0223
 
     ns_alias = 'ax'
-    mode = None
     ns_uri = 'http://openid.net/srv/ax/1.0'
+    mode = None  # NOTE mode is only ever set to a str value, see below
 
     def _checkMode(self, ax_args):
         """Raise an exception if the mode in the attribute exchange
@@ -90,7 +91,7 @@ class AXMessage(extension.Extension):
         basic information that must be in every attribute exchange
         message.
         """
-        return {'mode':self.mode}
+        return {'mode': self.mode}
 
 
 class AttrInfo(object):
@@ -145,6 +146,7 @@ class AttrInfo(object):
         case self.count is an integer.
         """
         return self.count == UNLIMITED_VALUES
+
 
 def toTypeURIs(namespace_map, alias_list_s):
     """Given a namespace mapping and a string containing a
@@ -319,8 +321,9 @@ class FetchRequest(AXMessage):
 
             tr = TrustRoot.parse(realm)
             if not tr.validateURL(self.update_url):
-                raise AXError("Update URL %r failed validation against realm %r" %
-                              (self.update_url, realm,))
+                raise AXError(
+                    "Update URL %r failed validation against realm %r" %
+                    (self.update_url, realm,))
 
         return self
 
@@ -361,10 +364,14 @@ class FetchRequest(AXMessage):
                     try:
                         count = int(count_s)
                         if count <= 0:
-                            raise AXError("Count %r must be greater than zero, got %r" % (count_key, count_s,))
+                            raise AXError(
+                                "Count %r must be greater than zero, got %r" %
+                                (count_key, count_s,))
                     except ValueError:
                         if count_s != UNLIMITED_VALUES:
-                            raise AXError("Invalid count value for %r: %r" % (count_key, count_s,))
+                            raise AXError(
+                                "Invalid count value for %r: %r" %
+                                (count_key, count_s,))
                         count = count_s
                 else:
                     count = 1

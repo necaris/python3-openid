@@ -37,6 +37,7 @@ TIME_VALIDATOR = re.compile('^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$')
 LEVELS_NIST = 'http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf'
 LEVELS_JISA = 'http://www.jisa.or.jp/spec/auth_level.html'
 
+
 class PAPEExtension(Extension):
     _default_auth_level_aliases = {
         'nist': LEVELS_NIST,
@@ -88,6 +89,7 @@ class PAPEExtension(Extension):
                 return alias
 
         raise KeyError(auth_level_uri)
+
 
 class Request(PAPEExtension):
     """A Provider Authentication Policy request, sent from a relying

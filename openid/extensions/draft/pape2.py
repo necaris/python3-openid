@@ -29,6 +29,7 @@ AUTH_PHISHING_RESISTANT = \
 
 TIME_VALIDATOR = re.compile('^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$')
 
+
 class Request(Extension):
     """A Provider Authentication Policy request, sent from a relying
     party to a provider
@@ -231,8 +232,9 @@ class Response(Extension):
                 nist_level = int(nist_level_str)
             except ValueError:
                 if strict:
-                    raise ValueError('nist_auth_level must be an integer between '
-                                     'zero and four, inclusive')
+                    raise ValueError(
+                        'nist_auth_level must be an integer between '
+                        'zero and four, inclusive')
                 else:
                     self.nist_auth_level = None
             else:
@@ -253,11 +255,11 @@ class Response(Extension):
         """
         if len(self.auth_policies) == 0:
             ns_args = {
-                'auth_policies':'none',
+                'auth_policies': 'none',
             }
         else:
             ns_args = {
-                'auth_policies':' '.join(self.auth_policies),
+                'auth_policies': ' '.join(self.auth_policies),
                 }
 
         if self.nist_auth_level is not None:

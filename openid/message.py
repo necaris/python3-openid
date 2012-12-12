@@ -58,9 +58,11 @@ OPENID_PROTOCOL_FIELDS = [
     'assoc_handle', 'trust_root', 'openid',
     ]
 
+
 class UndefinedOpenIDNamespace(ValueError):
     """Raised if the generic OpenID namespace is accessed when there
     is no OpenID namespace set for this message."""
+
 
 class InvalidOpenIDNamespace(ValueError):
     """Raised if openid.ns is not a recognized value.
@@ -82,11 +84,13 @@ no_default = object()
 # registerNamespaceAlias.
 registered_aliases = {}
 
+
 class NamespaceAliasRegistrationError(Exception):
     """
     Raised when an alias or namespace URI has already been registered.
     """
     pass
+
 
 def registerNamespaceAlias(namespace_uri, alias):
     """
@@ -102,12 +106,15 @@ def registerNamespaceAlias(namespace_uri, alias):
         return
 
     if namespace_uri in list(registered_aliases.values()):
-        raise NamespaceAliasRegistrationError('Namespace uri %r already registered' % (namespace_uri,))
+        raise NamespaceAliasRegistrationError(
+            'Namespace uri %r already registered' % (namespace_uri,))
 
     if alias in registered_aliases:
-        raise NamespaceAliasRegistrationError('Alias %r already registered' % (alias,))
+        raise NamespaceAliasRegistrationError(
+            'Alias %r already registered' % (alias,))
 
     registered_aliases[alias] = namespace_uri
+
 
 class Message(object):
     """
@@ -151,7 +158,6 @@ class Message(object):
             if isinstance(value, list):
                 raise TypeError("query dict must have one value for each key, "
                                 "not lists of values.  Query is %r" % (args,))
-
 
             try:
                 prefix, rest = key.split('.', 1)
@@ -494,10 +500,8 @@ class Message(object):
     def __eq__(self, other):
         return self.args == other.args
 
-
     def __ne__(self, other):
         return not (self == other)
-
 
     def getAliasedArg(self, aliased_key, default=None):
         if aliased_key == 'ns':
@@ -526,6 +530,7 @@ class Message(object):
             ns = self.getOpenIDNamespace()
 
         return self.getArg(ns, key, default)
+
 
 class NamespaceMap(object):
     """Maintains a bijective map between namespace uris and aliases.

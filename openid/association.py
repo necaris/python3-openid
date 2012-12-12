@@ -478,7 +478,6 @@ class Association(object):
 
         return mac(self.secret, kv)
 
-
     def getMessageSignature(self, message):
         """Return the signature of a message.
 
@@ -533,7 +532,6 @@ class Association(object):
             raise ValueError("%s has no sig." % (message,))
         calculated_sig = self.getMessageSignature(message)
         return cryptutil.const_eq(calculated_sig, message_sig)
-
 
     def _makePairs(self, message):
         signed = message.getArg(OPENID_NS, 'signed')

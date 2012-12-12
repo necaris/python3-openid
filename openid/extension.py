@@ -1,4 +1,7 @@
+import warnings
+
 from openid import message as message_module
+
 
 class Extension(object):
     """An interface for OpenID extensions.
@@ -18,7 +21,7 @@ class Extension(object):
             'uncle', and this method returns {'meat':'Hot Rats'}, the
             final message will contain {'openid.uncle.meat':'Hot Rats'}
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def toMessage(self, message=None):
         """Add the arguments from this extension to the provided
@@ -28,9 +31,10 @@ class Extension(object):
         @returns: The message with the extension arguments added
         """
         if message is None:
-            warnings.warn('Passing None to Extension.toMessage is deprecated. '
-                          'Creating a message assuming you want OpenID 2.',
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                'Passing None to Extension.toMessage is deprecated. '
+                'Creating a message assuming you want OpenID 2.',
+                DeprecationWarning, stacklevel=2)
             message = message_module.Message(message_module.OPENID2_NS)
 
         implicit = message.isOpenID1()
