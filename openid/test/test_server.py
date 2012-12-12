@@ -1385,14 +1385,14 @@ class TestCheckAuth(unittest.TestCase):
         r = self.request.answer(self.signatory)
         r = self.request.answer(self.signatory)
         self.failUnlessEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': 'false'})
+                             {'is_valid': b'false'})
 
     def test_invalidatehandle(self):
         self.request.invalidate_handle = "bogusHandle"
         r = self.request.answer(self.signatory)
         self.failUnlessEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': 'true',
-                              'invalidate_handle': "bogusHandle"})
+                             {'is_valid': b'true',
+                              'invalidate_handle': b"bogusHandle"})
         self.failUnlessEqual(r.request, self.request)
 
     def test_invalidatehandleNo(self):

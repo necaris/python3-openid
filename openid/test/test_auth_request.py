@@ -84,8 +84,8 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         self.authreq.addExtensionArg('bag:', 'material', 'paper')
         self.failUnless('bag:' in self.authreq.message.namespaces)
         self.failUnlessEqual(self.authreq.message.getArgs('bag:'),
-                             {'color': 'brown',
-                              'material': 'paper'})
+                             {'color': b'brown',
+                              'material': b'paper'})
         msg = self.authreq.getMessage(self.realm, self.return_to,
                                       self.immediate)
 

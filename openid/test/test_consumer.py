@@ -2,6 +2,7 @@ import urllib.parse
 import cgi
 import time
 import warnings
+import pprint
 
 from openid.message import Message, OPENID_NS, OPENID2_NS, IDENTIFIER_SELECT, \
      OPENID1_NS, BARE_NS
@@ -139,6 +140,15 @@ def setConsumerSession(con):
 
 
 def _test_success(server_url, user_url, delegate_url, links, immediate=False):
+    if isinstance(server_url, bytes):
+        server_url = str(server_url, encoding="utf-8")
+    if isinstance(user_url, bytes):
+        user_url = str(user_url, encoding="utf-8")
+    if isinstance(delegate_url, bytes):
+        delegate_url = str(delegate_url, encoding="utf-8")
+    if isinstance(links, bytes):
+        links = str(links, encoding="utf-8")
+
     store = memstore.MemoryStore()
     if immediate:
         mode = 'checkid_immediate'
@@ -155,29 +165,34 @@ def _test_success(server_url, user_url, delegate_url, links, immediate=False):
     fetchers.setDefaultFetcher(fetcher, wrap_exceptions=False)
 
     def run():
-        trust_root = consumer_url
+        trust_root = str(consumer_url, encoding="utf-8")
 
         consumer = GenericConsumer(store)
         setConsumerSession(consumer)
 
         request = consumer.begin(endpoint)
-        return_to = consumer_url
+        return_to = str(consumer_url, encoding="utf-8")
 
         m = request.getMessage(trust_root, return_to, immediate)
 
         redirect_url = request.redirectURL(trust_root, return_to, immediate)
+        if isinstance(redirect_url, bytes):
+            redirect_url = str(redirect_url, encoding="utf-8")
 
         parsed = urllib.parse.urlparse(redirect_url)
         qs = parsed[4]
         q = parseQuery(qs)
         new_return_to = q['openid.return_to']
         del q['openid.return_to']
-        assert q == {
+        expected = {
             'openid.mode': mode,
             'openid.identity': delegate_url,
             'openid.trust_root': trust_root,
             'openid.assoc_handle': fetcher.assoc_handle,
-        }, (q, user_url, delegate_url, mode)
+        }
+        assert q == expected, pprint.pformat((q, expected))
+
+        # (q, user_url, delegate_url, mode, expected)
 
         assert new_return_to.startswith(return_to)
         assert redirect_url.startswith(server_url)

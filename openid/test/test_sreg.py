@@ -408,14 +408,14 @@ class SRegRequestTest(unittest.TestCase):
                              req.getExtensionArgs())
 
 data = {
-    'nickname':'linusaur',
-    'postcode':'12345',
-    'country':'US',
-    'gender':'M',
-    'fullname':'Leonhard Euler',
-    'email':'president@whitehouse.gov',
-    'dob':'0000-00-00',
-    'language':'en-us',
+    'nickname': b'linusaur',
+    'postcode': b'12345',
+    'country': b'US',
+    'gender': b'M',
+    'fullname': b'Leonhard Euler',
+    'email': b'president@whitehouse.gov',
+    'dob': b'0000-00-00',
+    'language': b'en-us',
     }
 
 
@@ -485,11 +485,11 @@ class SendFieldsTest(unittest.TestCase):
 
         # Extract the fields that were sent
         sreg_data_resp = resp_msg.getArgs(sreg.ns_uri)
-        self.failUnlessEqual(
-            {'nickname':'linusaur',
-             'email':'president@whitehouse.gov',
-             'fullname':'Leonhard Euler',
-             }, sreg_data_resp)
+        self.failUnlessEqual({
+                'nickname': b'linusaur',
+                'email': b'president@whitehouse.gov',
+                'fullname': b'Leonhard Euler',
+                }, sreg_data_resp)
 
 if __name__ == '__main__':
     unittest.main()

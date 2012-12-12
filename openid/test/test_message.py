@@ -144,8 +144,8 @@ class EmptyMessageTest(unittest.TestCase):
 
     def _test_updateArgsNS(self, ns):
         update_args = {
-            'Camper van Beethoven': 'David Lowery',
-            'Magnolia Electric Co.': 'Jason Molina',
+            'Camper van Beethoven': b'David Lowery',
+            'Magnolia Electric Co.': b'Jason Molina',
         }
 
         self.failUnlessEqual(self.msg.getArgs(ns), {})
@@ -227,8 +227,8 @@ class EmptyMessageTest(unittest.TestCase):
 class OpenID1MessageTest(unittest.TestCase):
     def setUp(self):
         self.msg = message.Message.fromPostArgs({
-            'openid.mode': 'error',
-            'openid.error': 'unit test'
+            'openid.mode': b'error',
+            'openid.error': b'unit test'
         })
 
     def test_toPostArgs(self):
@@ -302,16 +302,16 @@ class OpenID1MessageTest(unittest.TestCase):
         self.failUnlessEqual(
             self.msg.hasKey('urn:nothing-significant', 'mode'), False)
 
-    test_getArgBARE = mkGetArgTest(message.BARE_NS, 'mode')
-    test_getArgNS = mkGetArgTest(message.OPENID_NS, 'mode', 'error')
-    test_getArgNS1 = mkGetArgTest(message.OPENID1_NS, 'mode', 'error')
+    test_getArgNSBARE = mkGetArgTest(message.BARE_NS, 'mode')
+    test_getArgNS = mkGetArgTest(message.OPENID_NS, 'mode', b'error')
+    test_getArgNS1 = mkGetArgTest(message.OPENID1_NS, 'mode', b'error')
     test_getArgNS2 = mkGetArgTest(message.OPENID2_NS, 'mode')
     test_getArgNS3 = mkGetArgTest('urn:nothing-significant', 'mode')
 
     def test_getArgs(self):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID_NS), {
-            'mode': 'error',
-            'error': 'unit test',
+            'mode': b'error',
+            'error': b'unit test',
         })
 
     def test_getArgsBARE(self):
@@ -319,8 +319,8 @@ class OpenID1MessageTest(unittest.TestCase):
 
     def test_getArgsNS1(self):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID1_NS), {
-            'mode': 'error',
-            'error': 'unit test',
+            'mode': b'error',
+            'error': b'unit test',
         })
 
     def test_getArgsNS2(self):
@@ -333,8 +333,8 @@ class OpenID1MessageTest(unittest.TestCase):
         if before is None:
             before = {}
         update_args = {
-            'Camper van Beethoven': 'David Lowery',
-            'Magnolia Electric Co.': 'Jason Molina',
+            'Camper van Beethoven': b'David Lowery',
+            'Magnolia Electric Co.': b'Jason Molina',
             }
 
         self.failUnlessEqual(self.msg.getArgs(ns), before)
@@ -345,14 +345,16 @@ class OpenID1MessageTest(unittest.TestCase):
 
     def test_updateArgs(self):
         self._test_updateArgsNS(message.OPENID_NS,
-                                before={'mode': 'error', 'error': 'unit test'})
+                                before={'mode': b'error',
+                                        'error': b'unit test'})
 
     def test_updateArgsBARE(self):
         self._test_updateArgsNS(message.BARE_NS)
 
     def test_updateArgsNS1(self):
         self._test_updateArgsNS(message.OPENID1_NS,
-                                before={'mode': 'error', 'error': 'unit test'})
+                                before={'mode': b'error',
+                                        'error': b'unit test'})
 
     def test_updateArgsNS2(self):
         self._test_updateArgsNS(message.OPENID2_NS)
@@ -578,21 +580,21 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_getArgsOpenID(self):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID_NS), {
-            'mode': 'error',
-            'error': 'unit test',
+            'mode': b'error',
+            'error': b'unit test',
         })
 
     def test_getArgsBARE(self):
         self.failUnlessEqual(self.msg.getArgs(message.BARE_NS),
-                             {'xey': 'value'})
+                             {'xey': b'value'})
 
     def test_getArgsNS1(self):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID1_NS), {})
 
     def test_getArgsNS2(self):
         self.failUnlessEqual(self.msg.getArgs(message.OPENID2_NS), {
-            'mode': 'error',
-            'error': 'unit test',
+            'mode': b'error',
+            'error': b'unit test',
         })
 
     def test_getArgsNS3(self):
@@ -602,8 +604,8 @@ class OpenID2MessageTest(unittest.TestCase):
         if before is None:
             before = {}
         update_args = {
-            'Camper van Beethoven': 'David Lowery',
-            'Magnolia Electric Co.': 'Jason Molina',
+            'Camper van Beethoven': b'David Lowery',
+            'Magnolia Electric Co.': b'Jason Molina',
         }
 
         self.failUnlessEqual(self.msg.getArgs(ns), before)
@@ -614,25 +616,27 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_updateArgsOpenID(self):
         self._test_updateArgsNS(message.OPENID_NS,
-                                before={'mode': 'error', 'error': 'unit test'})
+                                before={'mode': b'error',
+                                        'error': b'unit test'})
 
     def test_updateArgsBARE(self):
         self._test_updateArgsNS(message.BARE_NS,
-                                before={'xey': 'value'})
+                                before={'xey': b'value'})
 
     def test_updateArgsNS1(self):
         self._test_updateArgsNS(message.OPENID1_NS)
 
     def test_updateArgsNS2(self):
         self._test_updateArgsNS(message.OPENID2_NS,
-                                before={'mode': 'error', 'error': 'unit test'})
+                                before={'mode': b'error',
+                                        'error': b'unit test'})
 
     def test_updateArgsNS3(self):
         self._test_updateArgsNS('urn:nothing-significant')
 
     def _test_setArgNS(self, ns):
         key = 'Camper van Beethoven'
-        value = 'David Lowery'
+        value = b'David Lowery'
         self.failUnlessEqual(self.msg.getArg(ns, key), None)
         self.msg.setArg(ns, key, value)
         self.failUnlessEqual(self.msg.getArg(ns, key), value)
