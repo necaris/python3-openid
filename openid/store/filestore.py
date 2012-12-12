@@ -11,28 +11,7 @@ import logging
 
 from errno import EEXIST, ENOENT
 
-try:
-    from tempfile import mkstemp
-except ImportError:
-    # Python < 2.3
-    import warnings
-    warnings.filterwarnings("ignore",
-                            "tempnam is a potential security risk",
-                            RuntimeWarning,
-                            "openid.store.filestore")
-
-    def mkstemp(dir):
-        for _ in range(5):
-            name = os.tempnam(dir)
-            try:
-                fd = os.open(name, os.O_CREAT | os.O_EXCL | os.O_RDWR, 0o600)
-            except OSError as why:
-                if why.errno != EEXIST:
-                    raise
-            else:
-                return fd, name
-
-        raise RuntimeError('Failed to get temp file after 5 attempts')
+from tempfile import mkstemp
 
 from openid.association import Association
 from openid.store.interface import OpenIDStore
