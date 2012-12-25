@@ -9,11 +9,11 @@ except ImportError:
 if 'sdist' in sys.argv:
     os.system('./admin/makedoc')
 
-version = '3.0.0-alpha'
+import openid
 
 setup(
-    name='python-openid',
-    version=version,
+    name='python3-openid',
+    version=openid.__version__,
     description='OpenID support for servers and consumers.',
     long_description='''This is a set of Python packages to support use of
 the OpenID decentralized identity system in your application.  Want to enable
