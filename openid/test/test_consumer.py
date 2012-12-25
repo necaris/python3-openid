@@ -1399,9 +1399,9 @@ class TestSuccessResponse(unittest.TestCase):
             'return_to': 'return_to',
             })
         utargs = resp.extensionResponse('urn:unittest', False)
-        self.assertEqual(utargs, {'one': b'1', 'two': b'2'})
+        self.assertEqual(utargs, {'one': '1', 'two': '2'})
         sregargs = resp.extensionResponse('urn:sreg', False)
-        self.assertEqual(sregargs, {'nickname': b'j3h'})
+        self.assertEqual(sregargs, {'nickname': 'j3h'})
 
     def test_extensionResponseSigned(self):
         args = {
@@ -1427,8 +1427,8 @@ class TestSuccessResponse(unittest.TestCase):
         # All args in this NS are signed, so expect all.
         sregargs = resp.extensionResponse('urn:sreg', True)
         self.assertEqual(sregargs, {
-                'nickname': b'j3h',
-                'dob': b'yesterday'
+                'nickname': 'j3h',
+                'dob': 'yesterday'
                 })
 
         # Not all args in this NS are signed, so expect None when
@@ -2100,7 +2100,7 @@ class SillyExtension(Extension):
     ns_alias = 'silly'
 
     def getExtensionArgs(self):
-        return {'i_am': b'silly'}
+        return {'i_am': 'silly'}
 
 
 class TestAddExtension(unittest.TestCase):

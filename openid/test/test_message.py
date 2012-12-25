@@ -143,8 +143,8 @@ class EmptyMessageTest(unittest.TestCase):
 
     def _test_updateArgsNS(self, ns):
         update_args = {
-            'Camper van Beethoven': b'David Lowery',
-            'Magnolia Electric Co.': b'Jason Molina',
+            'Camper van Beethoven': 'David Lowery',
+            'Magnolia Electric Co.': 'Jason Molina',
         }
 
         self.assertEqual(self.msg.getArgs(ns), {})
@@ -226,20 +226,20 @@ class EmptyMessageTest(unittest.TestCase):
 class OpenID1MessageTest(unittest.TestCase):
     def setUp(self):
         self.msg = message.Message.fromPostArgs({
-            'openid.mode': b'error',
-            'openid.error': b'unit test'
+            'openid.mode': 'error',
+            'openid.error': 'unit test'
         })
 
     def test_toPostArgs(self):
         self.assertEqual(self.msg.toPostArgs(), {
-            'openid.mode': b'error',
-            'openid.error': b'unit test'
+            'openid.mode': 'error',
+            'openid.error': 'unit test'
         })
 
     def test_toArgs(self):
         self.assertEqual(self.msg.toArgs(), {
-            'mode': b'error',
-            'error': b'unit test'
+            'mode': 'error',
+            'error': 'unit test'
         })
 
     def test_toKVForm(self):
@@ -302,15 +302,15 @@ class OpenID1MessageTest(unittest.TestCase):
             self.msg.hasKey('urn:nothing-significant', 'mode'), False)
 
     test_getArgNSBARE = mkGetArgTest(message.BARE_NS, 'mode')
-    test_getArgNS = mkGetArgTest(message.OPENID_NS, 'mode', b'error')
-    test_getArgNS1 = mkGetArgTest(message.OPENID1_NS, 'mode', b'error')
+    test_getArgNS = mkGetArgTest(message.OPENID_NS, 'mode', 'error')
+    test_getArgNS1 = mkGetArgTest(message.OPENID1_NS, 'mode', 'error')
     test_getArgNS2 = mkGetArgTest(message.OPENID2_NS, 'mode')
     test_getArgNS3 = mkGetArgTest('urn:nothing-significant', 'mode')
 
     def test_getArgs(self):
         self.assertEqual(self.msg.getArgs(message.OPENID_NS), {
-            'mode': b'error',
-            'error': b'unit test',
+            'mode': 'error',
+            'error': 'unit test',
         })
 
     def test_getArgsBARE(self):
@@ -318,8 +318,8 @@ class OpenID1MessageTest(unittest.TestCase):
 
     def test_getArgsNS1(self):
         self.assertEqual(self.msg.getArgs(message.OPENID1_NS), {
-            'mode': b'error',
-            'error': b'unit test',
+            'mode': 'error',
+            'error': 'unit test',
         })
 
     def test_getArgsNS2(self):
@@ -332,8 +332,8 @@ class OpenID1MessageTest(unittest.TestCase):
         if before is None:
             before = {}
         update_args = {
-            'Camper van Beethoven': b'David Lowery',
-            'Magnolia Electric Co.': b'Jason Molina',
+            'Camper van Beethoven': 'David Lowery',
+            'Magnolia Electric Co.': 'Jason Molina',
             }
 
         self.assertEqual(self.msg.getArgs(ns), before)
@@ -344,16 +344,16 @@ class OpenID1MessageTest(unittest.TestCase):
 
     def test_updateArgs(self):
         self._test_updateArgsNS(message.OPENID_NS,
-                                before={'mode': b'error',
-                                        'error': b'unit test'})
+                                before={'mode': 'error',
+                                        'error': 'unit test'})
 
     def test_updateArgsBARE(self):
         self._test_updateArgsNS(message.BARE_NS)
 
     def test_updateArgsNS1(self):
         self._test_updateArgsNS(message.OPENID1_NS,
-                                before={'mode': b'error',
-                                        'error': b'unit test'})
+                                before={'mode': 'error',
+                                        'error': 'unit test'})
 
     def test_updateArgsNS2(self):
         self._test_updateArgsNS(message.OPENID2_NS)
@@ -425,16 +425,16 @@ class OpenID1ExplicitMessageTest(unittest.TestCase):
 
     def test_toPostArgs(self):
         self.assertEqual(self.msg.toPostArgs(), {
-            'openid.mode': b'error',
-            'openid.error': b'unit test',
-            'openid.ns': bytes(message.OPENID1_NS, encoding="utf-8")
+            'openid.mode': 'error',
+            'openid.error': 'unit test',
+            'openid.ns': message.OPENID1_NS,
         })
 
     def test_toArgs(self):
         self.assertEqual(self.msg.toArgs(), {
-            'mode': b'error',
-            'error': b'unit test',
-            'ns': bytes(message.OPENID1_NS, encoding="utf-8")
+            'mode': 'error',
+            'error': 'unit test',
+            'ns': message.OPENID1_NS,
         })
 
     def test_toKVForm(self):
@@ -478,10 +478,10 @@ class OpenID2MessageTest(unittest.TestCase):
     def test_toPostArgs(self):
         self.assertEqual(
             self.msg.toPostArgs(), {
-                'openid.mode': b'error',
-                'openid.error': b'unit test',
-                'openid.ns': bytes(message.OPENID2_NS, encoding="utf-8"),
-                'xey': b'value',
+                'openid.mode': 'error',
+                'openid.error': 'unit test',
+                'openid.ns': message.OPENID2_NS,
+                'xey': 'value',
             })
 
     def test_toPostArgs_bug_with_utf8_encoded_values(self):
@@ -491,20 +491,19 @@ class OpenID2MessageTest(unittest.TestCase):
                                              })
         msg.setArg(message.BARE_NS, 'ünicöde_key', 'ünicöde_välüe')
         self.assertEqual(msg.toPostArgs(),
-                             {'openid.mode': b'error',
-                              'openid.error': b'unit test',
-                              'openid.ns': bytes(message.OPENID2_NS,
-                                                 encoding="utf-8"),
-                              'ünicöde_key': 'ünicöde_välüe'.encode("utf-8"),
+                             {'openid.mode': 'error',
+                              'openid.error': 'unit test',
+                              'openid.ns': message.OPENID2_NS,
+                              'ünicöde_key': 'ünicöde_välüe',
                               })
 
     def test_toArgs(self):
         # This method can't tolerate BARE_NS.
         self.msg.delArg(message.BARE_NS, "xey")
         self.assertEqual(self.msg.toArgs(), {
-            'mode': b'error',
-            'error': b'unit test',
-            'ns': bytes(message.OPENID2_NS, encoding="utf-8")
+            'mode': 'error',
+            'error': 'unit test',
+            'ns': message.OPENID2_NS,
         })
 
     def test_toKVForm(self):
@@ -581,21 +580,21 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_getArgsOpenID(self):
         self.assertEqual(self.msg.getArgs(message.OPENID_NS), {
-            'mode': b'error',
-            'error': b'unit test',
+            'mode': 'error',
+            'error': 'unit test',
         })
 
     def test_getArgsBARE(self):
         self.assertEqual(self.msg.getArgs(message.BARE_NS),
-                             {'xey': b'value'})
+                             {'xey': 'value'})
 
     def test_getArgsNS1(self):
         self.assertEqual(self.msg.getArgs(message.OPENID1_NS), {})
 
     def test_getArgsNS2(self):
         self.assertEqual(self.msg.getArgs(message.OPENID2_NS), {
-            'mode': b'error',
-            'error': b'unit test',
+            'mode': 'error',
+            'error': 'unit test',
         })
 
     def test_getArgsNS3(self):
@@ -605,8 +604,8 @@ class OpenID2MessageTest(unittest.TestCase):
         if before is None:
             before = {}
         update_args = {
-            'Camper van Beethoven': b'David Lowery',
-            'Magnolia Electric Co.': b'Jason Molina',
+            'Camper van Beethoven': 'David Lowery',
+            'Magnolia Electric Co.': 'Jason Molina',
         }
 
         self.assertEqual(self.msg.getArgs(ns), before)
@@ -617,27 +616,27 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_updateArgsOpenID(self):
         self._test_updateArgsNS(message.OPENID_NS,
-                                before={'mode': b'error',
-                                        'error': b'unit test'})
+                                before={'mode': 'error',
+                                        'error': 'unit test'})
 
     def test_updateArgsBARE(self):
         self._test_updateArgsNS(message.BARE_NS,
-                                before={'xey': b'value'})
+                                before={'xey': 'value'})
 
     def test_updateArgsNS1(self):
         self._test_updateArgsNS(message.OPENID1_NS)
 
     def test_updateArgsNS2(self):
         self._test_updateArgsNS(message.OPENID2_NS,
-                                before={'mode': b'error',
-                                        'error': b'unit test'})
+                                before={'mode': 'error',
+                                        'error': 'unit test'})
 
     def test_updateArgsNS3(self):
         self._test_updateArgsNS('urn:nothing-significant')
 
     def _test_setArgNS(self, ns):
         key = 'Camper van Beethoven'
-        value = b'David Lowery'
+        value = 'David Lowery'
         self.assertEqual(self.msg.getArg(ns, key), None)
         self.msg.setArg(ns, key, value)
         self.assertEqual(self.msg.getArg(ns, key), value)
@@ -674,19 +673,19 @@ class OpenID2MessageTest(unittest.TestCase):
     def test_mysterious_missing_namespace_bug(self):
         """A failing test for bug #112"""
         openid_args = {
-            'assoc_handle': b'{{HMAC-SHA256}{1211477242.29743}{v5cadg==}',
-            'claimed_id': b'http://nerdbank.org/OPAffirmative/AffirmativeIdentityWithSregNoAssoc.aspx',
-            'ns.sreg': b'http://openid.net/extensions/sreg/1.1',
-            'response_nonce': b'2008-05-22T17:27:22ZUoW5.\\NV',
-            'signed': b'return_to,identity,claimed_id,op_endpoint,response_nonce,ns.sreg,sreg.email,sreg.nickname,assoc_handle',
-            'sig': b'e3eGZ10+TNRZitgq5kQlk5KmTKzFaCRI8OrRoXyoFa4=',
-            'mode': b'check_authentication',
-            'op_endpoint': b'http://nerdbank.org/OPAffirmative/ProviderNoAssoc.aspx',
-            'sreg.nickname': b'Andy',
-            'return_to': b'http://localhost.localdomain:8001/process?janrain_nonce=2008-05-22T17%3A27%3A21ZnxHULd',
-            'invalidate_handle': b'{{HMAC-SHA1}{1211477241.92242}{H0akXw==}',
-            'identity': b'http://nerdbank.org/OPAffirmative/AffirmativeIdentityWithSregNoAssoc.aspx',
-            'sreg.email': b'a@b.com'
+            'assoc_handle': '{{HMAC-SHA256}{1211477242.29743}{v5cadg==}',
+            'claimed_id': 'http://nerdbank.org/OPAffirmative/AffirmativeIdentityWithSregNoAssoc.aspx',
+            'ns.sreg': 'http://openid.net/extensions/sreg/1.1',
+            'response_nonce': '2008-05-22T17:27:22ZUoW5.\\NV',
+            'signed': 'return_to,identity,claimed_id,op_endpoint,response_nonce,ns.sreg,sreg.email,sreg.nickname,assoc_handle',
+            'sig': 'e3eGZ10+TNRZitgq5kQlk5KmTKzFaCRI8OrRoXyoFa4=',
+            'mode': 'check_authentication',
+            'op_endpoint': 'http://nerdbank.org/OPAffirmative/ProviderNoAssoc.aspx',
+            'sreg.nickname': 'Andy',
+            'return_to': 'http://localhost.localdomain:8001/process?janrain_nonce=2008-05-22T17%3A27%3A21ZnxHULd',
+            'invalidate_handle': '{{HMAC-SHA1}{1211477241.92242}{H0akXw==}',
+            'identity': 'http://nerdbank.org/OPAffirmative/AffirmativeIdentityWithSregNoAssoc.aspx',
+            'sreg.email': 'a@b.com'
         }
         m = message.Message.fromOpenIDArgs(openid_args)
 
@@ -694,7 +693,11 @@ class OpenID2MessageTest(unittest.TestCase):
             ('http://openid.net/extensions/sreg/1.1', 'sreg') in
             m.namespaces.items())
         missing = []
-        for k in str(openid_args['signed'], encoding="utf-8").split(','):
+        if isinstance(openid_args['signed'], bytes):
+            oid_args_signed = openid_args['signed'].decode("utf-8")
+        else:
+            oid_args_signed = openid_args['signed']
+        for k in oid_args_signed.split(','):
             if ("openid." + k) not in m.toPostArgs():
                 missing.append(k)
         self.assertEqual([], missing, missing)
@@ -703,24 +706,28 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_112B(self):
         args = {
-            'openid.assoc_handle': b'fa1f5ff0-cde4-11dc-a183-3714bfd55ca8',
-            'openid.claimed_id': b'http://binkley.lan/user/test01',
-            'openid.identity': b'http://test01.binkley.lan/',
-            'openid.mode': b'id_res',
-            'openid.ns': b'http://specs.openid.net/auth/2.0',
-            'openid.ns.pape': b'http://specs.openid.net/extensions/pape/1.0',
-            'openid.op_endpoint': b'http://binkley.lan/server',
-            'openid.pape.auth_policies': b'none',
-            'openid.pape.auth_time': b'2008-01-28T20:42:36Z',
-            'openid.pape.nist_auth_level': b'0',
-            'openid.response_nonce': b'2008-01-28T21:07:04Z99Q=',
-            'openid.return_to': b'http://binkley.lan:8001/process?janrain_nonce=2008-01-28T21%3A07%3A02Z0tMIKx',
-            'openid.sig': b'YJlWH4U6SroB1HoPkmEKx9AyGGg=',
-            'openid.signed': b'assoc_handle,identity,response_nonce,return_to,claimed_id,op_endpoint,pape.auth_time,ns.pape,pape.nist_auth_level,pape.auth_policies'
+            'openid.assoc_handle': 'fa1f5ff0-cde4-11dc-a183-3714bfd55ca8',
+            'openid.claimed_id': 'http://binkley.lan/user/test01',
+            'openid.identity': 'http://test01.binkley.lan/',
+            'openid.mode': 'id_res',
+            'openid.ns': 'http://specs.openid.net/auth/2.0',
+            'openid.ns.pape': 'http://specs.openid.net/extensions/pape/1.0',
+            'openid.op_endpoint': 'http://binkley.lan/server',
+            'openid.pape.auth_policies': 'none',
+            'openid.pape.auth_time': '2008-01-28T20:42:36Z',
+            'openid.pape.nist_auth_level': '0',
+            'openid.response_nonce': '2008-01-28T21:07:04Z99Q=',
+            'openid.return_to': 'http://binkley.lan:8001/process?janrain_nonce=2008-01-28T21%3A07%3A02Z0tMIKx',
+            'openid.sig': 'YJlWH4U6SroB1HoPkmEKx9AyGGg=',
+            'openid.signed': 'assoc_handle,identity,response_nonce,return_to,claimed_id,op_endpoint,pape.auth_time,ns.pape,pape.nist_auth_level,pape.auth_policies'
         }
         m = message.Message.fromPostArgs(args)
         missing = []
-        for k in str(args['openid.signed'], encoding="utf-8").split(','):
+        if isinstance(args['openid.signed'], bytes):
+            oid_args_signed = args['openid.signed'].decode("utf-8")
+        else:
+            oid_args_signed = args['openid.signed']
+        for k in oid_args_signed.split(','):
             if ("openid." + k) not in m.toPostArgs():
                 missing.append(k)
         self.assertEqual([], missing, missing)
@@ -729,12 +736,12 @@ class OpenID2MessageTest(unittest.TestCase):
 
     def test_implicit_sreg_ns(self):
         openid_args = {
-            'sreg.email': b'a@b.com'
+            'sreg.email': 'a@b.com'
         }
         m = message.Message.fromOpenIDArgs(openid_args)
         self.assertTrue((sreg.ns_uri, 'sreg') in
                         list(m.namespaces.items()))
-        self.assertEqual(b'a@b.com', m.getArg(sreg.ns_uri, 'email'))
+        self.assertEqual('a@b.com', m.getArg(sreg.ns_uri, 'email'))
         self.assertEqual(openid_args, m.toArgs())
         self.assertTrue(m.isOpenID1())
 
@@ -852,8 +859,8 @@ class MessageTest(unittest.TestCase):
             for e in hiddens:
                 if e.attrib['name'] == name:
                     # value will be bytes
-                    if isinstance(e.attrib['value'], str):
-                        value = str(value, encoding="utf-8")
+                    if isinstance(e.attrib['value'], bytes):
+                        value = value.encode("utf-8")
                     assert e.attrib['value'] == value, \
                            "Expected value of hidden input '%s' to be '%s', got '%s'" % \
                            (e.attrib['name'], value, e.attrib['value'])
@@ -1000,7 +1007,7 @@ class MessageTest(unittest.TestCase):
 
         post_args = m.toPostArgs()
         self.assertEqual(post_args, {
-            'openid.ns': bytes(message.THE_OTHER_OPENID1_NS, encoding="utf-8")
+            'openid.ns': message.THE_OTHER_OPENID1_NS,
         })
 
     def test_fromPostArgs_ns11(self):

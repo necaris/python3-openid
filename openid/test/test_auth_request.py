@@ -84,8 +84,8 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         self.authreq.addExtensionArg('bag:', 'material', 'paper')
         self.assertTrue('bag:' in self.authreq.message.namespaces)
         self.assertEqual(self.authreq.message.getArgs('bag:'),
-                             {'color': b'brown',
-                              'material': b'paper'})
+                             {'color': 'brown',
+                              'material': 'paper'})
         msg = self.authreq.getMessage(self.realm, self.return_to,
                                       self.immediate)
 
@@ -93,8 +93,8 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         # namespaces. Really it doesn't care that it has alias "0",
         # but that is tested anyway
         post_args = msg.toPostArgs()
-        self.assertEqual(b'brown', post_args['openid.ext0.color'])
-        self.assertEqual(b'paper', post_args['openid.ext0.material'])
+        self.assertEqual('brown', post_args['openid.ext0.color'])
+        self.assertEqual('paper', post_args['openid.ext0.material'])
 
     def test_standard(self):
         msg = self.authreq.getMessage(self.realm, self.return_to,

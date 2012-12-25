@@ -408,14 +408,14 @@ class SRegRequestTest(unittest.TestCase):
                              req.getExtensionArgs())
 
 data = {
-    'nickname': b'linusaur',
-    'postcode': b'12345',
-    'country': b'US',
-    'gender': b'M',
-    'fullname': b'Leonhard Euler',
-    'email': b'president@whitehouse.gov',
-    'dob': b'0000-00-00',
-    'language': b'en-us',
+    'nickname': 'linusaur',
+    'postcode': '12345',
+    'country': 'US',
+    'gender': 'M',
+    'fullname': 'Leonhard Euler',
+    'email': 'president@whitehouse.gov',
+    'dob': '0000-00-00',
+    'language': 'en-us',
     }
 
 
@@ -454,7 +454,7 @@ class SRegResponseTest(unittest.TestCase):
         success_resp = DummySuccessResponse(message, {})
         sreg_resp = sreg.SRegResponse.fromSuccessResponse(success_resp,
                                                           signed_only=False)
-        self.assertEqual([('nickname', b'The Mad Stork')],
+        self.assertEqual([('nickname', 'The Mad Stork')],
                              list(sreg_resp.items()))
 
 
@@ -486,9 +486,9 @@ class SendFieldsTest(unittest.TestCase):
         # Extract the fields that were sent
         sreg_data_resp = resp_msg.getArgs(sreg.ns_uri)
         self.assertEqual({
-                'nickname': b'linusaur',
-                'email': b'president@whitehouse.gov',
-                'fullname': b'Leonhard Euler',
+                'nickname': 'linusaur',
+                'email': 'president@whitehouse.gov',
+                'fullname': 'Leonhard Euler',
                 }, sreg_data_resp)
 
 if __name__ == '__main__':

@@ -573,7 +573,7 @@ class FetchResponseTest(unittest.TestCase):
         ax_resp = ax.FetchResponse.fromSuccessResponse(resp)
         values = ax_resp.get(uri)
         # coming through the system they'll be bytes-ified...
-        self.assertEqual([bytes(value, encoding="utf-8")], values)
+        self.assertEqual([value], values)
 
 
 class StoreRequestTest(unittest.TestCase):

@@ -860,25 +860,10 @@ class GenericConsumer(object):
 
         # NOTE -- parsed_args will be a dict of {bytes: bytes}, however it
         # will be checked against return values from Message methods which are
-        # {str: bytes}. We need to compare apples to apples.
-        new_parsed_args = []
-        for pair in parsed_args:
-            if isinstance(pair[0], bytes):
-                pair0 = str(pair[0], encoding="utf-8")
-            else:
-                pair0 = pair[0]
-            if isinstance(pair[1], str):
-                pair1 = bytes(pair[1], encoding="utf-8")
-            else:
-                pair1 = pair[1]
-            new_parsed_args.append((pair0, pair1))
-        parsed_args = new_parsed_args
-
+        # {str: str}. We need to compare apples to apples.
         for rt_key, rt_value in parsed_args:
             try:
                 value = query[rt_key]
-                if isinstance(value, str):
-                    value = bytes(value, encoding="utf-8")
                 if rt_value != value:
                     format = ("parameter %s value %r does not match "
                               "return_to's value %r")

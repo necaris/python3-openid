@@ -661,10 +661,6 @@ class TestEncode(unittest.TestCase):
                                                        request.return_to))
         # argh.
         q2 = dict(parse_qsl(urlparse(location)[4]))
-        # bytes-ify the values to ensure they're comparable, since toPostArgs()
-        # returns bytes values
-        for k in q2:
-            q2[k] = bytes(q2[k], encoding="utf-8")
         expected = response.fields.toPostArgs()
         self.assertEqual(q2, expected)
 
@@ -1242,10 +1238,7 @@ class TestCheckID(unittest.TestCase):
 
     def test_answerSetupDeny(self):
         answer = self.request.answer(False)
-        expected = {'mode': b'cancel'}
-        if answer.fields.getArgs(OPENID_NS) != expected:
-            self.assertEqual(answer.fields.getArgs(OPENID_NS) == expected)
-
+        expected = {'mode': 'cancel'}
         self.assertEqual(answer.fields.getArgs(OPENID_NS), expected)
 
     def test_encodeToURL(self):
@@ -1297,8 +1290,8 @@ class TestCheckIDExtension(unittest.TestCase):
         namespace = 'something:'
         self.response.fields.setArg(namespace, 'bright', 'potato')
         self.assertEqual(self.response.fields.getArgs(OPENID_NS), {
-                'blue': b'star',
-                'mode': b'id_res',
+                'blue': 'star',
+                'mode': 'id_res',
                 })
 
         self.assertEqual(self.response.fields.getArgs(namespace),
@@ -1306,13 +1299,11 @@ class TestCheckIDExtension(unittest.TestCase):
 
     def test_addFields(self):
         namespace = 'mi5:'
-        args = {'tangy': b'suspenders',
-                'bravo': b'inclusion'}
+        args = {'tangy': 'suspenders',
+                'bravo': 'inclusion'}
         self.response.fields.updateArgs(namespace, args)
         self.assertEqual(self.response.fields.getArgs(OPENID_NS),
-                             {'blue': b'star',
-                              'mode': b'id_res',
-                              })
+                             {'blue': 'star', 'mode': 'id_res'})
         self.assertEqual(self.response.fields.getArgs(namespace), args)
 
 
@@ -1358,14 +1349,14 @@ class TestCheckAuth(unittest.TestCase):
     def test_valid(self):
         r = self.request.answer(self.signatory)
         self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': b'true'})
+                             {'is_valid': 'true'})
         self.assertEqual(r.request, self.request)
 
     def test_invalid(self):
         self.signatory.isValid = False
         r = self.request.answer(self.signatory)
         self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': b'false'})
+                             {'is_valid': 'false'})
 
     def test_replay(self):
         """Don't validate the same response twice.
@@ -1383,14 +1374,14 @@ class TestCheckAuth(unittest.TestCase):
         r = self.request.answer(self.signatory)
         r = self.request.answer(self.signatory)
         self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': b'false'})
+                         {'is_valid': 'false'})
 
     def test_invalidatehandle(self):
         self.request.invalidate_handle = "bogusHandle"
         r = self.request.answer(self.signatory)
         self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': b'true',
-                              'invalidate_handle': b"bogusHandle"})
+                         {'is_valid': 'true',
+                          'invalidate_handle': "bogusHandle"})
         self.assertEqual(r.request, self.request)
 
     def test_invalidatehandleNo(self):
@@ -1399,7 +1390,7 @@ class TestCheckAuth(unittest.TestCase):
         self.request.invalidate_handle = assoc_handle
         r = self.request.answer(self.signatory)
         self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': b'true'})
+                             {'is_valid': 'true'})
 
 
 class TestAssociate(unittest.TestCase):
@@ -1431,7 +1422,7 @@ class TestAssociate(unittest.TestCase):
         self.assertTrue(rfg("enc_mac_key"))
         self.assertTrue(rfg("dh_server_public"))
 
-        enc_key = b64decode(rfg("enc_mac_key"))
+        enc_key = b64decode(rfg("enc_mac_key").encode("utf-8"))
         spub = cryptutil.base64ToLong(rfg("dh_server_public"))
         secret = consumer_dh.xorSecret(spub, enc_key, cryptutil.sha1)
         self.assertEqual(secret, self.assoc.secret)
@@ -1458,7 +1449,7 @@ class TestAssociate(unittest.TestCase):
             self.assertTrue(rfg("enc_mac_key"))
             self.assertTrue(rfg("dh_server_public"))
 
-            enc_key = b64decode(rfg("enc_mac_key"))
+            enc_key = b64decode(rfg("enc_mac_key").encode("utf-8"))
             spub = cryptutil.base64ToLong(rfg("dh_server_public"))
             secret = consumer_dh.xorSecret(spub, enc_key, cryptutil.sha256)
             self.assertEqual(secret, self.assoc.secret)
@@ -1573,8 +1564,9 @@ class TestAssociate(unittest.TestCase):
         self.failUnlessExpiresInMatches(
             response.fields, self.signatory.SECRET_LIFETIME)
 
-        self.assertEqual(
-            rfg("mac_key"), oidutil.toBase64(self.assoc.secret))
+        # remember, oidutil.toBase64 returns bytes...
+        r_mac_key = rfg("mac_key").encode('utf-8')
+        self.assertEqual(r_mac_key, oidutil.toBase64(self.assoc.secret))
         self.assertFalse(rfg("session_type"))
         self.assertFalse(rfg("enc_mac_key"))
         self.assertFalse(rfg("dh_server_public"))
@@ -1604,8 +1596,10 @@ class TestAssociate(unittest.TestCase):
         self.failUnlessExpiresInMatches(
             response.fields, self.signatory.SECRET_LIFETIME)
 
-        self.assertEqual(
-            rfg("mac_key"), oidutil.toBase64(self.assoc.secret))
+        # rfg gets from the response which will return str; oidutil.toBase64
+        # returns bytes. Make them comparable by bytes-ifying the mac_key
+        r_mac_key = rfg("mac_key").encode('utf-8')
+        self.assertEqual(r_mac_key, oidutil.toBase64(self.assoc.secret))
 
         self.assertEqual(rfg("session_type"), "no-encryption")
         self.assertFalse(rfg("enc_mac_key"))
@@ -1623,8 +1617,9 @@ class TestAssociate(unittest.TestCase):
         self.failUnlessExpiresInMatches(
             response.fields, self.signatory.SECRET_LIFETIME)
 
-        self.assertEqual(
-            rfg("mac_key"), oidutil.toBase64(self.assoc.secret))
+        # remember, oidutil.toBase64 returns bytes...
+        r_mac_key = rfg("mac_key").encode("utf-8")
+        self.assertEqual(r_mac_key, oidutil.toBase64(self.assoc.secret))
         self.assertFalse(rfg("session_type"))
         self.assertFalse(rfg("enc_mac_key"))
         self.assertFalse(rfg("dh_server_public"))
