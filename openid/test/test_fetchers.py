@@ -33,9 +33,8 @@ def failUnlessResponseExpected(expected, actual, extra):
 
 def test_fetcher(fetcher, exc, server):
     def geturl(path):
-        return 'http://%s:%s%s' % (socket.getfqdn(server.server_name),
-                                   server.socket.getsockname()[1],
-                                   path)
+        host, port = server.server_address
+        return 'http://%s:%s%s' % (host, port, path)
 
     expected_headers = {'content-type': 'text/plain'}
 
@@ -67,8 +66,8 @@ def test_fetcher(fetcher, exc, server):
             actual = fetcher.fetch(fetch_url)
         except (SystemExit, KeyboardInterrupt):
             pass
-        except:
-            print(fetcher, fetch_url)
+        except Exception as e:
+            raise AssertionError((fetcher, fetch_url, e))
             raise
         else:
             failUnlessResponseExpected(expected, actual, extra=locals())
@@ -160,7 +159,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
                 extra_headers = [('Content-type', 'text/plain')]
                 if location is not None:
                     host, port = self.server.server_address
-                    base = ('http://%s:%s' % (socket.getfqdn(host), port,))
+                    base = ('http://%s:%s' % (host, port,))
                     location = base + location
                     extra_headers.append(('Location', location))
                 self._respond(http_code, extra_headers, self.path)
@@ -209,8 +208,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
 
 
 def test():
-    import socket
-    host = socket.getfqdn('127.0.0.1')
+    host = 'localhost'
     # When I use port 0 here, it works for the first fetch and the
     # next one gets connection refused.  Bummer.  So instead, pick a
     # port that's *probably* not in use.
