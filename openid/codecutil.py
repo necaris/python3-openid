@@ -50,12 +50,27 @@ def _in_escape_range(octet):
     return False
 
 
+def _starts_surrogate_pair(character):
+    char_value = ord(character)
+    return 0xD800 <= char_value <= 0xDBFF
+
+
+def _ends_surrogate_pair(character):
+    char_value = ord(character)
+    return 0xDC00 <= char_value <= 0xDFFF
+
+
 def _pct_encoded_replacements(chunk):
     replacements = []
-    for character in chunk:
+    chunk_iter = iter(chunk)
+    for character in chunk_iter:
         codepoint = ord(character)
         if _in_escape_range(codepoint):
             for char in chr(codepoint).encode("utf-8"):
+                replacements.append("%%%X" % char)
+        elif _starts_surrogate_pair(character):
+            next_character = next(chunk_iter)
+            for char in (character + next_character).encode("utf-8"):
                 replacements.append("%%%X" % char)
         else:
             replacements.append(chr(codepoint))
