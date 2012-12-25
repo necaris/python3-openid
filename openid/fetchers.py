@@ -233,6 +233,10 @@ class Urllib2Fetcher(HTTPFetcher):
                 return self._makeResponse(why)
             finally:
                 why.close()
+        except urllib.error.URLError as why:
+            raise
+        except Exception as e:
+            raise AssertionError(e)
 
     def _makeResponse(self, urllib2_response):
         resp = HTTPResponse()
