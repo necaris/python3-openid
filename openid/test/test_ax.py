@@ -6,14 +6,17 @@ from openid.extensions import ax
 from openid.message import NamespaceMap, Message, OPENID2_NS
 from openid.consumer.consumer import SuccessResponse
 
+
 class BogusAXMessage(ax.AXMessage):
     mode = 'bogus'
 
     getExtensionArgs = ax.AXMessage._newArgs
 
+
 class DummyRequest(object):
     def __init__(self, message):
         self.message = message
+
 
 class AXMessageTest(unittest.TestCase):
     def setUp(self):
@@ -22,10 +25,10 @@ class AXMessageTest(unittest.TestCase):
     def test_checkMode(self):
         check = self.bax._checkMode
         self.assertRaises(ax.NotAXMessage, check, {})
-        self.assertRaises(ax.AXError, check, {'mode':'fetch_request'})
+        self.assertRaises(ax.AXError, check, {'mode': 'fetch_request'})
 
         # does not raise an exception when the mode is right
-        check({'mode':self.bax.mode})
+        check({'mode': self.bax.mode})
 
     def test_checkMode_newArgs(self):
         """_newArgs generates something that has the correct mode"""
@@ -78,6 +81,7 @@ class ToTypeURIsTest(unittest.TestCase):
         uris = ax.toTypeURIs(self.aliases, ','.join([alias1, alias2]))
         self.assertEqual([uri1, uri2], uris)
 
+
 class ParseAXValuesTest(unittest.TestCase):
     """Testing AXKeyValueMessage.parseExtensionArgs."""
 
@@ -95,27 +99,27 @@ class ParseAXValuesTest(unittest.TestCase):
         self.failUnlessAXValues({}, {})
 
     def test_missingValueForAliasExplodes(self):
-        self.failUnlessAXKeyError({'type.foo':'urn:foo'})
+        self.failUnlessAXKeyError({'type.foo': 'urn:foo'})
 
     def test_countPresentButNotValue(self):
-        self.failUnlessAXKeyError({'type.foo':'urn:foo',
-                                   'count.foo':'1'})
+        self.failUnlessAXKeyError({'type.foo': 'urn:foo',
+                                   'count.foo': '1'})
 
     def test_invalidCountValue(self):
         msg = ax.FetchRequest()
         self.assertRaises(ax.AXError,
                               msg.parseExtensionArgs,
-                              {'type.foo':'urn:foo',
-                               'count.foo':'bogus'})
+                              {'type.foo': 'urn:foo',
+                               'count.foo': 'bogus'})
 
     def test_requestUnlimitedValues(self):
         msg = ax.FetchRequest()
 
         msg.parseExtensionArgs(
-            {'mode':'fetch_request',
-             'required':'foo',
-             'type.foo':'urn:foo',
-             'count.foo':ax.UNLIMITED_VALUES})
+            {'mode': 'fetch_request',
+             'required': 'foo',
+             'type.foo': 'urn:foo',
+             'count.foo': ax.UNLIMITED_VALUES})
 
         attrs = list(msg.iterAttrs())
         foo = attrs[0]
@@ -156,37 +160,37 @@ class ParseAXValuesTest(unittest.TestCase):
 
     def test_countPresentAndIsZero(self):
         self.failUnlessAXValues(
-            {'type.foo':'urn:foo',
-             'count.foo':'0',
-             }, {'urn:foo':[]})
+            {'type.foo': 'urn:foo',
+             'count.foo': '0',
+             }, {'urn:foo': []})
 
     def test_singletonEmpty(self):
         self.failUnlessAXValues(
-            {'type.foo':'urn:foo',
-             'value.foo':'',
-             }, {'urn:foo':[]})
+            {'type.foo': 'urn:foo',
+             'value.foo': '',
+             }, {'urn:foo': []})
 
     def test_doubleAlias(self):
         self.failUnlessAXKeyError(
-            {'type.foo':'urn:foo',
-             'value.foo':'',
-             'type.bar':'urn:foo',
-             'value.bar':'',
+            {'type.foo': 'urn:foo',
+             'value.foo': '',
+             'type.bar': 'urn:foo',
+             'value.bar': '',
              })
 
     def test_doubleSingleton(self):
         self.failUnlessAXValues(
-            {'type.foo':'urn:foo',
-             'value.foo':'',
-             'type.bar':'urn:bar',
-             'value.bar':'',
-             }, {'urn:foo':[], 'urn:bar':[]})
+            {'type.foo': 'urn:foo',
+             'value.foo': '',
+             'type.bar': 'urn:bar',
+             'value.bar': '',
+             }, {'urn:foo': [], 'urn:bar': []})
 
     def test_singletonValue(self):
         self.failUnlessAXValues(
-            {'type.foo':'urn:foo',
-             'value.foo':'Westfall',
-             }, {'urn:foo':['Westfall']})
+            {'type.foo': 'urn:foo',
+             'value.foo': 'Westfall',
+             }, {'urn:foo': ['Westfall']})
 
 
 class FetchRequestTest(unittest.TestCase):
@@ -194,7 +198,6 @@ class FetchRequestTest(unittest.TestCase):
         self.msg = ax.FetchRequest()
         self.type_a = 'http://janrain.example.com/a'
         self.alias_a = 'a'
-
 
     def test_mode(self):
         self.assertEqual(self.msg.mode, 'fetch_request')
@@ -228,14 +231,12 @@ class FetchRequestTest(unittest.TestCase):
 
     def test_getExtensionArgs_empty(self):
         expected_args = {
-            'mode':'fetch_request',
+            'mode': 'fetch_request',
             }
         self.assertEqual(expected_args, self.msg.getExtensionArgs())
 
     def test_getExtensionArgs_noAlias(self):
-        attr = ax.AttrInfo(
-            type_uri = 'type://of.transportation',
-            )
+        attr = ax.AttrInfo(type_uri='type://of.transportation')
         self.msg.add(attr)
         ax_args = self.msg.getExtensionArgs()
         for k, v in ax_args.items():
@@ -246,31 +247,31 @@ class FetchRequestTest(unittest.TestCase):
             self.fail("Didn't find the type definition")
 
         self.failUnlessExtensionArgs({
-            'type.' + alias:attr.type_uri,
-            'if_available':alias,
+            'type.' + alias: attr.type_uri,
+            'if_available': alias,
             })
 
     def test_getExtensionArgs_alias_if_available(self):
         attr = ax.AttrInfo(
-            type_uri = 'type://of.transportation',
-            alias = 'transport',
+            type_uri='type://of.transportation',
+            alias='transport',
             )
         self.msg.add(attr)
         self.failUnlessExtensionArgs({
-            'type.' + attr.alias:attr.type_uri,
-            'if_available':attr.alias,
+            'type.' + attr.alias: attr.type_uri,
+            'if_available': attr.alias,
             })
 
     def test_getExtensionArgs_alias_req(self):
         attr = ax.AttrInfo(
-            type_uri = 'type://of.transportation',
-            alias = 'transport',
-            required = True,
+            type_uri='type://of.transportation',
+            alias='transport',
+            required=True,
             )
         self.msg.add(attr)
         self.failUnlessExtensionArgs({
-            'type.' + attr.alias:attr.type_uri,
-            'required':attr.alias,
+            'type.' + attr.alias: attr.type_uri,
+            'required': attr.alias,
             })
 
     def failUnlessExtensionArgs(self, expected_args):
@@ -291,17 +292,17 @@ class FetchRequestTest(unittest.TestCase):
 
     def test_parseExtensionArgs_extraType(self):
         extension_args = {
-            'mode':'fetch_request',
-            'type.' + self.alias_a:self.type_a,
+            'mode': 'fetch_request',
+            'type.' + self.alias_a: self.type_a,
             }
         self.assertRaises(ValueError,
                               self.msg.parseExtensionArgs, extension_args)
 
     def test_parseExtensionArgs(self):
         extension_args = {
-            'mode':'fetch_request',
-            'type.' + self.alias_a:self.type_a,
-            'if_available':self.alias_a
+            'mode': 'fetch_request',
+            'type.' + self.alias_a: self.type_a,
+            'if_available': self.alias_a
             }
         self.msg.parseExtensionArgs(extension_args)
         self.assertTrue(self.type_a in self.msg)
@@ -315,9 +316,9 @@ class FetchRequestTest(unittest.TestCase):
 
     def test_extensionArgs_idempotent(self):
         extension_args = {
-            'mode':'fetch_request',
-            'type.' + self.alias_a:self.type_a,
-            'if_available':self.alias_a
+            'mode': 'fetch_request',
+            'type.' + self.alias_a: self.type_a,
+            'if_available': self.alias_a
             }
         self.msg.parseExtensionArgs(extension_args)
         self.assertEqual(extension_args, self.msg.getExtensionArgs())
@@ -325,10 +326,10 @@ class FetchRequestTest(unittest.TestCase):
 
     def test_extensionArgs_idempotent_count_required(self):
         extension_args = {
-            'mode':'fetch_request',
-            'type.' + self.alias_a:self.type_a,
-            'count.' + self.alias_a:'2',
-            'required':self.alias_a
+            'mode': 'fetch_request',
+            'type.' + self.alias_a: self.type_a,
+            'count.' + self.alias_a: '2',
+            'required': self.alias_a
             }
         self.msg.parseExtensionArgs(extension_args)
         self.assertEqual(extension_args, self.msg.getExtensionArgs())
@@ -336,15 +337,15 @@ class FetchRequestTest(unittest.TestCase):
 
     def test_extensionArgs_count1(self):
         extension_args = {
-            'mode':'fetch_request',
-            'type.' + self.alias_a:self.type_a,
-            'count.' + self.alias_a:'1',
-            'if_available':self.alias_a,
+            'mode': 'fetch_request',
+            'type.' + self.alias_a: self.type_a,
+            'count.' + self.alias_a: '1',
+            'if_available': self.alias_a,
             }
         extension_args_norm = {
-            'mode':'fetch_request',
-            'type.' + self.alias_a:self.type_a,
-            'if_available':self.alias_a,
+            'mode': 'fetch_request',
+            'type.' + self.alias_a: self.type_a,
+            'if_available': self.alias_a,
             }
         self.msg.parseExtensionArgs(extension_args)
         self.assertEqual(extension_args_norm, self.msg.getExtensionArgs())
@@ -438,13 +439,13 @@ class FetchResponseTest(unittest.TestCase):
 
     def test_getExtensionArgs_empty(self):
         expected_args = {
-            'mode':'fetch_response',
+            'mode': 'fetch_response',
             }
         self.assertEqual(expected_args, self.msg.getExtensionArgs())
 
     def test_getExtensionArgs_empty_request(self):
         expected_args = {
-            'mode':'fetch_response',
+            'mode': 'fetch_response',
             }
         req = ax.FetchRequest()
         msg = ax.FetchResponse(request=req)
@@ -455,7 +456,7 @@ class FetchResponseTest(unittest.TestCase):
         alias = 'ext0'
 
         expected_args = {
-            'mode':'fetch_response',
+            'mode': 'fetch_response',
             'type.%s' % (alias,): uri,
             'count.%s' % (alias,): '0'
             }
@@ -469,7 +470,7 @@ class FetchResponseTest(unittest.TestCase):
         alias = 'ext0'
 
         expected_args = {
-            'mode':'fetch_response',
+            'mode': 'fetch_response',
             'update_url': self.request_update_url,
             'type.%s' % (alias,): uri,
             'count.%s' % (alias,): '0'
@@ -481,9 +482,9 @@ class FetchResponseTest(unittest.TestCase):
 
     def test_getExtensionArgs_some_request(self):
         expected_args = {
-            'mode':'fetch_response',
-            'type.' + self.alias_a:self.type_a,
-            'value.' + self.alias_a + '.1':self.value_a,
+            'mode': 'fetch_response',
+            'type.' + self.alias_a: self.type_a,
+            'value.' + self.alias_a + '.1': self.value_a,
             'count.' + self.alias_a: '1'
             }
         req = ax.FetchRequest()
@@ -521,6 +522,7 @@ class FetchResponseTest(unittest.TestCase):
             }
         sf = ['openid.' + i for i in list(args.keys())]
         msg = Message.fromOpenIDArgs(args)
+
         class Endpoint:
             claimed_id = 'http://invalid.'
 
@@ -539,6 +541,7 @@ class FetchResponseTest(unittest.TestCase):
             }
         sf = ['openid.' + i for i in list(args.keys())]
         msg = Message.fromOpenIDArgs(args)
+
         class Endpoint:
             claimed_id = 'http://invalid.'
 
@@ -596,33 +599,34 @@ class StoreRequestTest(unittest.TestCase):
         msg.setValues(self.type_a, ['foo', 'bar'])
         args = msg.getExtensionArgs()
         expected_args = {
-            'mode':'store_request',
+            'mode': 'store_request',
             'type.' + self.alias_a: self.type_a,
             'count.' + self.alias_a: '2',
-            'value.%s.1' % (self.alias_a,):'foo',
-            'value.%s.2' % (self.alias_a,):'bar',
+            'value.%s.1' % (self.alias_a,): 'foo',
+            'value.%s.2' % (self.alias_a,): 'bar',
             }
         self.assertEqual(expected_args, args)
+
 
 class StoreResponseTest(unittest.TestCase):
     def test_success(self):
         msg = ax.StoreResponse()
         self.assertTrue(msg.succeeded())
         self.assertFalse(msg.error_message)
-        self.assertEqual({'mode':'store_response_success'},
-                             msg.getExtensionArgs())
+        self.assertEqual({'mode': 'store_response_success'},
+                         msg.getExtensionArgs())
 
     def test_fail_nomsg(self):
         msg = ax.StoreResponse(False)
         self.assertFalse(msg.succeeded())
         self.assertFalse(msg.error_message)
-        self.assertEqual({'mode':'store_response_failure'},
-                             msg.getExtensionArgs())
+        self.assertEqual({'mode': 'store_response_failure'},
+                         msg.getExtensionArgs())
 
     def test_fail_msg(self):
         reason = 'no reason, really'
         msg = ax.StoreResponse(False, reason)
         self.assertFalse(msg.succeeded())
         self.assertEqual(reason, msg.error_message)
-        self.assertEqual({'mode':'store_response_failure',
-                              'error':reason}, msg.getExtensionArgs())
+        self.assertEqual({'mode': 'store_response_failure',
+                          'error': reason}, msg.getExtensionArgs())
