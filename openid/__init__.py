@@ -23,7 +23,7 @@ module.
     and limitations under the License.
 """
 
-__version__ = '[library version:3.0.0]'[17:-1]
+__version__ = '[library version:3.0.1]'[17:-1]
 
 __all__ = [
     'association',
