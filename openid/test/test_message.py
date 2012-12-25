@@ -244,11 +244,11 @@ class OpenID1MessageTest(unittest.TestCase):
 
     def test_toKVForm(self):
         self.assertEqual(self.msg.toKVForm(),
-                             b'error:unit test\nmode:error\n')
+                         b'error:unit test\nmode:error\n')
 
     def test_toURLEncoded(self):
         self.assertEqual(self.msg.toURLEncoded(),
-                             'openid.error=unit+test&openid.mode=error')
+                         'openid.error=unit+test&openid.mode=error')
 
     def test_toURL(self):
         base_url = 'http://base.url/'

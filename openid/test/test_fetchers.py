@@ -269,12 +269,11 @@ class DefaultFetcherTest(unittest.TestCase):
         """Make sure that the default fetcher instance wraps
         exceptions by default"""
         default_fetcher = fetchers.getDefaultFetcher()
-        self.assertTrue(isinstance(default_fetcher,
-                                   fetchers.ExceptionWrappingFetcher),
-                        default_fetcher)
+        self.assertIsInstance(
+            default_fetcher, fetchers.ExceptionWrappingFetcher)
 
         self.assertRaises(fetchers.HTTPFetchingError,
-                              fetchers.fetch, 'http://invalid.janrain.com/')
+                          fetchers.fetch, 'http://invalid.janrain.com/')
 
     def test_notWrapped(self):
         """Make sure that if we set a non-wrapped fetcher as default,
@@ -291,9 +290,8 @@ class DefaultFetcherTest(unittest.TestCase):
             fetchers.fetch('http://invalid.janrain.com/')
         except fetchers.HTTPFetchingError:
             self.fail('Should not be wrapping exception')
-        except:
-            exc = sys.exc_info()[1]
-            self.assertTrue(isinstance(exc, urllib.error.URLError), exc)
+        except Exception as exc:
+            self.assertIsInstance(exc, urllib.error.URLError)
             pass
         else:
             self.fail('Should have raised an exception')

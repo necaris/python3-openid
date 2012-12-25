@@ -730,7 +730,6 @@ class GenericConsumer(object):
                 "return_to does not match return URL. Expected %r, got %r"
                 % (return_to, message.getArg(OPENID_NS, 'return_to')))
 
-
         # Verify discovery information:
         endpoint = self._verifyDiscoveryResults(message, endpoint)
         logging.info("Received id_res response from %s using association %s" %
@@ -848,7 +847,7 @@ class GenericConsumer(object):
         response.
         """
         # NOTE -- query came from Message.toPostArgs, which returns a dict of
-        # {str: bytes}
+        # {str: str}
         message = Message.fromPostArgs(query)
         return_to = message.getArg(OPENID_NS, 'return_to')
 

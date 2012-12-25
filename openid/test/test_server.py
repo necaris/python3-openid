@@ -1268,7 +1268,7 @@ class TestCheckID(unittest.TestCase):
         self.assertEqual(self.request.return_to, rt)
         query = dict(parse_qsl(query_string))
         self.assertEqual(query, {'openid.mode': 'cancel',
-                                     'openid.ns': OPENID2_NS})
+                                 'openid.ns': OPENID2_NS})
 
     def test_getCancelURLimmed(self):
         self.request.mode = 'checkid_immediate'
@@ -1302,7 +1302,7 @@ class TestCheckIDExtension(unittest.TestCase):
                 })
 
         self.assertEqual(self.response.fields.getArgs(namespace),
-                             {'bright': b'potato'})
+                         {'bright': 'potato'})
 
     def test_addFields(self):
         namespace = 'mi5:'

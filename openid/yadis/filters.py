@@ -14,6 +14,7 @@ __all__ = [
 from openid.yadis.etxrd import expandService
 import collections
 
+
 class BasicServiceEndpoint(object):
     """Generic endpoint object that contains parsed service
     information, as well as a reference to the service element from
@@ -61,6 +62,7 @@ class BasicServiceEndpoint(object):
 
     fromBasicServiceEndpoint = staticmethod(fromBasicServiceEndpoint)
 
+
 class IFilter(object):
     """Interface for Yadis filter objects. Other filter-like things
     are convertable to this class."""
@@ -68,6 +70,7 @@ class IFilter(object):
     def getServiceEndpoints(self, yadis_url, service_element):
         """Returns an iterator of endpoint objects"""
         raise NotImplementedError
+
 
 class TransformFilterMaker(object):
     """Take a list of basic filters and makes a filter that transforms
@@ -124,6 +127,7 @@ class TransformFilterMaker(object):
 
         return None
 
+
 class CompoundFilter(object):
     """Create a new filter that applies a set of filters to an endpoint
     and collects their results.
@@ -144,6 +148,7 @@ class CompoundFilter(object):
 filter_type_error = TypeError(
     'Expected a filter, an endpoint, a callable or a list of any of these.')
 
+
 def mkFilter(parts):
     """Convert a filter-convertable thing into a filter
 
@@ -159,6 +164,7 @@ def mkFilter(parts):
         return mkCompoundFilter([parts])
     else:
         return mkCompoundFilter(parts)
+
 
 def mkCompoundFilter(parts):
     """Create a filter out of a list of filter-like things

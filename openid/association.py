@@ -486,7 +486,7 @@ class Association(object):
 
         @return: the signature, base64 encoded
 
-        @rtype: str
+        @rtype: bytes
 
         @raises ValueError: If there is no signed list and I am not a sign-all
             type of association.
