@@ -185,6 +185,8 @@ def parseLinkAttrs(html):
     @return: A list of dictionaries of attributes, one for each link tag
     @rtype: [[(type(html), type(html))]]
     """
+    if isinstance(html, bytes):
+        html = html.decode("utf-8")
     stripped = removed_re.sub('', html)
     html_mo = html_find.search(stripped)
     if html_mo is None or html_mo.start('contents') == -1:
