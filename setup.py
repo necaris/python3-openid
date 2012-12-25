@@ -10,10 +10,11 @@ if 'sdist' in sys.argv:
     os.system('./admin/makedoc')
 
 import openid
+version = openid.__version__
 
 setup(
     name='python3-openid',
-    version=openid.__version__,
+    version=version,
     description='OpenID support for servers and consumers.',
     long_description='''This is a set of Python packages to support use of
 the OpenID decentralized identity system in your application.  Want to enable
@@ -33,7 +34,7 @@ and support for a variety of storage back-ends.''',
     # license=getLicense(),
     author='Rami Chowdhury',
     author_email='rami.chowdhury@gmail.com',
-    download_url='http://github.com/necaris/python3-openid/tarball/%s' % (version,),
+    download_url='http://github.com/necaris/python3-openid/tarball/v%s' % (version,),
     classifiers=[
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
