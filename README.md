@@ -49,6 +49,6 @@ detailed at:
 # CONTACT
 
 Going forward, the plan is to maintain this library on GitHub, so any bug
-reports, suggestions, and feature requests should be raised as [Issues](issues).
+reports, suggestions, and feature requests should be raised as Issues.
 
 There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
