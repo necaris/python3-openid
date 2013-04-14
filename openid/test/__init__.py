@@ -66,11 +66,10 @@ def pyUnitTests():
     try:
         from openid.test import test_examples
     except ImportError:
-        e = sys.exc_info()[1]
-        if 'twill' in str(e):
-            warnings.warn("Could not import twill; skipping test_examples.")
-        else:
-            raise
+        # This is very likely due to twill being unimportable, since it's
+        # ancient and unmaintained. Until the examples are reimplemented using
+        # something else, we just need to skip it
+        warnings.warn("Could not import twill; skipping test_examples.")
     else:
         pyunit_modules.append(test_examples)
 
