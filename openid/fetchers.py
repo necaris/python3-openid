@@ -255,6 +255,20 @@ class Urllib2Fetcher(HTTPFetcher):
         else:
             resp.status = 200
 
+        _, extra_dict = self._parseHeaderValue(
+            resp.headers.get("content-type", ""))
+        if 'charset' in extra_dict:
+            # Try to decode the response body to a string, if there's a
+            # charset known
+            charset = extra_dict['charset']
+        else:
+            # Fall back to ISO-8859-1 otherwise, since HTTP/1.1 suggests it
+            charset = "latin1"
+        try:
+            resp.body = resp.body.decode(charset)
+        except Exception:
+            pass
+
         return resp
 
     def _lowerCaseKeys(self, headers_dict):
@@ -262,6 +276,27 @@ class Urllib2Fetcher(HTTPFetcher):
         for k, v in headers_dict.items():
             new_dict[k.lower()] = v
         return new_dict
+
+    def _parseHeaderValue(self, header_value):
+        """
+        Parse out a complex header value (such as Content-Type, with a value
+        like "text/html; charset=utf-8") into a main value and a dictionary of
+        extra information (in this case, 'text/html' and {'charset': 'utf8'}).
+        """
+        values = header_value.split(';', 1)
+        if len(values) == 1:
+            # There's no extra info -- return the main value and an empty dict
+            return values[0], {}
+        main_value, extra_values = values[0], values[1].split(';')
+        extra_dict = {}
+        for value_string in extra_values:
+            try:
+                key, value = value_string.split('=', 1)
+                extra_dict[key.strip()] = value.strip()
+            except ValueError:
+                # Can't unpack it -- must be malformed. Ignore
+                pass
+        return main_value, extra_dict
 
 
 class HTTPError(HTTPFetchingError):

@@ -41,12 +41,11 @@ def test_fetcher(fetcher, exc, server):
     def plain(path, code):
         path = '/' + path
         expected = fetchers.HTTPResponse(
-            geturl(path), code, expected_headers,
-            bytes(path, encoding="utf-8"))
+            geturl(path), code, expected_headers, path)
         return (path, expected)
 
     expect_success = fetchers.HTTPResponse(
-        geturl('/success'), 200, expected_headers, b'/success')
+        geturl('/success'), 200, expected_headers, '/success')
     cases = [
         ('/success', expect_success),
         ('/301redirect', expect_success),
@@ -295,8 +294,39 @@ class DefaultFetcherTest(unittest.TestCase):
             self.fail('Should have raised an exception')
 
 
+class Urllib2FetcherTests(unittest.TestCase):
+    '''Make sure a few of the utility methods are also covered by tests.'''
+    def setUp(self):
+        self.fetcher = fetchers.Urllib2Fetcher()
+
+    def test_disallowed(self):
+        '''
+        Test that the _allowedURL function only lets through the right things.
+        '''
+        for url in ["file://localhost/thing.txt", "ftp://server/path",
+                    "sftp://server/path", "ssh://server/path"]:
+            self.assertEquals(fetchers._allowedURL(url), False)
+
+    def test_lowerCaseKeys(self):
+        uppercased = {'Content-Type': None, 'HiPPyHiPPyShAKe': None}
+        lowercased = {'content-type': None, 'hippyhippyshake': None}
+        self.assertEquals(self.fetcher._lowerCaseKeys(uppercased), lowercased)
+
+    def test_parseHeaderValue(self):
+        headers_parsed = [
+            ("text/html; charset=latin-1",
+             ("text/html", {"charset": "latin-1"})),
+            ("1; mode=block", ("1", {"mode": "block"})),
+            ("foo; bar=baz; thing=quux",
+             ("foo", {"bar": "baz", "thing": "quux"})),
+        ]
+        for s, p in headers_parsed:
+            self.assertEquals(self.fetcher._parseHeaderValue(s), p)
+
+
 def pyUnitTests():
     case1 = unittest.FunctionTestCase(test)
     loadTests = unittest.defaultTestLoader.loadTestsFromTestCase
     case2 = loadTests(DefaultFetcherTest)
-    return unittest.TestSuite([case1, case2])
+    case3 = loadTests(Urllib2FetcherTests)
+    return unittest.TestSuite([case1, case2, case3])
