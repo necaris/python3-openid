@@ -1,3 +1,9 @@
+What's New in Python3-OpenID 3.0.1
+=================================
+
+This implementation of OpenID has been ported to Python 3 -- all but one test
+is known to pass.
+
 What's New in Python OpenID 2.1.0
 =================================
 
@@ -46,7 +52,7 @@ database key for storing account information.
 What's New in Python OpenID 2.0
 ===============================
 
-The big news here is compatibility with svn revision 313 of the OpenID 2.0 
+The big news here is compatibility with svn revision 313 of the OpenID 2.0
 draft specification.
 
 Highlights include:
@@ -63,7 +69,7 @@ Dependencies
 
 Python 2.5 is now supported.  Support for Python 2.2 discontinued.
 Seperate installation of yadis and urljr packages is no longer
-required; they have been included in this package.  
+required; they have been included in this package.
 
 
 Upgrading from 1.1 or 1.2
@@ -78,7 +84,7 @@ of columns in the oid_nonces table.
 If you've written your own custom store or code that interacts directly with it,
 you'll need to review the change notes in openid.store.interface.
 
-Consumers should now pass an additional parameter to Consumer.complete() 
+Consumers should now pass an additional parameter to Consumer.complete()
 to defend against return_to tampering.
 
 
