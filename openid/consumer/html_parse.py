@@ -175,18 +175,36 @@ def replaceEnt(mo):
     return replacements.get(mo.group(1), mo.group())
 
 
-def parseLinkAttrs(html):
+def parseLinkAttrs(html, ignore_errors=False):
     """Find all link tags in a string representing a HTML document and
     return a list of their attributes.
 
     @param html: the text to parse
     @type html: str or unicode
 
+    @param ignore_errors: whether to return despite e.g. parsing errors
+    @type ignore_errors: bool
+
     @return: A list of dictionaries of attributes, one for each link tag
     @rtype: [[(type(html), type(html))]]
     """
     if isinstance(html, bytes):
-        html = html.decode("utf-8")
+        # Attempt to decode as UTF-8, since that's the most modern -- also
+        # try Latin-1, since that's suggested by HTTP/1.1. If neither of
+        # those works, fall over.
+        try:
+            html = html.decode("utf-8")
+        except UnicodeDecodeError:
+            try:
+                html = html.decode("latin1")
+            except UnicodeDecodeError:
+                if ignore_errors:
+                    # Optionally ignore the errors and act as if no link attrs
+                    # were found here
+                    return []
+                else:
+                    raise AssertionError("Unreadable HTML!")
+
     stripped = removed_re.sub('', html)
     html_mo = html_find.search(stripped)
     if html_mo is None or html_mo.start('contents') == -1:
