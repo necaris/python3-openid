@@ -239,6 +239,11 @@ class Urllib2Fetcher(HTTPFetcher):
             raise AssertionError(e)
 
     def _makeResponse(self, urllib2_response):
+        '''
+        Construct an HTTPResponse from the the urllib response. Attempt to
+        decode the response body from bytes to str if the necessary information
+        is available.
+        '''
         resp = HTTPResponse()
         resp.body = urllib2_response.read(MAX_RESPONSE_KB * 1024)
         resp.final_url = urllib2_response.geturl()
