@@ -1,14 +1,20 @@
 "Test some examples."
 
 import socket
-import os.path, unittest, sys, time
+import os.path
+import unittest
+import sys
+import time
 from io import StringIO
 
-import twill.commands, twill.parse, twill.unit
+import twill.commands
+import twill.parse
+import twill.unit
 
 from openid.consumer.discover import \
      OpenIDServiceEndpoint, OPENID_1_1_TYPE
 from openid.consumer.consumer import AuthRequest
+
 
 class TwillTest(twill.unit.TestInfo):
     """Variant of twill.unit.TestInfo that runs a function as a test script,
@@ -46,6 +52,7 @@ def splitDir(d, count):
     for i in range(count):
         d = os.path.dirname(d)
     return d
+
 
 def runExampleServer(host, port, data_path):
     thisfile = os.path.abspath(sys.modules[__name__].__file__)
