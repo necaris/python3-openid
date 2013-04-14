@@ -1,10 +1,8 @@
 import warnings
 import unittest
-import sys
 import urllib.request
 import urllib.error
 import urllib.parse
-import socket
 
 from openid import fetchers
 
