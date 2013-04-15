@@ -4,7 +4,8 @@ various SQL databases to back them.
 
 Example of how to initialize a store database::
 
-    python -c 'from openid.store import sqlstore; import pysqlite2.dbapi2; sqlstore.SQLiteStore(pysqlite2.dbapi2.connect("cstore.db")).createTables()'
+python -c 'from openid.store import sqlstore; import pysqlite2.dbapi2;'
+  'sqlstore.SQLiteStore(pysqlite2.dbapi2.connect("cstore.db")).createTables()'
 """
 import re
 import time
@@ -12,6 +13,7 @@ import time
 from openid.association import Association
 from openid.store.interface import OpenIDStore
 from openid.store import nonce
+
 
 def _inTxn(func):
     def wrapped(self, *args, **kwargs):
@@ -27,6 +29,7 @@ def _inTxn(func):
         wrapped.__doc__ = func.__doc__
 
     return wrapped
+
 
 class SQLStore(OpenIDStore):
     """
@@ -227,7 +230,7 @@ class SQLStore(OpenIDStore):
             for values in rows:
                 assoc = Association(*values)
                 assoc.secret = self.blobDecode(assoc.secret)
-                if assoc.getExpiresIn() == 0:
+                if assoc.expiresIn == 0:
                     self.txn_removeAssociation(server_url, assoc.handle)
                 else:
                     associations.append((assoc.issued, assoc))

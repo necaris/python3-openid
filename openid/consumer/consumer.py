@@ -787,7 +787,7 @@ class GenericConsumer(object):
             assoc = self.store.getAssociation(server_url, assoc_handle)
 
         if assoc:
-            if assoc.getExpiresIn() <= 0:
+            if assoc.expiresIn <= 0:
                 # XXX: It might be a good idea sometimes to re-start the
                 # authentication with a new association. Doing it
                 # automatically opens the possibility for

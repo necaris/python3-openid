@@ -42,7 +42,7 @@ class ServerAssocs(object):
         """
         remove = []
         for handle, assoc in self.assocs.items():
-            if assoc.getExpiresIn() == 0:
+            if assoc.expiresIn == 0:
                 remove.append(handle)
         for handle in remove:
             del self.assocs[handle]

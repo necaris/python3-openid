@@ -468,7 +468,7 @@ class AssociateRequest(OpenIDRequest):
         """
         response = OpenIDResponse(self)
         response.fields.updateArgs(OPENID_NS, {
-            'expires_in': '%d' % (assoc.getExpiresIn(),),
+            'expires_in': str(assoc.expiresIn),
             'assoc_type': self.assoc_type,
             'assoc_handle': assoc.handle,
             })

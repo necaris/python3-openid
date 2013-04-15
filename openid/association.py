@@ -1,13 +1,13 @@
-# -*- test-case-name: openid.test.test_association -*-
+#-*-test-case-name: openid.test.test_association-*-
+#-*-coding: utf-8-*-
 """
 This module contains code for dealing with associations between
 consumers and servers. Associations contain a shared secret that is
 used to sign C{openid.mode=id_res} messages.
 
 Users of the library should not usually need to interact directly with
-associations. The L{store<openid.store>},
-L{server<openid.server.server>} and
-L{consumer<openid.consumer.consumer>} objects will create and manage
+associations. The L{store<openid.store>}, L{server<openid.server.server>}
+and L{consumer<openid.consumer.consumer>} objects will create and manage
 the associations. The consumer and server code will make use of a
 C{L{SessionNegotiator}} when managing associations, which enables
 users to express a preference for what kind of associations should be
@@ -30,7 +30,7 @@ __all__ = [
     'encrypted_negotiator',
     'SessionNegotiator',
     'Association',
-    ]
+]
 
 import time
 
@@ -42,7 +42,7 @@ from openid.message import OPENID_NS
 all_association_types = [
     'HMAC-SHA1',
     'HMAC-SHA256',
-    ]
+]
 
 if hasattr(cryptutil, 'hmacSha256'):
     supported_association_types = list(all_association_types)
@@ -52,23 +52,24 @@ if hasattr(cryptutil, 'hmacSha256'):
         ('HMAC-SHA1', 'no-encryption'),
         ('HMAC-SHA256', 'DH-SHA256'),
         ('HMAC-SHA256', 'no-encryption'),
-        ]
+    ]
 
     only_encrypted_association_order = [
         ('HMAC-SHA1', 'DH-SHA1'),
         ('HMAC-SHA256', 'DH-SHA256'),
-        ]
+    ]
 else:
     supported_association_types = ['HMAC-SHA1']
 
     default_association_order = [
         ('HMAC-SHA1', 'DH-SHA1'),
         ('HMAC-SHA1', 'no-encryption'),
-        ]
+    ]
 
     only_encrypted_association_order = [
         ('HMAC-SHA1', 'DH-SHA1'),
-        ]
+    ]
+
 
 def getSessionTypes(assoc_type):
     """Return the allowed session types for a given association type"""
@@ -78,6 +79,7 @@ def getSessionTypes(assoc_type):
         }
     return assoc_to_session.get(assoc_type, [])
 
+
 def checkSessionType(assoc_type, session_type):
     """Check to make sure that this pair of assoc type and session
     type are allowed"""
@@ -85,6 +87,7 @@ def checkSessionType(assoc_type, session_type):
         raise ValueError(
             'Session type %r not valid for assocation type %r'
             % (session_type, assoc_type))
+
 
 class SessionNegotiator(object):
     """A session negotiator controls the allowed and preferred
@@ -168,7 +171,6 @@ class SessionNegotiator(object):
             checkSessionType(assoc_type, session_type)
             self.allowed_types.append((assoc_type, session_type))
 
-
     def isAllowed(self, assoc_type, session_type):
         """Is this combination of association type and session type allowed?"""
         assoc_good = (assoc_type, session_type) in self.allowed_types
@@ -186,6 +188,7 @@ class SessionNegotiator(object):
 default_negotiator = SessionNegotiator(default_association_order)
 encrypted_negotiator = SessionNegotiator(only_encrypted_association_order)
 
+
 def getSecretSize(assoc_type):
     if assoc_type == 'HMAC-SHA1':
         return 20
@@ -193,6 +196,7 @@ def getSecretSize(assoc_type):
         return 32
     else:
         raise ValueError('Unsupported association type: %r' % (assoc_type,))
+
 
 class Association(object):
     """
@@ -237,7 +241,7 @@ class Association(object):
     @type assoc_type: C{str}
 
 
-    @sort: __init__, fromExpiresIn, getExpiresIn, __eq__, __ne__,
+    @sort: __init__, fromExpiresIn, expiresIn, __eq__, __ne__,
         handle, secret, issued, lifetime, assoc_type
     """
 
@@ -249,15 +253,14 @@ class Association(object):
         'issued',
         'lifetime',
         'assoc_type',
-        ]
-
+    ]
 
     _macs = {
         'HMAC-SHA1': cryptutil.hmacSha1,
         'HMAC-SHA256': cryptutil.hmacSha256,
-        }
+    }
 
-
+    @classmethod
     def fromExpiresIn(cls, expires_in, handle, secret, assoc_type):
         """
         This is an alternate constructor used by the OpenID consumer
@@ -295,8 +298,6 @@ class Association(object):
         issued = int(time.time())
         lifetime = expires_in
         return cls(handle, secret, issued, lifetime, assoc_type)
-
-    fromExpiresIn = classmethod(fromExpiresIn)
 
     def __init__(self, handle, secret, issued, lifetime, assoc_type):
         """
@@ -340,10 +341,10 @@ class Association(object):
             fmt = '%r is not a supported association type'
             raise ValueError(fmt % (assoc_type,))
 
-#         secret_size = getSecretSize(assoc_type)
-#         if len(secret) != secret_size:
-#             fmt = 'Wrong size secret (%s bytes) for association type %s'
-#             raise ValueError(fmt % (len(secret), assoc_type))
+        # secret_size = getSecretSize(assoc_type)
+        # if len(secret) != secret_size:
+        #     fmt = 'Wrong size secret (%s bytes) for association type %s'
+        #     raise ValueError(fmt % (len(secret), assoc_type))
 
         self.handle = handle
         self.secret = secret
@@ -351,7 +352,8 @@ class Association(object):
         self.lifetime = lifetime
         self.assoc_type = assoc_type
 
-    def getExpiresIn(self, now=None):
+    @property
+    def expiresIn(self, now=None):
         """
         This returns the number of seconds this association is still
         valid for, or C{0} if the association is no longer valid.
@@ -366,8 +368,6 @@ class Association(object):
             now = int(time.time())
 
         return max(0, self.issued + self.lifetime - now)
-
-    expiresIn = property(getExpiresIn)
 
     def __eq__(self, other):
         """
@@ -405,21 +405,23 @@ class Association(object):
         @rtype: str
         """
         data = {
-            'version':'2',
-            'handle':self.handle,
-            'secret':oidutil.toBase64(self.secret),
-            'issued':str(int(self.issued)),
-            'lifetime':str(int(self.lifetime)),
-            'assoc_type':self.assoc_type
-            }
+            'version': '2',
+            'handle': self.handle,
+            'secret': oidutil.toBase64(self.secret),
+            'issued': str(int(self.issued)),
+            'lifetime': str(int(self.lifetime)),
+            'assoc_type': self.assoc_type
+        }
 
         assert len(data) == len(self.assoc_keys)
+
         pairs = []
         for field_name in self.assoc_keys:
             pairs.append((field_name, data[field_name]))
 
         return kvform.seqToKV(pairs, strict=True)
 
+    @classmethod
     def deserialize(cls, assoc_s):
         """
         Parse an association as stored by serialize().
@@ -451,8 +453,6 @@ class Association(object):
         lifetime = int(lifetime)
         secret = oidutil.fromBase64(secret)
         return cls(handle, secret, issued, lifetime, assoc_type)
-
-    deserialize = classmethod(deserialize)
 
     def sign(self, pairs):
         """

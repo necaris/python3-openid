@@ -276,7 +276,7 @@ class FileOpenIDStore(OpenIDStore):
                 return None
 
         # Clean up expired associations
-        if association.getExpiresIn() == 0:
+        if association.expiresIn == 0:
             _removeIfPresent(filename)
             return None
         else:
@@ -371,7 +371,7 @@ class FileOpenIDStore(OpenIDStore):
     def cleanupAssociations(self):
         removed = 0
         for assoc_filename, assoc in self._allAssocs():
-            if assoc.getExpiresIn() == 0:
+            if assoc.expiresIn == 0:
                 _removeIfPresent(assoc_filename)
                 removed += 1
         return removed

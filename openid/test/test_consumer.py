@@ -81,9 +81,6 @@ class GoodAssociation:
     expiresIn = 3600
     handle = "-blah-"
 
-    def getExpiresIn(self):
-        return self.expiresIn
-
     def checkMessageSignature(self, message):
         return message.getArg(OPENID_NS, 'sig') == GOODSIG
 
