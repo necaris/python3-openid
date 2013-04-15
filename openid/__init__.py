@@ -23,7 +23,9 @@ module.
     and limitations under the License.
 """
 
-__version__ = '[library version:3.0.1]'[17:-1]
+version_info = (3, 0, 1)
+
+__version__ = ".".join(str(x) for x in version_info)
 
 __all__ = [
     'association',
@@ -41,15 +43,4 @@ __all__ = [
     'store',
     'urinorm',
     'yadis',
-    ]
-
-# Parse the version info
-try:
-    version_info = tuple(map(int, __version__.split('.')))
-except ValueError:
-    version_info = (None, None, None)
-else:
-    if len(version_info) != 3:
-        version_info = (None, None, None)
-    else:
-        version_info = tuple(version_info)
+]
