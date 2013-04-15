@@ -1,3 +1,4 @@
+#-*-coding: utf-8-*-
 """
 This package is an implementation of the OpenID specification in
 Python.  It contains code for both server and consumer
@@ -6,10 +7,9 @@ see the C{L{openid.consumer.consumer}} module.  For information on
 implementing an OpenID server, see the C{L{openid.server.server}}
 module.
 
-@contact: U{http://openid.net/developers/dev-mailing-lists/
-    <http://openid.net/developers/dev-mailing-lists/}
+@contact: U{http://github.com/necaris/python3-openid/}
 
-@copyright: (C) 2005-2008 JanRain, Inc.
+@copyright: (C) 2005-2008 JanRain, Inc., 2012-2013 Rami Chowdhury
 
 @license: Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
