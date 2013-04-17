@@ -4,6 +4,5 @@ python:
   - 3.3
   - 3.2
 
-before_install: pip install --use-mirrors nose pycrypto
 install: python setup.py install
 script: ./run_tests.sh
