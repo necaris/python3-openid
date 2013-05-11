@@ -11,8 +11,10 @@ from openid.yadis import xrires
 from openid.yadis.xri import XRI
 from urllib.parse import urlsplit
 from openid import message
-
+import openid.consumer
+import openid.store.memstore
 ### Tests for conditions that trigger DiscoveryFailure
+
 
 class SimpleMockFetcher(object):
     def __init__(self, responses):
@@ -23,6 +25,7 @@ class SimpleMockFetcher(object):
         assert body is None
         assert response.final_url == url
         return response
+
 
 class TestDiscoveryFailure(datadriven.DataDrivenTestCase):
     cases = [
@@ -68,6 +71,7 @@ import warnings
 warnings.filterwarnings('ignore', 'raising a string.*', DeprecationWarning,
                         r'^openid\.test\.test_discover$', 77)
 
+
 class ErrorRaisingFetcher(object):
     """Just raise an exception when fetch is called"""
 
@@ -77,8 +81,10 @@ class ErrorRaisingFetcher(object):
     def fetch(self, url, body=None, headers=None):
         raise self.thing_to_raise
 
+
 class DidFetch(Exception):
     """Custom exception just to make sure it's not handled differently"""
+
 
 class TestFetchException(datadriven.DataDrivenTestCase):
     """Make sure exceptions get passed through discover function from
@@ -129,10 +135,10 @@ class TestNormalization(unittest.TestCase):
 
         try:
             discover.discover('users.stompy.janrain.com:8000/x')
-        except DiscoveryFailure as why:
+        except DiscoveryFailure:
             self.fail('failed to parse url with port correctly')
         except RuntimeError:
-            pass #expected
+            pass  # expected
 
         fetchers.setDefaultFetcher(None)
 
@@ -163,6 +169,7 @@ class DiscoveryMockFetcher(object):
         return HTTPResponse(final_url, status, {'content-type': ctype}, body)
 
 # from twisted.trial import unittest as trialtest
+
 
 class BaseTestDiscovery(unittest.TestCase):
     id_url = "http://someuser.unittest/"
@@ -217,7 +224,8 @@ class BaseTestDiscovery(unittest.TestCase):
             self.assertEqual(display_identifier, s.getDisplayIdentifier())
             self.assertEqual(s.claimed_id, s.canonicalID)
 
-        self.assertEqual(s.display_identifier or s.claimed_id, s.getDisplayIdentifier())
+        self.assertEqual(s.display_identifier or s.claimed_id,
+                         s.getDisplayIdentifier())
 
     def setUp(self):
         self.documents = self.documents.copy()
@@ -227,11 +235,13 @@ class BaseTestDiscovery(unittest.TestCase):
     def tearDown(self):
         fetchers.setDefaultFetcher(None)
 
+
 def readDataFile(filename):
     module_directory = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(
         module_directory, 'data', 'test_discover', filename)
     return open(filename).read()
+
 
 class TestDiscovery(BaseTestDiscovery):
     def _discover(self, content_type, data,
@@ -305,7 +315,6 @@ class TestDiscovery(BaseTestDiscovery):
             content_type='text/html',
             data=readDataFile('openid.html'),
             expected_services=1)
-
 
         self._checkService(
             services[0],
@@ -513,13 +522,13 @@ class TestDiscovery(BaseTestDiscovery):
             expected_services=1,
             )
 
+
 class MockFetcherForXRIProxy(object):
 
     def __init__(self, documents, proxy_url=xrires.DEFAULT_PROXY):
         self.documents = documents
         self.fetchlog = []
         self.proxy_url = None
-
 
     def fetch(self, url, body=None, headers=None):
         self.fetchlog.append((url, body, headers))
@@ -554,7 +563,7 @@ class TestXRIDiscovery(BaseTestDiscovery):
     documents = {'=smoker': ('application/xrds+xml',
                              readDataFile('yadis_2entries_delegate.xml')),
                  '=smoker*bad': ('application/xrds+xml',
-                                 readDataFile('yadis_another_delegate.xml')) }
+                                 readDataFile('yadis_another_delegate.xml'))}
 
     def test_xri(self):
         user_xri, services = discover.discoverXRI('=smoker')
@@ -623,7 +632,7 @@ class TestXRIDiscoveryIDP(BaseTestDiscovery):
     fetcherClass = MockFetcherForXRIProxy
 
     documents = {'=smoker': ('application/xrds+xml',
-                             readDataFile('yadis_2entries_idp.xml')) }
+                             readDataFile('yadis_2entries_idp.xml'))}
 
     def test_xri(self):
         user_xri, services = discover.discoverXRI('=smoker')
@@ -657,6 +666,7 @@ class TestPreferredNamespace(datadriven.DataDrivenTestCase):
         (message.OPENID2_NS, [discover.OPENID_1_0_TYPE,
                               discover.OPENID_2_0_TYPE]),
         ]
+
 
 class TestIsOPIdentifier(unittest.TestCase):
     def setUp(self):
@@ -692,6 +702,7 @@ class TestIsOPIdentifier(unittest.TestCase):
                                    discover.OPENID_IDP_2_0_TYPE]
         self.assertTrue(self.endpoint.isOPIdentifier())
 
+
 class TestFromOPEndpointURL(unittest.TestCase):
     def setUp(self):
         self.op_endpoint_url = 'http://example.com/op/endpoint'
@@ -713,6 +724,7 @@ class TestFromOPEndpointURL(unittest.TestCase):
 
     def test_serverURL(self):
         self.assertEqual(self.endpoint.server_url, self.op_endpoint_url)
+
 
 class TestDiscoverFunction(unittest.TestCase):
     def setUp(self):
@@ -743,6 +755,7 @@ class TestDiscoverFunction(unittest.TestCase):
 
     def test_xriChar(self):
         self.assertEqual('XRI', discover.discover('=something'))
+
 
 class TestEndpointSupportsType(unittest.TestCase):
     def setUp(self):
@@ -803,11 +816,27 @@ class TestEndpointDisplayIdentifier(unittest.TestCase):
     def test_strip_fragment(self):
         endpoint = discover.OpenIDServiceEndpoint()
         endpoint.claimed_id = 'http://recycled.invalid/#123'
-        self.assertEqual('http://recycled.invalid/', endpoint.getDisplayIdentifier())
+        self.assertEqual('http://recycled.invalid/',
+                         endpoint.getDisplayIdentifier())
+
+
+class TestDiscoveryFailureDjangoAllAuth(unittest.TestCase):
+    def test_discovery(self):
+        session = {}
+        store = openid.store.memstore.MemoryStore()
+        client = openid.consumer.Consumer(session, store)
+        auth_request = client.begin("http://www.google.com")
+        result = auth_request.redirectURL(
+            'http://localhost/',
+            'http://localhost/callback')
+        raise AssertionError("I am an error")
+        self.assertEquals(result, None)
 
 
 def pyUnitTests():
-    return datadriven.loadTests(__name__)
+    suite = datadriven.loadTests(__name__)
+    return suite
+
 
 if __name__ == '__main__':
     suite = pyUnitTests()
