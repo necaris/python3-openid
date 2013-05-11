@@ -31,15 +31,7 @@ class DataDrivenTestCase(unittest.TestCase):
 
 def loadTests(module_name):
     loader = unittest.defaultTestLoader
-    this_module = __import__(module_name, {}, {}, [None])
-
-    tests = []
-    for name in dir(this_module):
-        obj = getattr(this_module, name)
-        if isinstance(obj, unittest.TestCase):
-            if hasattr(obj, 'loadTests'):
-                tests.extend(obj.loadTests())
-            else:
-                tests.append(loader.loadTestsFromTestCase(obj))
-
+    tests = loader.loadTestsFromName(module_name)
+    if not tests:
+        raise AssertionError("No tests for {0}".format(module_name))
     return unittest.TestSuite(tests)
