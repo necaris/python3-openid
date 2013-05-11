@@ -2,6 +2,7 @@ This started out as a fork of the Python OpenID library, with changes
 to make it Python 3 compatible. It's now a port of that library, including
 cleanups and updates to the code in general, since I lack the patience to try and keep code compatible with Python 2.3 - 3.2.
 
+[![Build Status](https://travis-ci.org/necaris/python3-openid.png)](https://travis-ci.org/necaris/python3-openid)
 
 # REQUIREMENTS
 
