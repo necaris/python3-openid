@@ -2,11 +2,11 @@
 
 __copyright__ = 'Copyright 2005-2008, Janrain, Inc.'
 
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from urlparse import urlparse
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import urlparse
 
 import time
-import Cookie
+import http.cookies
 import cgi
 import cgitb
 import sys
@@ -97,7 +97,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(cgitb.html(sys.exc_info(), context=10))
+            self.wfile.write(bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
 
     def do_POST(self):
         try:
@@ -127,16 +127,16 @@ class ServerHandler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(cgitb.html(sys.exc_info(), context=10))
+            self.wfile.write(bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
 
     def handleAllow(self, query):
         # pretend this next bit is keying off the user's session or something,
         # right?
         request = self.server.lastCheckIDRequest.get(self.user)
-
+        query = self.binaryToUTF8(query)
         if 'yes' in query:
             if 'login_as' in query:
-                self.user = self.query['login_as']
+                self.user = query['login_as']
 
             if request.idSelect():
                 identity = self.server.base_url + 'id/' + query['identifier']
@@ -144,7 +144,7 @@ class ServerHandler(BaseHTTPRequestHandler):
                 identity = request.identity
 
             trust_root = request.trust_root
-            if self.query.get('remember', 'no') == 'yes':
+            if query.get('remember', 'no') == 'yes':
                 self.server.approved[(identity, trust_root)] = 'always'
 
             response = self.approved(request, identity)
@@ -161,7 +161,7 @@ class ServerHandler(BaseHTTPRequestHandler):
     def setUser(self):
         cookies = self.headers.get('Cookie')
         if cookies:
-            morsel = Cookie.BaseCookie(cookies).get('user')
+            morsel = http.cookies.BaseCookie(cookies).get('user')
             if morsel:
                 self.user = morsel.value
 
@@ -177,8 +177,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 
     def serverEndPoint(self, query):
         try:
+            query = self.binaryToUTF8(query)
             request = self.server.openid.decodeRequest(query)
-        except server.ProtocolError, why:
+        except server.ProtocolError as why:
             self.displayResponse(why)
             return
 
@@ -226,19 +227,19 @@ class ServerHandler(BaseHTTPRequestHandler):
     def displayResponse(self, response):
         try:
             webresponse = self.server.openid.encodeResponse(response)
-        except server.EncodingError, why:
+        except server.EncodingError as why:
             text = why.response.encodeToKVForm()
             self.showErrorPage('<pre>%s</pre>' % cgi.escape(text))
             return
 
         self.send_response(webresponse.code)
-        for header, value in webresponse.headers.iteritems():
+        for header, value in webresponse.headers.items():
             self.send_header(header, value)
         self.writeUserHeader()
         self.end_headers()
 
         if webresponse.body:
-            self.wfile.write(webresponse.body)
+            self.wfile.write(bytes(webresponse.body, 'utf-8'))
 
     def doLogin(self):
         if 'submit' in self.query:
@@ -436,7 +437,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         ident = self.server.base_url + path[1:]
 
         approved_trust_roots = []
-        for (aident, trust_root) in self.server.approved.keys():
+        for (aident, trust_root) in list(self.server.approved.keys()):
             if aident == ident:
                 trs = '<li><tt>%s</tt></li>\n' % cgi.escape(trust_root)
                 approved_trust_roots.append(trs)
@@ -461,7 +462,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
         endpoint_url = self.server.base_url + 'openidserver'
         user_url = self.server.base_url + 'id/' + user
-        self.wfile.write("""\
+        self.wfile.write(bytes("""\
 <?xml version="1.0" encoding="UTF-8"?>
 <xrds:XRDS
     xmlns:xrds="xri://$xrds"
@@ -478,7 +479,7 @@ class ServerHandler(BaseHTTPRequestHandler):
   </XRD>
 </xrds:XRDS>
 """%(discover.OPENID_2_0_TYPE, discover.OPENID_1_0_TYPE,
-     endpoint_url, user_url))
+     endpoint_url, user_url), 'utf-8'))
 
     def showServerYadis(self):
         self.send_response(200)
@@ -486,7 +487,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         endpoint_url = self.server.base_url + 'openidserver'
-        self.wfile.write("""\
+        self.wfile.write(bytes("""\
 <?xml version="1.0" encoding="UTF-8"?>
 <xrds:XRDS
     xmlns:xrds="xri://$xrds"
@@ -500,7 +501,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
   </XRD>
 </xrds:XRDS>
-"""%(discover.OPENID_IDP_2_0_TYPE, endpoint_url,))
+"""%(discover.OPENID_IDP_2_0_TYPE, endpoint_url,), 'utf-8'))
 
     def showMainPage(self):
         yadis_tag = '<meta http-equiv="x-xrds-location" content="%s">'%\
@@ -592,7 +593,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        self.wfile.write('''<html>
+        self.wfile.write(bytes('''<html>
   <head>
     <title>%(title)s</title>
     %(head_extras)s
@@ -667,8 +668,15 @@ class ServerHandler(BaseHTTPRequestHandler):
 %(body)s
   </body>
 </html>
-''' % contents)
-
+''' % contents, 'UTF-8'))
+    
+    def binaryToUTF8(self, data):
+        args = {}
+        for key, value in data.items():        
+            key = key.decode('utf-8')
+            value = value.decode('utf-8')
+            args[key] = value
+        return args
 
 def main(host, port, data_path):
     addr = (host, port)
@@ -682,8 +690,8 @@ def main(host, port, data_path):
 
     httpserver.setOpenIDServer(oidserver)
 
-    print 'Server running at:'
-    print httpserver.base_url
+    print('Server running at:')
+    print(httpserver.base_url)
     httpserver.serve_forever()
 
 if __name__ == '__main__':
