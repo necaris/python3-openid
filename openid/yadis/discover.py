@@ -102,8 +102,8 @@ def discover(uri):
 def whereIsYadis(resp):
     """Given a HTTPResponse, return the location of the Yadis document.
 
-    May be the URL just retrieved, another URL, or None, if I can't
-    find any.
+    May be the URL just retrieved, another URL, or None if no suitable URL can
+    be found.
 
     [non-blocking]
 
@@ -139,7 +139,21 @@ def whereIsYadis(resp):
                 encoding = 'utf-8'
 
             if isinstance(resp.body, bytes):
-                content = resp.body.decode(encoding)
+                try:
+                    content = resp.body.decode(encoding)
+                except UnicodeError:
+                    # All right, the detected encoding has failed. Try with
+                    # UTF-8 (even if there was no detected encoding and we've
+                    # defaulted to UTF-8, it's not that expensive an operation)
+                    try:
+                        content = resp.body.decode('utf-8')
+                    except UnicodeError:
+                        # At this point the content cannot be decoded to a str
+                        # using the detected encoding or falling back to utf-8,
+                        # so we have to resort to replacing undecodable chars.
+                        # This *will* result in broken content but there isn't
+                        # anything else that can be done.
+                        content = resp.body.decode(encoding, 'replace')
             else:
                 content = resp.body
 
