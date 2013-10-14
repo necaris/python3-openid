@@ -451,7 +451,7 @@ class Association(object):
             raise ValueError('Unknown version: %r' % version)
         issued = int(issued)
         lifetime = int(lifetime)
-        secret = oidutil.fromBase64(secret)
+        secret = oidutil.fromBase64(secret).decode('utf-8')  # should be str
         return cls(handle, secret, issued, lifetime, assoc_type)
 
     def sign(self, pairs):
