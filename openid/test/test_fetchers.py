@@ -303,12 +303,12 @@ class Urllib2FetcherTests(unittest.TestCase):
         '''
         for url in ["file://localhost/thing.txt", "ftp://server/path",
                     "sftp://server/path", "ssh://server/path"]:
-            self.assertEquals(fetchers._allowedURL(url), False)
+            self.assertEqual(fetchers._allowedURL(url), False)
 
     def test_lowerCaseKeys(self):
         uppercased = {'Content-Type': None, 'HiPPyHiPPyShAKe': None}
         lowercased = {'content-type': None, 'hippyhippyshake': None}
-        self.assertEquals(self.fetcher._lowerCaseKeys(uppercased), lowercased)
+        self.assertEqual(self.fetcher._lowerCaseKeys(uppercased), lowercased)
 
     def test_parseHeaderValue(self):
         headers_parsed = [
@@ -319,7 +319,7 @@ class Urllib2FetcherTests(unittest.TestCase):
              ("foo", {"bar": "baz", "thing": "quux"})),
         ]
         for s, p in headers_parsed:
-            self.assertEquals(self.fetcher._parseHeaderValue(s), p)
+            self.assertEqual(self.fetcher._parseHeaderValue(s), p)
 
 
 def pyUnitTests():

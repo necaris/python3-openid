@@ -1361,7 +1361,7 @@ class GenericConsumer(object):
         # OpenID 1, but we'll accept it anyway, while issuing a
         # warning.
         if session_type == 'no-encryption':
-            logging.warn('OpenID server sent "no-encryption"'
+            logging.warning('OpenID server sent "no-encryption"'
                         'for OpenID 1.X')
 
         # Missing or empty session type is the way to flag a

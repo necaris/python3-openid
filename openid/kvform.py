@@ -22,7 +22,7 @@ def seqToKV(seq, strict=False):
         if strict:
             raise KVFormError(formatted)
         else:
-            logging.warn(formatted)
+            logging.warning(formatted)
 
     lines = []
     for k, v in seq:
@@ -76,7 +76,7 @@ def kvToSeq(data, strict=False):
         if strict:
             raise KVFormError(formatted)
         else:
-            logging.warn(formatted)
+            logging.warning(formatted)
 
     if isinstance(data, bytes):
         data = data.decode("utf-8")
