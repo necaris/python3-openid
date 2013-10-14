@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 import sys
 import unittest
-from . import datadriven
 import os.path
+from urllib.parse import urlsplit
+
+from . import datadriven
+
 from openid import fetchers
 from openid.fetchers import HTTPResponse
 from openid.yadis.discover import DiscoveryFailure
-from openid.consumer import discover
+from openid.consumer import discover, consumer as openid_consumer
 from openid.yadis import xrires
 from openid.yadis.xri import XRI
-from urllib.parse import urlsplit
 from openid import message
-import openid.consumer
 import openid.store.memstore
 ### Tests for conditions that trigger DiscoveryFailure
 
@@ -237,29 +238,33 @@ class BaseTestDiscovery(unittest.TestCase):
 
 
 def readDataFile(filename):
+    """
+    Read the contents of the given file and return them. NOTE that files are
+    read in binary mode and the return value is a bytes object.
+    """
     module_directory = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(
         module_directory, 'data', 'test_discover', filename)
-    with open(filename) as f:
+    with open(filename, 'rb') as f:
         contents = f.read()
     return contents
 
 
 class TestDiscovery(BaseTestDiscovery):
-    def _discover(self, content_type, data,
-                  expected_services, expected_id=None):
+    def _discover(self, content_type, data, expected_service_count,
+                  expected_id=None):
         if expected_id is None:
             expected_id = self.id_url
 
         self.documents[self.id_url] = (content_type, data)
         id_url, services = discover.discover(self.id_url)
-        self.assertEqual(expected_services, len(services))
+        self.assertEqual(expected_service_count, len(services))
         self.assertEqual(expected_id, id_url)
         return services
 
     def test_404(self):
-        self.assertRaises(DiscoveryFailure,
-                              discover.discover, self.id_url + '/404')
+        self.assertRaises(
+            DiscoveryFailure, discover.discover, self.id_url + '/404')
 
     def test_unicode(self):
         """
@@ -268,8 +273,10 @@ class TestDiscovery(BaseTestDiscovery):
         self._discover(
             content_type='text/html;charset=utf-8',
             data=readDataFile('unicode.html'),
-            expected_services=0)
+            expected_service_count=0)
 
+    # TODO: Remove, I think this is testing the internals of the Yadis parser
+    # and not spec-compliance.
     def test_unicode_undecodable_html(self):
         """
         Check page with unicode and HTML entities that can not be decoded
@@ -277,7 +284,7 @@ class TestDiscovery(BaseTestDiscovery):
         data = readDataFile('unicode2.html')
         self.assertRaises(UnicodeDecodeError, data.decode, 'utf-8')
         self._discover(content_type='text/html;charset=utf-8',
-            data=data, expected_services=0)
+                       data=data, expected_service_count=0)
 
     def test_unicode_undecodable_html2(self):
         """
@@ -290,17 +297,17 @@ class TestDiscovery(BaseTestDiscovery):
         data = readDataFile('unicode3.html')
         self.assertRaises(UnicodeDecodeError, data.decode, 'utf-8')
         self._discover(content_type='text/html;charset=utf-8',
-            data=data, expected_services=1)
+                       data=data, expected_service_count=1)
 
     def test_noOpenID(self):
         services = self._discover(content_type='text/plain',
                                   data="junk",
-                                  expected_services=0)
+                                  expected_service_count=0)
 
         services = self._discover(
             content_type='text/html',
             data=readDataFile('openid_no_delegate.html'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -316,7 +323,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='text/html',
             data=readDataFile('openid.html'),
-            expected_services=1)
+            expected_service_count=1)
 
         self._checkService(
             services[0],
@@ -333,13 +340,13 @@ class TestDiscovery(BaseTestDiscovery):
         if one is supplied in the User Input."""
         content_type = 'text/html'
         data = readDataFile('openid.html')
-        expected_services = 1
+        expected_service_count = 1
 
         self.documents[self.id_url] = (content_type, data)
         expected_id = self.id_url
         self.id_url = self.id_url + '#fragment'
         id_url, services = discover.discover(self.id_url)
-        self.assertEqual(expected_services, len(services))
+        self.assertEqual(expected_service_count, len(services))
         self.assertEqual(expected_id, id_url)
 
         self._checkService(
@@ -356,7 +363,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='text/html',
             data=readDataFile('openid2.html'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -373,7 +380,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='text/html',
             data=readDataFile('openid_1_and_2.html'),
-            expected_services=2,
+            expected_service_count=2,
             )
 
         for t, s in zip(['2.0', '1.1'], services):
@@ -390,7 +397,7 @@ class TestDiscovery(BaseTestDiscovery):
     def test_yadisEmpty(self):
         services = self._discover(content_type='application/xrds+xml',
                                   data=readDataFile('yadis_0entries.xml'),
-                                  expected_services=0)
+                                  expected_service_count=0)
 
     def test_htmlEmptyYadis(self):
         """HTML document has discovery information, but points to an
@@ -401,7 +408,7 @@ class TestDiscovery(BaseTestDiscovery):
 
         services = self._discover(content_type='text/html',
                                   data=readDataFile('openid_and_yadis.html'),
-                                  expected_services=1)
+                                  expected_service_count=1)
 
         self._checkService(
             services[0],
@@ -416,7 +423,7 @@ class TestDiscovery(BaseTestDiscovery):
     def test_yadis1NoDelegate(self):
         services = self._discover(content_type='application/xrds+xml',
                                   data=readDataFile('yadis_no_delegate.xml'),
-                                  expected_services=1)
+                                  expected_service_count=1)
 
         self._checkService(
             services[0],
@@ -432,7 +439,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='application/xrds+xml',
             data=readDataFile('openid2_xrds_no_local_id.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -449,7 +456,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='application/xrds+xml',
             data=readDataFile('openid2_xrds.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -466,7 +473,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='application/xrds+xml',
             data=readDataFile('yadis_idp.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -482,7 +489,7 @@ class TestDiscovery(BaseTestDiscovery):
         services = self._discover(
             content_type='application/xrds+xml',
             data=readDataFile('yadis_idp_delegate.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -497,14 +504,14 @@ class TestDiscovery(BaseTestDiscovery):
         self.assertRaises(DiscoveryFailure, self._discover,
             content_type='application/xrds+xml',
             data=readDataFile('yadis_2_bad_local_id.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
     def test_yadis1And2(self):
         services = self._discover(
             content_type='application/xrds+xml',
             data=readDataFile('openid_1_and_2_xrds.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
         self._checkService(
@@ -521,7 +528,7 @@ class TestDiscovery(BaseTestDiscovery):
         self.assertRaises(DiscoveryFailure, self._discover,
             content_type='application/xrds+xml',
             data=readDataFile('openid_1_and_2_xrds_bad_delegate.xml'),
-            expected_services=1,
+            expected_service_count=1,
             )
 
 
@@ -826,7 +833,7 @@ class TestDiscoveryFailureDjangoAllAuth(unittest.TestCase):
     def test_discovery(self):
         session = {}
         store = openid.store.memstore.MemoryStore()
-        client = openid.consumer.Consumer(session, store)
+        client = openid_consumer.Consumer(session, store)
         auth_request = client.begin("http://www.google.com")
         result = auth_request.redirectURL(
             'http://localhost/',
