@@ -14,6 +14,7 @@ import urllib.parse
 import time
 import io
 import sys
+import contextlib
 
 import openid
 import openid.urinorm
@@ -222,21 +223,17 @@ class Urllib2Fetcher(HTTPFetcher):
             body = bytes(body, encoding="utf-8")
 
         req = urllib.request.Request(url, data=body, headers=headers)
-        try:
-            f = self.urlopen(req)
+        with contextlib.closing(self.urlopen(req)) as f:
             try:
                 return self._makeResponse(f)
-            finally:
-                f.close()
-        except urllib.error.HTTPError as why:
-            try:
-                return self._makeResponse(why)
-            finally:
-                why.close()
-        except urllib.error.URLError as why:
-            raise
-        except Exception as e:
-            raise AssertionError(e)
+            except urllib.error.HTTPError as why:
+                with contextlib.closing(why):
+                    return self._makeResponse(why)
+            except urllib.error.URLError as why:
+                with contextlib.closing(why):
+                    raise
+            except Exception as e:
+                raise AssertionError(e)
 
     def _makeResponse(self, urllib2_response):
         '''
