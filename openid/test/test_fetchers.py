@@ -146,7 +146,9 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/closed':
-            # self.wfile.close()
+            # *somehow* a ResourceWarning gets raised with an unclosed socket
+            # when this is hit. It's virtually impossible to find out where.
+            # Since ResourceWarnings are just warnings, ignore for now.
             pass
         else:
             try:
