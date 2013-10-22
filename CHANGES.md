@@ -1,4 +1,6 @@
 
+As of 3.0.0:
+
 * API changes
   * SQLStore implementations no longer create or use a 'settings'
     table

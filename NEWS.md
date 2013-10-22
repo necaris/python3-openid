@@ -1,3 +1,11 @@
+What's New in Python3-OpenID 3.0.2
+=================================
+
+All the tests that require no more than the standard library pass -- however
+modules that depend on external packages (such as the pyCURL fetcher or the
+MySQL / PostgreSQL stores) haven't been updated and may not work.
+
+
 What's New in Python3-OpenID 3.0.1
 =================================
 
