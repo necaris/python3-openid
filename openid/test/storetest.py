@@ -1,13 +1,14 @@
-from openid.association import Association
-from openid.cryptutil import randomString
-from openid.store.nonce import mkNonce, split
-
 import unittest
 import string
 import time
 import socket
 import random
 import os
+import warnings
+
+from openid.association import Association
+from openid.cryptutil import randomString
+from openid.store.nonce import mkNonce, split
 
 db_host = 'dbtest'
 
@@ -230,41 +231,31 @@ def test_filestore():
     from openid.store import filestore
     import tempfile
     import shutil
-    try:
-        temp_dir = tempfile.mkdtemp()
-    except AttributeError:
-        import os
-        temp_dir = os.tmpnam()
-        os.mkdir(temp_dir)
 
+    temp_dir = tempfile.mkdtemp()
     store = filestore.FileOpenIDStore(temp_dir)
-    try:
-        testStore(store)
-        store.cleanup()
-    except:
-        raise
-    else:
-        shutil.rmtree(temp_dir)
+
+    testStore(store)
+    store.cleanup()
+    shutil.rmtree(temp_dir)
 
 
 def test_sqlite():
     from openid.store import sqlstore
-    try:
-        from pysqlite2 import dbapi2 as sqlite
-    except ImportError:
-        pass
-    else:
-        conn = sqlite.connect(':memory:')
-        store = sqlstore.SQLiteStore(conn)
-        store.createTables()
-        testStore(store)
+    import sqlite3
+    conn = sqlite3.connect(':memory:')
+    store = sqlstore.SQLiteStore(conn)
+    store.createTables()
+    testStore(store)
 
 
 def test_mysql():
+    # TODO fix
     from openid.store import sqlstore
     try:
         import MySQLdb
     except ImportError:
+        warnings.warn("Could not import MySQLdb. Skipping MySQL store tests.")
         pass
     else:
         db_user = 'openid_test'
@@ -332,6 +323,7 @@ def test_postgresql():
     try:
         import psycopg
     except ImportError:
+        warnings.warn("Could not import psycopg. Skipping PostgreSQL store tests.")
         pass
     else:
         db_name = getTmpDbName()
