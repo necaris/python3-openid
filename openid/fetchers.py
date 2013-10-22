@@ -258,13 +258,10 @@ class Urllib2Fetcher(HTTPFetcher):
 
         _, extra_dict = self._parseHeaderValue(
             resp.headers.get("content-type", ""))
-        if 'charset' in extra_dict:
-            # Try to decode the response body to a string, if there's a
-            # charset known
-            charset = extra_dict['charset']
-        else:
-            # Fall back to ISO-8859-1 otherwise, since HTTP/1.1 suggests it
-            charset = "latin1"
+        # Try to decode the response body to a string, if there's a
+        # charset known; fall back to ISO-8859-1 otherwise, since that's
+        # what's suggested in HTTP/1.1
+        charset = extra_dict.get('charset', 'latin1')
         try:
             resp.body = resp.body.decode(charset)
         except Exception:

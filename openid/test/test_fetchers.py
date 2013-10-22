@@ -66,12 +66,15 @@ def test_fetcher(fetcher, should_raise_exc, server):
             pass
         except Exception as e:
             raise AssertionError((fetcher, fetch_url, e))
-            raise
         else:
             failUnlessResponseExpected(expected, actual, extra=locals())
 
-    for err_url in [geturl('/closed'), 'http://invalid.janrain.com/',
-                    'not:a/url', 'ftp://janrain.com/pub/']:
+    for err_url in [
+            geturl('/closed'),
+            'http://invalid.janrain.com/',
+            'not:a/url',
+            'ftp://janrain.com/pub/',
+            ]:
         try:
             result = fetcher.fetch(err_url)
         except (KeyboardInterrupt, SystemExit):
