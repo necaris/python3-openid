@@ -229,7 +229,6 @@ class SQLStore(OpenIDStore):
             associations = []
             for values in rows:
                 assoc = Association(*values)
-                assoc.secret = self.blobDecode(assoc.secret)
                 if assoc.expiresIn == 0:
                     self.txn_removeAssociation(server_url, assoc.handle)
                 else:
@@ -344,7 +343,7 @@ class SQLiteStore(SQLStore):
         return str(buf)
 
     def blobEncode(self, s):
-        return buffer(s)
+        return memoryview(s)
 
     def useNonce(self, *args, **kwargs):
         # Older versions of the sqlite wrapper do not raise
