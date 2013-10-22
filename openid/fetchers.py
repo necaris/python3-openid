@@ -10,6 +10,7 @@ __all__ = ['fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
 import urllib.request
 import urllib.error
 import urllib.parse
+import http.client
 
 import time
 import io
@@ -223,17 +224,20 @@ class Urllib2Fetcher(HTTPFetcher):
             body = bytes(body, encoding="utf-8")
 
         req = urllib.request.Request(url, data=body, headers=headers)
-        with contextlib.closing(self.urlopen(req)) as f:
-            try:
-                return self._makeResponse(f)
-            except urllib.error.HTTPError as why:
-                with contextlib.closing(why):
-                    return self._makeResponse(why)
-            except urllib.error.URLError as why:
-                with contextlib.closing(why):
-                    raise
-            except Exception as e:
-                raise AssertionError(e)
+
+        url_resource = None
+        try:
+            url_resource = self.urlopen(req)
+            with contextlib.closing(url_resource):
+                return self._makeResponse(url_resource)
+        except urllib.error.HTTPError as why:
+            with contextlib.closing(why):
+                resp = self._makeResponse(why)
+                return resp
+        except (urllib.error.URLError, http.client.BadStatusLine) as why:
+            raise
+        except Exception as why:
+            raise AssertionError(why)
 
     def _makeResponse(self, urllib2_response):
         '''
