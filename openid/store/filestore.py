@@ -175,7 +175,7 @@ class FileOpenIDStore(OpenIDStore):
 
         (str, Association) -> NoneType
         """
-        association_s = association.serialize()
+        association_s = association.serialize()  # NOTE: UTF-8 encoded bytes
         filename = self.getAssociationFilename(server_url, association.handle)
         tmp_file, tmp = self._mktemp()
 
@@ -263,17 +263,17 @@ class FileOpenIDStore(OpenIDStore):
                 return None
             else:
                 raise
-        else:
-            try:
-                assoc_s = assoc_file.read()
-            finally:
-                assoc_file.close()
 
-            try:
-                association = Association.deserialize(assoc_s)
-            except ValueError:
-                _removeIfPresent(filename)
-                return None
+        try:
+            assoc_s = assoc_file.read()
+        finally:
+            assoc_file.close()
+
+        try:
+            association = Association.deserialize(assoc_s)
+        except ValueError:
+            _removeIfPresent(filename)
+            return None
 
         # Clean up expired associations
         if association.expiresIn == 0:
