@@ -834,12 +834,14 @@ class TestDiscoveryFailureDjangoAllAuth(unittest.TestCase):
         session = {}
         store = openid.store.memstore.MemoryStore()
         client = openid_consumer.Consumer(session, store)
-        auth_request = client.begin("http://www.google.com")
-        result = auth_request.redirectURL(
-            'http://localhost/',
-            'http://localhost/callback')
-        raise AssertionError("I am an error")
-        self.assertEquals(result, None)
+        # Now confirm that trying discovery on a non-OpenID URL raises a
+        # DiscoveryFailure
+        with self.assertRaises(DiscoveryFailure):
+            auth_request = client.begin("http://www.google.com")
+            result = auth_request.redirectURL(
+                'http://localhost/',
+                'http://localhost/callback')
+            self.assertEquals(result, None)
 
 
 def pyUnitTests():
