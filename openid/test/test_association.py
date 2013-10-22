@@ -13,8 +13,9 @@ class AssociationSerializationTest(unittest.TestCase):
     def test_roundTrip(self):
         issued = int(time.time())
         lifetime = 600
+        handle = 'a-QoU6tM*#!*R\'q\\w<W>X`90>tj7d{[t~Wv@(j(V9(jcx:ZeGYbT0;N]"C}bxQ$aDjf{)"z6@+W<Wb$Vm`k9j0/tZ=\\J[0Qmp35ex[H9g<nUC9UGj4.Hlq7"Q]`w:w6Q'
         assoc = association.Association(
-            'handle', 'secret', issued, lifetime, 'HMAC-SHA1')
+            handle, 'secret', issued, lifetime, 'HMAC-SHA1')
         s = assoc.serialize()
         assoc2 = association.Association.deserialize(s)
         self.assertEqual(assoc.handle, assoc2.handle)
@@ -111,8 +112,8 @@ class TestMac(unittest.TestCase):
     def test_sha1(self):
         assoc = association.Association.fromExpiresIn(
             3600, '{sha1}', 'very_secret', "HMAC-SHA1")
-        expected = ('\xe0\x1bv\x04\xf1G\xc0\xbb\x7f\x9a\x8b'
-                    '\xe9\xbc\xee}\\\xe5\xbb7*')
+        expected = (b'\xe0\x1bv\x04\xf1G\xc0\xbb\x7f\x9a\x8b'
+                    b'\xe9\xbc\xee}\\\xe5\xbb7*')
         sig = assoc.sign(self.pairs)
         self.assertEqual(sig, expected)
 
@@ -120,8 +121,8 @@ class TestMac(unittest.TestCase):
         def test_sha256(self):
             assoc = association.Association.fromExpiresIn(
                 3600, '{sha256SA}', 'very_secret', "HMAC-SHA256")
-            expected = ('\xfd\xaa\xfe;\xac\xfc*\x988\xad\x05d6-\xeaVy'
-                        '\xd5\xa5Z.<\xa9\xed\x18\x82\\$\x95x\x1c&')
+            expected = (b'\xfd\xaa\xfe;\xac\xfc*\x988\xad\x05d6-\xeaVy'
+                        b'\xd5\xa5Z.<\xa9\xed\x18\x82\\$\x95x\x1c&')
             sig = assoc.sign(self.pairs)
             self.assertEqual(sig, expected)
 

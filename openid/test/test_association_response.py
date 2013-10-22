@@ -244,7 +244,7 @@ class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
 
 
 class DummyAssociationSession(object):
-    secret = "shh! don't tell!"
+    secret = b"shh! don't tell!"  # association secrets are bytes
     extract_secret_called = False
 
     session_type = None
