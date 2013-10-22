@@ -29,7 +29,8 @@ def failUnlessResponseExpected(expected, actual, extra):
         assert got_headers[k] == v, (k, v, got_headers[k], extra)
 
 
-def test_fetcher(fetcher, exc, server):
+def test_fetcher(fetcher, should_raise_exc, server):
+
     def geturl(path):
         host, port = server.server_address
         return 'http://%s:%s%s' % (host, port, path)
@@ -79,11 +80,11 @@ def test_fetcher(fetcher, exc, server):
             # This is raised by the Curl fetcher for bad cases
             # detected by the fetchers module, but it's a subclass of
             # HTTPFetchingError, so we have to catch it explicitly.
-            assert exc
+            assert should_raise_exc
         except fetchers.HTTPFetchingError:
-            assert not exc, (fetcher, exc, server)
-        except:
-            assert exc
+            assert not should_raise_exc, (fetcher, should_raise_exc, server)
+        except Exception as e:
+            assert should_raise_exc
         else:
             assert False, 'An exception was expected for %r (%r)' % (
                 fetcher, result)
