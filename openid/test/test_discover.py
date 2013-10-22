@@ -275,17 +275,6 @@ class TestDiscovery(BaseTestDiscovery):
             data=readDataFile('unicode.html'),
             expected_service_count=0)
 
-    # TODO: Remove, I think this is testing the internals of the Yadis parser
-    # and not spec-compliance.
-    def test_unicode_undecodable_html(self):
-        """
-        Check page with unicode and HTML entities that can not be decoded
-        """
-        data = readDataFile('unicode2.html')
-        self.assertRaises(UnicodeDecodeError, data.decode, 'utf-8')
-        self._discover(content_type='text/html;charset=utf-8',
-                       data=data, expected_service_count=0)
-
     def test_unicode_undecodable_html2(self):
         """
         Check page with unicode and HTML entities that can not be decoded
