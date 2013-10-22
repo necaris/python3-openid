@@ -347,7 +347,11 @@ class Association(object):
         #     raise ValueError(fmt % (len(secret), assoc_type))
 
         self.handle = handle
+
+        if isinstance(secret, str):
+            secret = secret.encode("utf-8")  # should be bytes
         self.secret = secret
+
         self.issued = issued
         self.lifetime = lifetime
         self.assoc_type = assoc_type
@@ -428,11 +432,8 @@ class Association(object):
 
         inverse of serialize
 
-
         @param assoc_s: Association as serialized by serialize()
-
-        @type assoc_s: str
-
+        @type assoc_s: bytes
 
         @return: instance of this class
         """
@@ -451,7 +452,7 @@ class Association(object):
             raise ValueError('Unknown version: %r' % version)
         issued = int(issued)
         lifetime = int(lifetime)
-        secret = oidutil.fromBase64(secret).decode('utf-8')  # should be str
+        secret = oidutil.fromBase64(secret)
         return cls(handle, secret, issued, lifetime, assoc_type)
 
     def sign(self, pairs):
@@ -460,13 +461,11 @@ class Association(object):
 
 
         @param pairs: The pairs to sign, in order
-
         @type pairs: sequence of (str, str)
 
 
         @return: The binary signature of this sequence of pairs
-
-        @rtype: str
+        @rtype: bytes
         """
         kv = kvform.seqToKV(pairs)
 
