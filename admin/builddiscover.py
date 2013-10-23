@@ -1,6 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Build a set of YADIS identity URL / service discovery files in
+the format for Apache mod_asis -- simple text files containing their
+own HTTP headers.
+
+These can then be used as a basis for testing.
+"""
+
+import sys
 import os.path
-import urlparse
+import urllib.parse
 
 from openid.test import discoverdata
 
@@ -29,18 +38,21 @@ manifest_header = """\
 """
 
 def buildDiscover(base_url, out_dir):
-    """Convert all files in a directory to apache mod_asis files in
-    another directory."""
+    """
+    Convert all files in a directory to apache mod_asis files in
+    another directory.
+    """
     test_data = discoverdata.readTests(discoverdata.default_test_file)
 
     def writeTestFile(test_name):
+        """Helper to generate an output data file for a given test name."""
         template = test_data[test_name]
 
         data = discoverdata.fillTemplate(
             test_name, template, base_url, discoverdata.example_xrds)
 
         out_file_name = os.path.join(out_dir, test_name)
-        out_file = file(out_file_name, 'w')
+        out_file = open(out_file_name, 'w', encoding="utf-8")
         out_file.write(data)
 
     manifest = [manifest_header]
@@ -49,19 +61,17 @@ def buildDiscover(base_url, out_dir):
             continue
         writeTestFile(input_name)
 
-        input_url = urlparse.urljoin(base_url, input_name)
-        id_url = urlparse.urljoin(base_url, id_name)
-        result_url = urlparse.urljoin(base_url, result_name)
+        input_url = urllib.parse.urljoin(base_url, input_name)
+        id_url = urllib.parse.urljoin(base_url, id_name)
+        result_url = urllib.parse.urljoin(base_url, result_name)
 
         manifest.append('\t'.join((input_url, id_url, result_url)))
         manifest.append('\n')
 
     manifest_file_name = os.path.join(out_dir, 'manifest.txt')
-    manifest_file = file(manifest_file_name, 'w')
-    for chunk in manifest:
-        manifest_file.write(chunk)
-    manifest_file.close()
+    with open(manifest_file_name, 'w', encoding="utf-8") as manifest_file:
+        for chunk in manifest:
+            manifest_file.write(chunk)
 
 if __name__ == '__main__':
-    import sys
     buildDiscover(*sys.argv[1:])
