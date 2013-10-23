@@ -1,4 +1,3 @@
-
 DJANGO EXAMPLE PACKAGE
 ======================
 
@@ -10,12 +9,9 @@ Python web framework.  You can get Django (and learn more about it) at
 SETUP
 =====
 
- 1. Install the OpenID library, version 2.0.0 or later.
+ 1. Install the OpenID library
 
- 2. Install Django 0.95.1.
-
-    If you find that the examples run on even newer versions of
-    Django, please let us know!
+ 2. Install Django >= 1.5 (with Python 3 support)
 
  3. Modify djopenid/settings.py appropriately; you may wish to change
     the database type or path, although the default settings should be
@@ -56,12 +52,3 @@ start looking at the important code by looking in the 'views' modules:
   djopenid.server.views
 
 Each view is a python callable that responds to an HTTP request.
-Regardless of whether you use a framework, your application should
-look similar to these example applications.
-
-CONTACT
-=======
-
-Please send bug reports, patches, and other feedback to
-
-  http://openid.net/developers/dev-mailing-lists/

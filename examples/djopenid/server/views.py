@@ -21,7 +21,8 @@ from djopenid import util
 from djopenid.util import getViewURL
 
 from django import http
-from django.views.generic.simple import direct_to_template
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 
 from openid.server.server import Server, ProtocolError, CheckIDRequest, \
      EncodingError
@@ -64,12 +65,12 @@ def server(request):
     """
     Respond to requests for the server's primary web page.
     """
-    return direct_to_template(
-        request,
+    return render_to_response(
         'server/index.html',
         {'user_url': getViewURL(request, idPage),
          'server_xrds_url': getViewURL(request, idpXrds),
-         })
+         },
+        context_instance=RequestContext(request))
 
 def idpXrds(request):
     """
@@ -83,20 +84,20 @@ def idPage(request):
     """
     Serve the identity page for OpenID URLs.
     """
-    return direct_to_template(
-        request,
+    return render_to_response(
         'server/idPage.html',
-        {'server_url': getViewURL(request, endpoint)})
+        {'server_url': getViewURL(request, endpoint)},
+        context_instance=RequestContext(request))
 
 def trustPage(request):
     """
     Display the trust page template, which allows the user to decide
     whether to approve the OpenID verification.
     """
-    return direct_to_template(
-        request,
+    return render_to_response(
         'server/trust.html',
-        {'trust_handler_url':getViewURL(request, processTrustResult)})
+        {'trust_handler_url':getViewURL(request, processTrustResult)},
+        context_instance=RequestContext(request))
 
 def endpoint(request):
     """
@@ -110,20 +111,20 @@ def endpoint(request):
     # library can use.
     try:
         openid_request = s.decodeRequest(query)
-    except ProtocolError, why:
+    except ProtocolError as why:
         # This means the incoming request was invalid.
-        return direct_to_template(
-            request,
+        return render_to_response(
             'server/endpoint.html',
-            {'error': str(why)})
+            {'error': str(why)},
+        context_instance=RequestContext(request))
 
     # If we did not get a request, display text indicating that this
     # is an endpoint.
     if openid_request is None:
-        return direct_to_template(
-            request,
+        return render_to_response(
             'server/endpoint.html',
-            {})
+            {},
+            context_instance=RequestContext(request))
 
     # We got a request; if the mode is checkid_*, we will handle it by
     # getting feedback from the user or by checking the session.
@@ -189,21 +190,21 @@ def showDecidePage(request, openid_request):
         # Stringify because template's ifequal can only compare to strings.
         trust_root_valid = verifyReturnTo(trust_root, return_to) \
                            and "Valid" or "Invalid"
-    except DiscoveryFailure, err:
+    except DiscoveryFailure as err:
         trust_root_valid = "DISCOVERY_FAILED"
-    except HTTPFetchingError, err:
+    except HTTPFetchingError as err:
         trust_root_valid = "Unreachable"
 
     pape_request = pape.Request.fromOpenIDRequest(openid_request)
 
-    return direct_to_template(
-        request,
+    return render_to_response(
         'server/trust.html',
         {'trust_root': trust_root,
          'trust_handler_url':getViewURL(request, processTrustResult),
          'trust_root_valid': trust_root_valid,
          'pape_request': pape_request,
-         })
+         },
+        context_instance=RequestContext(request))
 
 def processTrustResult(request):
     """
@@ -261,19 +262,19 @@ def displayResponse(request, openid_response):
     # Encode the response into something that is renderable.
     try:
         webresponse = s.encodeResponse(openid_response)
-    except EncodingError, why:
+    except EncodingError as why:
         # If it couldn't be encoded, display an error.
         text = why.response.encodeToKVForm()
-        return direct_to_template(
-            request,
+        return render_to_response(
             'server/endpoint.html',
-            {'error': cgi.escape(text)})
+            {'error': cgi.escape(text)},
+        context_instance=RequestContext(request))
 
     # Construct the appropriate django framework response.
     r = http.HttpResponse(webresponse.body)
     r.status_code = webresponse.code
 
-    for header, value in webresponse.headers.iteritems():
+    for header, value in webresponse.headers.items():
         r[header] = value
 
     return r
