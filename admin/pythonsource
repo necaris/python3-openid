@@ -1,2 +1,8 @@
 #!/usr/bin/env bash
-find ./openid/ \( \( -name _darcs -o -name .svn -o -name _trial_temp -o -name test -o -name admin -o -name examples \) -type d -prune -a -false \) -o \( ! -iname \*~ -a -type f \) -a \( ! -iname \*.pyc -a -type f \) -a -name \*.py
+#
+# Script to find the library's Python source files (i.e. not including
+# tests, admin scripts or example code)
+#
+# Not sure what this is for. Counting SLOC maybe?
+#
+find ./openid \( -name "test" -o -name "admin" -o -name "examples" \) -prune -o -name "*.py"
