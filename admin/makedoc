@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# Generate HTML documentation for the project using Epydoc
+#
+
+# TODO: start using Sphinx
 
 rm -rf doc/*
 epydoc --html --output doc/ --name "Python-OpenID" --top openid \
