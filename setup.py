@@ -3,11 +3,13 @@ import os
 
 from distutils.core import setup
 
-if 'sdist' in sys.argv:
-    os.system('./admin/makedoc')
-
 import openid
+
 version = openid.__version__
+
+if 'sdist' in sys.argv:
+    # When building a source distribution, generate documentation
+    os.system('./admin/makedoc')
 
 setup(
     name='python3-openid',
