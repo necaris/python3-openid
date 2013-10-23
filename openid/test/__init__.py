@@ -1,29 +1,36 @@
-import os.path
 import sys
+import os.path
 import warnings
 import unittest
 
-test_modules = [
-    'cryptutil',
-    'oidutil',
-    'dh',
-    ]
 
-
-def fixpath():
+def addParentToPath():
+    """
+    Add the parent directory to sys.path to make it importable.
+    """
     try:
         d = os.path.dirname(__file__)
     except NameError:
         d = os.path.dirname(sys.argv[0])
     parent = os.path.normpath(os.path.join(d, '..'))
     if parent not in sys.path:
-        print(("putting %s in sys.path" % (parent,)))
+        print("adding {} to sys.path".format(parent))
         sys.path.insert(0, parent)
 
 
-def otherTests():
+def specialCaseTests():
+    """
+    Some modules have an explicit `test` function that collects tests --
+    collect these together as a suite.
+    """
+    function_test_modules = [
+        'cryptutil',
+        'oidutil',
+        'dh',
+    ]
+
     suite = unittest.TestSuite()
-    for module_name in test_modules:
+    for module_name in function_test_modules:
         module_name = 'openid.test.' + module_name
         try:
             test_mod = __import__(module_name, {}, {}, [None])
@@ -36,7 +43,11 @@ def otherTests():
 
 
 def pyUnitTests():
-    pyunit_module_names = [
+    """
+    Aggregate unit tests from modules, including a few special cases, and
+    return a suite.
+    """
+    test_module_names = [
         'server',
         'consumer',
         'message',
@@ -56,11 +67,11 @@ def pyUnitTests():
         'rpverify',
         'extension',
         'codecutil',
-        ]
+    ]
 
-    pyunit_modules = [
-        __import__('openid.test.test_%s' % (name,), {}, {}, ['unused'])
-        for name in pyunit_module_names
+    test_modules = [
+        __import__('openid.test.test_{}'.format(name), {}, {}, ['unused'])
+        for name in test_module_names
         ]
 
     try:
@@ -71,10 +82,11 @@ def pyUnitTests():
         # something else, we just need to skip it
         warnings.warn("Could not import twill; skipping test_examples.")
     else:
-        pyunit_modules.append(test_examples)
+        test_modules.append(test_examples)
 
     # Some modules have data-driven tests, and they use custom methods
-    # to build the test suite:
+    # to build the test suite -- the module-level pyUnitTests function should
+    # return an appropriate test suite
     custom_module_names = [
         'kvform',
         'linkparse',
@@ -94,54 +106,46 @@ def pyUnitTests():
         ]
 
     loader = unittest.TestLoader()
-    s = unittest.TestSuite()
+    suite = unittest.TestSuite()
 
-    for m in pyunit_modules:
-        s.addTest(loader.loadTestsFromModule(m))
+    for m in test_modules:
+        suite.addTest(loader.loadTestsFromModule(m))
 
     for name in custom_module_names:
-        m = __import__('openid.test.%s' % (name,), {}, {}, ['unused'])
+        mod = __import__('openid.test.{}'.format(name), {}, {}, ['unused'])
         try:
-            s.addTest(m.pyUnitTests())
+            suite.addTest(mod.pyUnitTests())
         except AttributeError:
             # because the AttributeError doesn't actually say which
             # object it was.
             print(("Error loading tests from %s:" % (name,)))
             raise
 
-    return s
+    return suite
 
 
 def _import_djopenid():
-    """Import djopenid from examples/
-
-    It's not in sys.path, and I don't really want to put it in sys.path.
     """
-    import types
-    parentDir = os.path.join(__file__, "..", "..")
-    topDir = os.path.abspath(os.path.join(parentDir, ".."))
-    djdir = os.path.join(topDir, 'examples', 'djopenid')
-
-    djinit = os.path.join(djdir, '__init__.py')
-
-    djopenid = types.ModuleType('djopenid')
-    with open(djinit, 'r') as f:
-        exec(compile(f.read(), "__init__.py", "exec"), {})
-
-    djopenid.__file__ = djinit
-
-    # __path__ is the magic that makes child modules of the djopenid package
-    # importable.  New feature in python 2.3, see PEP 302.
-    djopenid.__path__ = [djdir]
-    sys.modules['djopenid'] = djopenid
-
-
-def django_tests():
-    """Runs tests from examples/djopenid.
-
-    @returns: number of failed tests.
+    Import djopenid from the examples directory without putting it in sys.path
+    permanently (which we don't really want to do as we don't want namespace
+    conflicts)
     """
-    import os
+    # Find our way to the examples/djopenid directory
+    grandParentDir = os.path.join(__file__, "..", "..", "..")
+    grandParentDir = os.path.abspath(grandParentDir)
+    examplesDir = os.path.join(grandParentDir, "examples")
+
+    sys.path.append(examplesDir)
+    import djopenid
+    sys.path.remove(examplesDir)
+
+
+def djangoExampleTests():
+    """
+    Run tests from examples/djopenid.
+
+    @return: number of failed tests.
+    """
     # Django uses this to find out where its settings are.
     os.environ['DJANGO_SETTINGS_MODULE'] = 'djopenid.settings'
 
@@ -150,30 +154,31 @@ def django_tests():
     try:
         import django.test.simple
     except ImportError:
-        warnings.warn("django.test.simple not found; "
-                      "django examples not tested.")
+        warnings.warn("django.test.simple not found; skipping django examples.")
         return 0
 
-    import djopenid.server.models, djopenid.consumer.models
+    import djopenid.server.models
+    import djopenid.consumer.models
     print ("Testing Django examples:")
 
-    # These tests do get put in to a pyunit test suite, so we could run them
-    # with the other pyunit tests, but django also establishes a test database
-    # for them, so we let it do that thing instead.
+    runner = django.test.simple.DjangoTestSuiteRunner()
+    return runner.run_tests(['server', 'consumer'])
+
+    # These tests do get put into a test suite, so we could run them with the
+    # other tests, but django also establishes a test database for them, so we
+    # let it do that thing instead.
     return django.test.simple.run_tests([djopenid.server.models,
                                          djopenid.consumer.models])
 
-try:
-    bool
-except NameError:
-    def bool(x):
-        return not not x
 
 
 def test_suite():
-    fixpath()
-    all_suite = unittest.TestSuite()
-    all_suite.addTests(otherTests())
-    all_suite.addTests(pyUnitTests())
-    all_suite.addTest(unittest.FunctionTestCase(django_tests))
-    return all_suite
+    """
+    Collect all of the tests together in a single suite.
+    """
+    addParentToPath()
+    combined_suite = unittest.TestSuite()
+    combined_suite.addTests(specialCaseTests())
+    combined_suite.addTests(pyUnitTests())
+    combined_suite.addTest(unittest.FunctionTestCase(djangoExampleTests))
+    return combined_suite
