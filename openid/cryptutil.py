@@ -78,6 +78,9 @@ SHA256_AVAILABLE = True
 try:
     from Crypto.Util.number import long_to_bytes, bytes_to_long
 except ImportError:
+    # In the case where we don't have pycrypto installed, define substitute
+    # functionality.
+
     import pickle
 
     def longToBinary(l):
@@ -94,26 +97,27 @@ except ImportError:
         b.reverse()
         return pickle.decode_long(bytes(b))
 else:
-    # We have pycrypto
+    # We have pycrypto, so wrap its functions instead.
 
     def longToBinary(l):
         if l < 0:
             raise ValueError('This function only supports positive integers')
 
-        bytes = long_to_bytes(l)
-        if ord(bytes[0]) > 127:
-            return '\x00' + bytes
+        bytestring = long_to_bytes(l)
+        if bytestring[0] > 127:
+            return b'\x00' + bytestring
         else:
-            return bytes
+            return bytestring
 
-    def binaryToLong(bytes):
-        if not bytes:
+    def binaryToLong(bytestring):
+        if not bytestring:
             raise ValueError('Empty string passed to strToLong')
 
-        if ord(bytes[0]) > 127:
+        if bytestring[0] > 127:
             raise ValueError('This function only supports positive integers')
 
-        return bytes_to_long(bytes)
+        return bytes_to_long(bytestring)
+
 
 # A cryptographically safe source of random bytes
 getBytes = os.urandom
