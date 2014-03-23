@@ -1,7 +1,7 @@
 
 from django import http
 from django.http import HttpResponseRedirect
-from django.views.generic.simple import direct_to_template
+from django.views.generic.base import TemplateView
 
 from openid.consumer import consumer
 from openid.consumer.discover import DiscoveryFailure
@@ -21,6 +21,7 @@ PAPE_POLICIES = [
 POLICY_PAIRS = [(p, getattr(pape, p))
                 for p in PAPE_POLICIES]
 
+
 def getOpenIDStore():
     """
     Return an OpenID store object fit for the currently-chosen
@@ -28,20 +29,23 @@ def getOpenIDStore():
     """
     return util.getOpenIDStore('/tmp/djopenid_c_store', 'c_')
 
+
 def getConsumer(request):
     """
     Get a Consumer object to perform OpenID authentication.
     """
     return consumer.Consumer(request.session, getOpenIDStore())
 
+
 def renderIndexPage(request, **template_args):
     template_args['consumer_url'] = util.getViewURL(request, startOpenID)
     template_args['pape_policies'] = POLICY_PAIRS
 
-    response =  direct_to_template(
+    response = TemplateView(
         request, 'consumer/index.html', template_args)
     response[YADIS_HEADER_NAME] = util.getViewURL(request, rpXRDS)
     return response
+
 
 def startOpenID(request):
     """
@@ -128,10 +132,11 @@ def startOpenID(request):
             form_id = 'openid_message'
             form_html = auth_request.formMarkup(trust_root, return_to,
                                                 False, {'id': form_id})
-            return direct_to_template(
+            return TemplateView(
                 request, 'consumer/request_form.html', {'html': form_html})
 
     return renderIndexPage(request)
+
 
 def finishOpenID(request):
     """
@@ -209,6 +214,7 @@ def finishOpenID(request):
             result['failure_reason'] = response.message
 
     return renderIndexPage(request, **result)
+
 
 def rpXRDS(request):
     """

@@ -42,7 +42,9 @@ def getOpenIDStore(filestore_path, table_prefix):
     The result of this function should be passed to the Consumer
     constructor as the store parameter.
     """
-    if not settings.DATABASE_ENGINE:
+
+    db_engine = settings.DATABASES['default']['ENGINE']
+    if not db_engine:
         return FileOpenIDStore(filestore_path)
 
     # Possible side-effect: create a database connection if one isn't
@@ -56,21 +58,20 @@ def getOpenIDStore(filestore_path, table_prefix):
         }
 
     types = {
-        'postgresql': sqlstore.PostgreSQLStore,
-        'mysql': sqlstore.MySQLStore,
-        'sqlite3': sqlstore.SQLiteStore,
+        'django.db.backends.postgresql_psycopg2': sqlstore.PostgreSQLStore,
+        'django.db.backends.mysql': sqlstore.MySQLStore,
+        'django.db.backends.sqlite3': sqlstore.SQLiteStore,
         }
 
-    try:
-        s = types[settings.DATABASE_ENGINE](connection.connection,
-                                            **tablenames)
-    except KeyError:
-        raise ImproperlyConfigured("Database engine %s not supported by OpenID library" % \
-              (settings.DATABASE_ENGINE,))
+    if db_engine not in types:
+        raise ImproperlyConfigured(
+            "Database engine %s not supported by OpenID library" % db_engine)
+
+    s = types[db_engine](connection.connection, **tablenames)
 
     try:
         s.createTables()
-    except (SystemExit, KeyboardInterrupt, MemoryError) as e:
+    except (SystemExit, KeyboardInterrupt, MemoryError):
         raise
     except:
         # XXX This is not the Right Way to do this, but because the
