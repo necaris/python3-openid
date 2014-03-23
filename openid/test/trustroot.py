@@ -69,15 +69,17 @@ def parseTests(data):
     tests.extend(getTests(_MatchTest, [1, 0], mh, mdat))
     return tests
 
+
 def pyUnitTests():
     here = os.path.dirname(os.path.abspath(__file__))
     test_data_file_name = os.path.join(here, 'data', 'trustroot.txt')
-    test_data_file = open(test_data_file_name)
+    test_data_file = open(test_data_file_name, encoding='utf-8')
     test_data = test_data_file.read()
     test_data_file.close()
 
     tests = parseTests(test_data)
     return unittest.TestSuite(tests)
+
 
 if __name__ == '__main__':
     suite = pyUnitTests()
