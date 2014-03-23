@@ -14,12 +14,12 @@ if 'sdist' in sys.argv:
 setup(
     name='python3-openid',
     version=version,
-    description='OpenID support for servers and consumers.',
+    description='OpenID support for modern servers and consumers.',
     long_description='''This is a set of Python packages to support use of
-the OpenID decentralized identity system in your application.  Want to enable
-single sign-on for your web site?  Use the openid.consumer package.  Want to
-run your own OpenID server? Check out openid.server.  Includes example code
-and support for a variety of storage back-ends.''',
+the OpenID decentralized identity system in your application, update to Python
+3.  Want to enable single sign-on for your web site?  Use the openid.consumer
+package.  Want to run your own OpenID server? Check out openid.server.
+Includes example code and support for a variety of storage back-ends.''',
     url='http://github.com/necaris/python3-openid',
     packages=[
         'openid',
@@ -33,6 +33,8 @@ and support for a variety of storage back-ends.''',
     # license specified by classifier
     author='Rami Chowdhury',
     author_email='rami.chowdhury@gmail.com',
+    maintainer='Rami Chowdhury',
+    maintainer_email='rami.chowdhury@gmail.com',
     download_url=('http://github.com/necaris/python3-openid/tarball'
                   '/v{}'.format(version)),
     classifiers=[
