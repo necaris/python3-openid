@@ -4,3 +4,5 @@
 .tox
 MANIFEST
 dist/
+.envrc
+.direnv
