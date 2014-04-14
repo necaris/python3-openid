@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-#
-# Script to find the library's Python source files (i.e. not including
-# tests, admin scripts or example code)
-#
-# Not sure what this is for. Counting SLOC maybe?
-#
-find ./openid \( -name "test" -o -name "admin" -o -name "examples" \) -prune -o -name "*.py"
