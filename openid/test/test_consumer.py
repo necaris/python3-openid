@@ -1918,7 +1918,8 @@ class TestCreateAssociationRequest(unittest.TestCase):
     # XXX: test the other types
 
 
-class TestDiffieHellmanResponseParameters(object):
+class _TestingDiffieHellmanResponseParameters(object):
+
     session_cls = None
     message_namespace = None
 
@@ -1977,18 +1978,20 @@ class TestDiffieHellmanResponseParameters(object):
                               self.msg)
 
 
-class TestOpenID1SHA1(TestDiffieHellmanResponseParameters, unittest.TestCase):
+class TestOpenID1SHA1(_TestingDiffieHellmanResponseParameters,
+                      unittest.TestCase):
     session_cls = DiffieHellmanSHA1ConsumerSession
     message_namespace = OPENID1_NS
 
 
-class TestOpenID2SHA1(TestDiffieHellmanResponseParameters, unittest.TestCase):
+class TestOpenID2SHA1(_TestingDiffieHellmanResponseParameters,
+                      unittest.TestCase):
     session_cls = DiffieHellmanSHA1ConsumerSession
     message_namespace = OPENID2_NS
 
 if cryptutil.SHA256_AVAILABLE:
 
-    class TestOpenID2SHA256(TestDiffieHellmanResponseParameters,
+    class TestOpenID2SHA256(_TestingDiffieHellmanResponseParameters,
                             unittest.TestCase):
         session_cls = DiffieHellmanSHA256ConsumerSession
         message_namespace = OPENID2_NS
