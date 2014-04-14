@@ -1,4 +1,4 @@
-This started out as a fork of the Python OpenID library, with changes
+*NOTE*: This started out as a fork of the Python OpenID library, with changes
 to make it Python 3 compatible. It's now a port of that library, including
 cleanups and updates to the code in general.
 
@@ -6,7 +6,7 @@ cleanups and updates to the code in general.
 
 # REQUIREMENTS
 
- - Python 3.x (tested on 3.2, 3.3)
+ - Python 3.x (tested on 3.2, 3.3, 3.4)
 
 # INSTALLATION
 
@@ -21,11 +21,13 @@ Alternatively, you can run the following command:
 
 # GETTING STARTED
 
-The examples directory includes an example server and consumer
-implementation.  See the README file in that directory for more
-information on running the examples. *NOTE* this may be out of date.
+The library should follow the existing `python-openid` API as closely as possible.
 
-The library should follow the existing `python-openid` API as closely as possible -- documentation will be auto-generated as soon as I can figure out how to update the documentation tools.
+*NOTE*: documentation will be auto-generated as soon as I can figure out how to update the documentation tools.
+
+*NOTE*: The examples directory includes an example server and consumer
+implementation.  See the README file in that directory for more
+information on running the examples.
 
 # LOGGING
 
@@ -46,6 +48,6 @@ detailed at:
 # CONTACT
 
 Going forward, the plan is to maintain this library on GitHub, so any bug
-reports, suggestions, and feature requests should be raised as Issues.
+reports, suggestions, and feature requests should be raised [here](issues).
 
 There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
