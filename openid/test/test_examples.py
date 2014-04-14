@@ -11,8 +11,7 @@ import twill.commands
 import twill.parse
 import twill.unit
 
-from openid.consumer.discover import \
-     OpenIDServiceEndpoint, OPENID_1_1_TYPE
+from openid.consumer.discover import OpenIDServiceEndpoint, OPENID_1_1_TYPE
 from openid.consumer.consumer import AuthRequest
 
 
@@ -66,7 +65,6 @@ def runExampleServer(host, port, data_path):
     serverMain(host, port, data_path)
 
 
-
 class TestServer(unittest.TestCase):
     """Acceptance tests for examples/server.py.
 
@@ -90,12 +88,10 @@ class TestServer(unittest.TestCase):
 
         twill.commands.reset_browser()
 
-
     def runExampleServer(self):
         """Zero-arg run-the-server function to be passed to TestInfo."""
         # FIXME - make sure sstore starts clean.
         runExampleServer('127.0.0.1', self.server_port, 'sstore')
-
 
     def v1endpoint(self, port):
         """Return an OpenID 1.1 OpenIDServiceEndpoint for the server."""
@@ -108,7 +104,6 @@ class TestServer(unittest.TestCase):
 
 
     # TODO: test discovery
-
     def test_checkidv1(self):
         """OpenID 1.1 checkid_setup request."""
         ti = TwillTest(self.twill_checkidv1, self.runExampleServer,
@@ -118,7 +113,6 @@ class TestServer(unittest.TestCase):
         if self.twillErr.getvalue():
             self.fail(self.twillErr.getvalue())
 
-
     def test_allowed(self):
         """OpenID 1.1 checkid_setup request."""
         ti = TwillTest(self.twill_allowed, self.runExampleServer,
@@ -127,7 +121,6 @@ class TestServer(unittest.TestCase):
 
         if self.twillErr.getvalue():
             self.fail(self.twillErr.getvalue())
-
 
     def twill_checkidv1(self, twillInfo):
         endpoint = self.v1endpoint(self.server_port)
@@ -149,7 +142,6 @@ class TestServer(unittest.TestCase):
             msg = '%s\nFinal page:\n%s' % (
                 str(e), c.get_browser().get_html())
             self.fail(msg)
-
 
     def twill_allowed(self, twillInfo):
         endpoint = self.v1endpoint(self.server_port)
@@ -181,7 +173,6 @@ class TestServer(unittest.TestCase):
                 self.twillErr.getvalue(),
                 c.get_browser().get_html())
             self.fail(msg)
-
 
     def tearDown(self):
         twill.set_output(None)
