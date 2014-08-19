@@ -17,7 +17,8 @@ XRDS_BOILERPLATE = '''\
 '''
 
 def mkXRDS(services):
-    return XRDS_BOILERPLATE % (services,)
+    xrds = XRDS_BOILERPLATE % (services,)
+    return xrds.encode('utf-8')
 
 def mkService(uris=None, type_uris=None, local_id=None, dent='        '):
     chunks = [dent, '<Service>\n']

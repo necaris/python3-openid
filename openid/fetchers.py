@@ -323,11 +323,11 @@ class CurlHTTPFetcher(HTTPFetcher):
 
         # Remove the status line from the beginning of the input
         unused_http_status_line = header_file.readline().lower()
-        if unused_http_status_line.startswith('http/1.1 100 '):
+        if unused_http_status_line.startswith(b'http/1.1 100 '):
             unused_http_status_line = header_file.readline()
             unused_http_status_line = header_file.readline()
 
-        lines = [line.strip() for line in header_file]
+        lines = [line.decode().strip() for line in header_file]
 
         # and the blank line from the end
         empty_line = lines.pop()
@@ -368,7 +368,8 @@ class CurlHTTPFetcher(HTTPFetcher):
         header_list = []
         if headers is not None:
             for header_name, header_value in headers.items():
-                header_list.append('%s: %s' % (header_name, header_value))
+                header = '%s: %s' % (header_name, header_value)
+                header_list.append(header.encode())
 
         c = pycurl.Curl()
         try:
@@ -386,7 +387,7 @@ class CurlHTTPFetcher(HTTPFetcher):
                 if not self._checkURL(url):
                     raise HTTPError("Fetching URL not allowed: %r" % (url,))
 
-                data = io.StringIO()
+                data = io.BytesIO()
 
                 def write_data(chunk):
                     if data.tell() > (1024 * MAX_RESPONSE_KB):
@@ -394,7 +395,7 @@ class CurlHTTPFetcher(HTTPFetcher):
                     else:
                         return data.write(chunk)
 
-                response_header_data = io.StringIO()
+                response_header_data = io.BytesIO()
                 c.setopt(pycurl.WRITEFUNCTION, write_data)
                 c.setopt(pycurl.HEADERFUNCTION, response_header_data.write)
                 c.setopt(pycurl.TIMEOUT, off)
@@ -420,7 +421,7 @@ class CurlHTTPFetcher(HTTPFetcher):
                     resp.headers = response_headers
                     resp.status = code
                     resp.final_url = url
-                    resp.body = data.getvalue()
+                    resp.body = data.getvalue().decode()
                     return resp
 
                 off = stop - int(time.time())
