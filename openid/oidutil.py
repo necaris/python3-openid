@@ -15,6 +15,12 @@ import urllib.parse as urlparse
 from urllib.parse import urlencode
 
 
+xxe_safe_elementtree_modules = [
+    'defusedxml.cElementTree',
+    'defusedxml.ElementTree',
+    ]
+
+
 elementtree_modules = [
     'lxml.etree',
     'xml.etree.cElementTree',
@@ -59,6 +65,27 @@ for (var i = 0; i < elements.length; i++) {
 </html>
 """ % (title, form)
     return html
+
+
+def importSafeElementTree(module_names=None):
+    """Find a working ElementTree implementation that is not vulnerable
+    to XXE, using `defusedxml`.
+
+    >>> XXESafeElementTree = importSafeElementTree()
+
+    @param module_names: The names of modules to try to use as
+        a safe ElementTree. Defaults to C{L{xxe_safe_elementtree_modules}}
+
+    @returns: An ElementTree module that is not vulnerable to XXE.
+    """
+    if module_names is None:
+        module_names = xxe_safe_elementtree_modules
+    try:
+        return importElementTree(module_names)
+    except ImportError:
+        raise ImportError('Unable to find a ElementTree module '
+            'that is not vulnerable to XXE. '
+            'Tried importing %r' % (module_names,))
 
 
 def importElementTree(module_names=None):

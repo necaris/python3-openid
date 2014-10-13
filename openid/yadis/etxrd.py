@@ -25,8 +25,10 @@ import functools
 from datetime import datetime
 from time import strptime
 
-from openid.oidutil import importElementTree
+from openid.oidutil import importElementTree, importSafeElementTree
+
 ElementTree = importElementTree()
+SafeElementTree = importSafeElementTree()
 
 # the different elementtree modules don't have a common exception
 # model. We just want to be able to catch the exceptions that signify
@@ -66,7 +68,7 @@ def parseXRDS(text):
         not contain an XRDS.
     """
     try:
-        element = ElementTree.XML(text)
+        element = SafeElementTree.XML(text)
     except XMLError as why:
         exc = XRDSError('Error parsing document as XML')
         exc.reason = why

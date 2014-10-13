@@ -37,6 +37,9 @@ Includes example code and support for a variety of storage back-ends.''',
     maintainer_email='rami.chowdhury@gmail.com',
     download_url=('http://github.com/necaris/python3-openid/tarball'
                   '/v{}'.format(version)),
+    install_requires=[
+        'defusedxml',
+    ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
