@@ -189,8 +189,7 @@ def getCanonicalID(iname, xrd_tree):
     childID = canonicalID.lower()
 
     for xrd in xrd_list[1:]:
-        # XXX: can't use rsplit until we require python >= 2.4.
-        parent_sought = childID[:childID.rindex('!')]
+        parent_sought = childID.rsplit("!", 1)[0]
         parent = xri.XRI(xrd.findtext(canonicalID_tag))
         if parent_sought != parent.lower():
             raise XRDSFraud("%r can not come from %s" % (childID, parent))
