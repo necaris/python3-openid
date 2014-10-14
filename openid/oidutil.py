@@ -22,7 +22,6 @@ xxe_safe_elementtree_modules = [
 
 
 elementtree_modules = [
-    'lxml.etree',
     'xml.etree.cElementTree',
     'xml.etree.ElementTree',
     'cElementTree',

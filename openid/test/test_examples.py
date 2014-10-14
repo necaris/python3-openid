@@ -7,6 +7,8 @@ import sys
 import time
 from io import StringIO
 
+# TODO: Replace twill with MechanicalSoup or similar
+'''
 import twill.commands
 import twill.parse
 import twill.unit
@@ -177,7 +179,7 @@ class TestServer(unittest.TestCase):
     def tearDown(self):
         twill.set_output(None)
         twill.set_errout(None)
-
+'''
 
 if __name__ == '__main__':
     unittest.main()

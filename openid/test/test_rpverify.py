@@ -75,6 +75,13 @@ class TestExtractReturnToURLs(unittest.TestCase):
     def test_badXML(self):
         self.failUnlessDiscoveryFailure('>')
 
+    def test_failure(self):
+        try:
+            self.failUnlessDiscoveryFailure('')
+        except Exception as e:
+            print(e)
+            raise
+
     def test_noEntries(self):
         self.failUnlessXRDSHasReturnURLs(b'''\
 <?xml version="1.0" encoding="UTF-8"?>
