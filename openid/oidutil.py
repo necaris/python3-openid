@@ -11,7 +11,7 @@ __all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML',
 import binascii
 import logging
 
-import urllib.parse as urlparse
+# import urllib.parse as urlparse
 from urllib.parse import urlencode
 
 
