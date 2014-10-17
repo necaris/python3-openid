@@ -30,19 +30,6 @@ from openid.oidutil import importElementTree, importSafeElementTree
 ElementTree = importElementTree()
 SafeElementTree = importSafeElementTree()
 
-# the different elementtree modules don't have a common exception
-# model. We just want to be able to catch the exceptions that signify
-# malformed XML data and wrap them, so that the other library code
-# doesn't have to know which XML library we're using.
-try:
-    # Make the parser raise an exception so we can sniff out the type
-    # of exceptions
-    ElementTree.XML('> purposely malformed XML <')
-except (SystemExit, MemoryError, AssertionError, ImportError):
-    raise
-except:
-    XMLError = sys.exc_info()[0]
-
 from openid.yadis import xri
 
 
@@ -69,7 +56,9 @@ def parseXRDS(text):
     """
     try:
         element = SafeElementTree.XML(text)
-    except XMLError as why:
+    except (SystemExit, MemoryError, AssertionError, ImportError):
+        raise
+    except Exception as why:
         exc = XRDSError('Error parsing document as XML')
         exc.reason = why
         raise exc
