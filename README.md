@@ -2,7 +2,7 @@
 to make it Python 3 compatible. It's now a port of that library, including
 cleanups and updates to the code in general.
 
-[![Build Status](https://travis-ci.org/necaris/python3-openid.png?branch=master)](https://travis-ci.org/necaris/python3-openid)
+[![Build Status](https://travis-ci.org/necaris/python3-openid.svg?branch=master)](https://travis-ci.org/necaris/python3-openid)
 
 # REQUIREMENTS
 
