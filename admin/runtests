@@ -14,19 +14,19 @@ def fixpath():
         d = os.path.dirname(sys.argv[0])
     parent = os.path.normpath(os.path.join(d, '..'))
     if parent not in sys.path:
-        print "putting %s in sys.path" % (parent,)
+        print ("putting %s in sys.path" % (parent,))
         sys.path.insert(0, parent)
 
 def otherTests():
     failed = []
     for module_name in test_modules:
-        print 'Testing %s...' % (module_name,) ,
+        print ('Testing %s...' % (module_name,))
         sys.stdout.flush()
         module_name = 'openid.test.' + module_name
         try:
             test_mod = __import__(module_name, {}, {}, [None])
         except ImportError:
-            print 'Failed to import test %r' % (module_name,)
+            print ('Failed to import test %r' % (module_name,))
             failed.append(module_name)
         else:
             try:
@@ -37,7 +37,7 @@ def otherTests():
                 sys.excepthook(*sys.exc_info())
                 failed.append(module_name)
             else:
-                print 'Succeeded.'
+                print ('Succeeded.')
 
 
     return failed
@@ -72,7 +72,7 @@ def pyunitTests():
 
     try:
         from openid.test import test_examples
-    except ImportError, e:
+    except ImportError as e:
         if 'twill' in str(e):
             warnings.warn("Could not import twill; skipping test_examples.")
         else:
@@ -110,10 +110,10 @@ def pyunitTests():
         m = __import__('openid.test.%s' % (name,), {}, {}, ['unused'])
         try:
             s.addTest(m.pyUnitTests())
-        except AttributeError, ex:
+        except AttributeError as ex:
             # because the AttributeError doesn't actually say which
             # object it was.
-            print "Error loading tests from %s:" % (name,)
+            print ("Error loading tests from %s:" % (name,))
             raise
 
     runner = unittest.TextTestRunner() # verbosity=2)
@@ -125,7 +125,7 @@ def pyunitTests():
 def splitDir(d, count):
     # in python2.4 and above, it's easier to spell this as
     # d.rsplit(os.sep, count)
-    for i in xrange(count):
+    for i in range(count):
         d = os.path.dirname(d)
     return d
 
@@ -144,7 +144,9 @@ def _import_djopenid():
     djinit = os.path.join(djdir, '__init__.py')
 
     djopenid = types.ModuleType('djopenid')
-    execfile(djinit, djopenid.__dict__)
+    with open(djinit) as f:
+        code = compile(f.read(), djinit, 'exec')
+        exec(code, djopenid.__dict__)
     djopenid.__file__ = djinit
 
     # __path__ is the magic that makes child modules of the djopenid package
@@ -167,12 +169,12 @@ def django_tests():
 
     try:
         import django.test.simple
-    except ImportError, e:
+    except ImportError as e:
         warnings.warn("django.test.simple not found; "
                       "django examples not tested.")
         return 0
     import djopenid.server.models, djopenid.consumer.models
-    print "Testing Django examples:"
+    print ("Testing Django examples:")
 
     # These tests do get put in to a pyunit test suite, so we could run them
     # with the other pyunit tests, but django also establishes a test database
@@ -193,7 +195,7 @@ def main():
     django_failures = django_tests()
 
     if other_failed:
-        print 'Failures:', ', '.join(other_failed)
+        print ('Failures:', ', '.join(other_failed))
 
     failed = (bool(other_failed) or
               bool(not pyunit_result.wasSuccessful()) or
