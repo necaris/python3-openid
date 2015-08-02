@@ -1,4 +1,6 @@
 #
 nose==1.3.1
 Django==1.5
+httplib2
 pycrypto
+pycurl
