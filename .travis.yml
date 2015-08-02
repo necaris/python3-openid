@@ -13,6 +13,7 @@ python:
 env:
   global:
     - TEST_DB_HOST=localhost
+    - TEST_MYSQL_USER=root
     - TEST_POSTGRES_USER=postgres
 
 install:

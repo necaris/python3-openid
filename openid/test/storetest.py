@@ -1,9 +1,8 @@
 import unittest
 import string
 import time
-import socket
-import random
 import os
+import uuid
 import warnings
 
 from openid.association import Association
@@ -27,12 +26,12 @@ generateSecret = randomString
 
 
 def getTmpDbName():
-    hostname = socket.gethostname()
-    hostname = hostname.replace('.', '_')
-    hostname = hostname.replace('-', '_')
-    return "%s_%d_%s_openid_test" % \
-           (hostname, os.getpid(), \
-            random.randrange(1, int(time.time())))
+    """Returns a name suitable for creating a temporary database.
+
+    Restrictions:
+     - Maximum length 64 characters (MySQL)
+    """
+    return "openid_test_%s" % uuid.uuid4().hex
 
 
 def testStore(store):
@@ -250,7 +249,6 @@ def test_sqlite():
 
 
 def test_mysql():
-    # TODO fix
     from openid.store import sqlstore
     try:
         import MySQLdb
@@ -258,7 +256,7 @@ def test_mysql():
         warnings.warn("Could not import MySQLdb. Skipping MySQL store tests.")
         pass
     else:
-        db_user = 'openid_test'
+        db_user = os.environ.get('TEST_MYSQL_USER', 'openid_test')
         db_passwd = ''
         db_name = getTmpDbName()
 
@@ -269,7 +267,7 @@ def test_mysql():
             conn = MySQLdb.connect(user=db_user, passwd=db_passwd,
                                    host=db_host)
         except MySQLdb.OperationalError as why:
-            if int(why) == 2005:
+            if why.args[0] == 2005:
                 print(('Skipping MySQL store test (cannot connect '
                        'to test server on host %r)' % (db_host,)))
                 return
