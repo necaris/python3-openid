@@ -1,16 +1,15 @@
 import unittest
 import string
 import time
-import socket
-import random
 import os
+import uuid
 import warnings
 
 from openid.association import Association
 from openid.cryptutil import randomString
 from openid.store.nonce import mkNonce, split
 
-db_host = 'dbtest'
+db_host = os.environ.get('TEST_DB_HOST', 'dbtest')
 
 allowed_handle = []
 for c in string.printable:
@@ -27,12 +26,12 @@ generateSecret = randomString
 
 
 def getTmpDbName():
-    hostname = socket.gethostname()
-    hostname = hostname.replace('.', '_')
-    hostname = hostname.replace('-', '_')
-    return "%s_%d_%s_openid_test" % \
-           (hostname, os.getpid(), \
-            random.randrange(1, int(time.time())))
+    """Returns a name suitable for creating a temporary database.
+
+    Restrictions:
+     - Maximum length 64 characters (MySQL)
+    """
+    return "openid_test_%s" % uuid.uuid4().hex
 
 
 def testStore(store):
@@ -55,7 +54,7 @@ def testStore(store):
 
     def checkRetrieve(url, handle=None, expected=None):
         retrieved_assoc = store.getAssociation(url, handle)
-        assert retrieved_assoc == expected, (retrieved_assoc, expected)
+        assert retrieved_assoc == expected, (retrieved_assoc.__dict__, expected.__dict__)
         if expected is not None:
             if retrieved_assoc is expected:
                 print ('Unexpected: retrieved a reference to the expected '
@@ -250,7 +249,6 @@ def test_sqlite():
 
 
 def test_mysql():
-    # TODO fix
     from openid.store import sqlstore
     try:
         import MySQLdb
@@ -258,7 +256,7 @@ def test_mysql():
         warnings.warn("Could not import MySQLdb. Skipping MySQL store tests.")
         pass
     else:
-        db_user = 'openid_test'
+        db_user = os.environ.get('TEST_MYSQL_USER', 'openid_test')
         db_passwd = ''
         db_name = getTmpDbName()
 
@@ -269,7 +267,7 @@ def test_mysql():
             conn = MySQLdb.connect(user=db_user, passwd=db_passwd,
                                    host=db_host)
         except MySQLdb.OperationalError as why:
-            if int(why) == 2005:
+            if why.args[0] == 2005:
                 print(('Skipping MySQL store test (cannot connect '
                        'to test server on host %r)' % (db_host,)))
                 return
@@ -298,7 +296,7 @@ def test_postgresql():
     Tests the PostgreSQLStore on a locally-hosted PostgreSQL database
     cluster, version 7.4 or later.  To run this test, you must have:
 
-    - The 'psycopg' python module (version 1.1) installed
+    - The 'psycopg2' python module (version 1.1) installed
 
     - PostgreSQL running locally
 
@@ -321,19 +319,24 @@ def test_postgresql():
     """
     from openid.store import sqlstore
     try:
-        import psycopg
+        import psycopg2
     except ImportError:
-        warnings.warn("Could not import psycopg. Skipping PostgreSQL store tests.")
+        warnings.warn("Could not import psycopg2. Skipping PostgreSQL store tests.")
         pass
     else:
         db_name = getTmpDbName()
-        db_user = 'openid_test'
+        db_user = os.environ.get('TEST_POSTGRES_USER', 'openid_test')
 
         # Connect once to create the database; reconnect to access the
         # new database.
-        conn_create = psycopg.connect(database='template1', user=db_user,
-                                      host=db_host)
-        conn_create.autocommit()
+        try:
+            conn_create = psycopg2.connect(database='template1', user=db_user,
+                                           host=db_host)
+        except psycopg2.OperationalError as why:
+            warnings.warn("Skipping PostgreSQL store test: %s" % why)
+            return
+
+        conn_create.autocommit = True
 
         # Create the test database.
         cursor = conn_create.cursor()
@@ -341,7 +344,7 @@ def test_postgresql():
         conn_create.close()
 
         # Connect to the test database.
-        conn_test = psycopg.connect(database=db_name, user=db_user,
+        conn_test = psycopg2.connect(database=db_name, user=db_user,
                                     host=db_host)
 
         # OK, we're in the right environment. Create the store
@@ -363,9 +366,9 @@ def test_postgresql():
         time.sleep(1)
 
         # Remove the database now that the test is over.
-        conn_remove = psycopg.connect(database='template1', user=db_user,
+        conn_remove = psycopg2.connect(database='template1', user=db_user,
                                       host=db_host)
-        conn_remove.autocommit()
+        conn_remove.autocommit = True
 
         cursor = conn_remove.cursor()
         cursor.execute('DROP DATABASE %s;' % (db_name,))

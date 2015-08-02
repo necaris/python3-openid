@@ -228,6 +228,8 @@ class SQLStore(OpenIDStore):
         else:
             associations = []
             for values in rows:
+                values = list(values)
+                values[1] = self.blobDecode(values[1])
                 assoc = Association(*values)
                 if assoc.expiresIn == 0:
                     self.txn_removeAssociation(server_url, assoc.handle)
@@ -339,9 +341,6 @@ class SQLiteStore(SQLStore):
 
     clean_nonce_sql = 'DELETE FROM %(nonces)s WHERE timestamp < ?;'
 
-    def blobDecode(self, buf):
-        return str(buf)
-
     def blobEncode(self, s):
         return memoryview(s)
 
@@ -417,13 +416,6 @@ class MySQLStore(SQLStore):
 
     clean_nonce_sql = 'DELETE FROM %(nonces)s WHERE timestamp < %%s;'
 
-    def blobDecode(self, blob):
-        if type(blob) is str:
-            # Versions of MySQLdb >= 1.2.2
-            return blob
-        else:
-            # Versions of MySQLdb prior to 1.2.2 (as far as we can tell)
-            return blob.tostring()
 
 class PostgreSQLStore(SQLStore):
     """
@@ -434,16 +426,7 @@ class PostgreSQLStore(SQLStore):
 
     All other methods are implementation details.
     """
-
-    try:
-        import psycopg as exceptions
-    except ImportError:
-        # psycopg2 has the dbapi extension where the exception classes
-        # are available on the connection object. A psycopg2
-        # connection will use the correct exception classes because of
-        # this, and a psycopg connection will fall through to use the
-        # psycopg imported above.
-        exceptions = None
+    exceptions = None
 
     create_nonce_sql = """
     CREATE TABLE %(nonces)s (
@@ -510,9 +493,9 @@ class PostgreSQLStore(SQLStore):
     clean_nonce_sql = 'DELETE FROM %(nonces)s WHERE timestamp < %%s;'
 
     def blobEncode(self, blob):
-        try:
-            from psycopg2 import Binary
-        except ImportError:
-            from psycopg import Binary
+        from psycopg2 import Binary
 
         return Binary(blob)
+
+    def blobDecode(self, blob):
+        return blob.tobytes()

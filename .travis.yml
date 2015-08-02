@@ -1,11 +1,23 @@
 language: python
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
 
 python:
   - 3.4
   - 3.3
   - 3.2
 
+env:
+  global:
+    - TEST_DB_HOST=localhost
+    - TEST_MYSQL_USER=root
+    - TEST_POSTGRES_USER=postgres
+
 install:
-  - pip install --use-mirrors Django==1.5
+  - pip install "pip>=7.1.0"
+  - pip install -r dev-requirements.txt
   - python setup.py install
 script: ./run_tests.sh

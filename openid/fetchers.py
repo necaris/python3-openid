@@ -496,7 +496,7 @@ class HTTPLib2Fetcher(HTTPFetcher):
             final_url = url
 
         return HTTPResponse(
-            body=content,
+            body=content.decode(), # TODO Don't assume ASCII
             final_url=final_url,
             headers=dict(list(httplib2_response.items())),
             status=httplib2_response.status,

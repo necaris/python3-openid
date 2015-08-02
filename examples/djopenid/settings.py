@@ -38,6 +38,7 @@ TIME_ZONE = 'Europe/London'
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 # http://blogs.law.harvard.edu/tech/stories/storyReader$15
 LANGUAGE_CODE = 'en-us.UTF-8'
+USE_I18N = False
 
 SITE_ID = 1
 
