@@ -3,7 +3,6 @@ import string
 import time
 import os
 import uuid
-import warnings
 
 from openid.association import Association
 from openid.cryptutil import randomString
@@ -253,8 +252,9 @@ def test_mysql():
     try:
         import MySQLdb
     except ImportError:
-        warnings.warn("Could not import MySQLdb. Skipping MySQL store tests.")
-        pass
+        raise unittest.SkipTest('Skipping MySQL store tests. '
+                                'Could not import MySQLdb.')
+
     else:
         db_user = os.environ.get('TEST_MYSQL_USER', 'openid_test')
         db_passwd = ''
@@ -268,9 +268,9 @@ def test_mysql():
                                    host=db_host)
         except MySQLdb.OperationalError as why:
             if why.args[0] == 2005:
-                print(('Skipping MySQL store test (cannot connect '
-                       'to test server on host %r)' % (db_host,)))
-                return
+                raise unittest.SkipTest('Skipping MySQL store test. '
+                                        'Cannot connect to server on host %r.'
+                                        % (db_host,))
             else:
                 raise
 
@@ -321,8 +321,8 @@ def test_postgresql():
     try:
         import psycopg2
     except ImportError:
-        warnings.warn("Could not import psycopg2. Skipping PostgreSQL store tests.")
-        pass
+        raise unittest.SkipTest('Skipping PostgreSQL store tests. '
+                                'Could not import psycopg2.')
     else:
         db_name = getTmpDbName()
         db_user = os.environ.get('TEST_POSTGRES_USER', 'openid_test')
@@ -333,8 +333,8 @@ def test_postgresql():
             conn_create = psycopg2.connect(database='template1', user=db_user,
                                            host=db_host)
         except psycopg2.OperationalError as why:
-            warnings.warn("Skipping PostgreSQL store test: %s" % why)
-            return
+            raise unittest.SkipTest('Skipping PostgreSQL store test: %s'
+                                     % why)
 
         conn_create.autocommit = True
 

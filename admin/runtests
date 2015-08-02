@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-import os.path, sys, warnings
+import os.path
+import sys
+import unittest
+
 
 test_modules = [
     'cryptutil',
@@ -74,7 +77,8 @@ def pyunitTests():
         from openid.test import test_examples
     except ImportError as e:
         if 'twill' in str(e):
-            warnings.warn("Could not import twill; skipping test_examples.")
+            raise unittest.SkipTest('Skipping test_examples. '
+                                    'Could not import twill.')
         else:
             raise
     else:
@@ -170,9 +174,8 @@ def django_tests():
     try:
         import django.test.simple
     except ImportError as e:
-        warnings.warn("django.test.simple not found; "
-                      "django examples not tested.")
-        return 0
+        raise unittest.SkipTest("django.test.simple not found; "
+                                "django examples not tested.")
     import djopenid.server.models, djopenid.consumer.models
     print ("Testing Django examples:")
 
