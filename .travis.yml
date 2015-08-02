@@ -10,6 +10,11 @@ python:
   - 3.3
   - 3.2
 
+env:
+  global:
+    - TEST_DB_HOST=localhost
+    - TEST_POSTGRES_USER=postgres
+
 install:
   - pip install "pip>=7.1.0"
   - pip install -r dev-requirements.txt

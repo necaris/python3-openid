@@ -119,13 +119,13 @@ def main(argv=None):
             return 1
         password = askForPassword()
         try:
-            import psycopg
+            import psycopg2
         except ImportError:
-            print "You need psycopg installed to update a postgres DB."
+            print "You need psycopg2 installed to update a postgres DB."
             return 1
 
         try:
-            db_conn = psycopg.connect(database = options.postgres_db_name,
+            db_conn = psycopg2.connect(database = options.postgres_db_name,
                                       user = options.username,
                                       host = options.db_host,
                                       password = password)
