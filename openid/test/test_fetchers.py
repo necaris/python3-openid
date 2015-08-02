@@ -107,10 +107,9 @@ def run_fetcher_tests(server):
                 try:
                     __import__(library_name)
                 except ImportError:
-                    warnings.warn(
+                    raise unittest.SkipTest(
                         'Skipping tests for %r fetcher because '
                         'the library did not import.' % (library_name,))
-                    pass
                 else:
                     assert False, ('%s present but not detected' % (
                         library_name,))

@@ -43,22 +43,22 @@ class TestProcessTrustResult(TestCase):
 
         response = views.processTrustResult(self.request)
 
-        self.failUnlessEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         finalURL = response['location']
-        self.failUnless('openid.mode=id_res' in finalURL, finalURL)
-        self.failUnless('openid.identity=' in finalURL, finalURL)
-        self.failUnless('openid.sreg.postcode=12345' in finalURL, finalURL)
+        self.assertIn('openid.mode=id_res', finalURL)
+        self.assertIn('openid.identity=', finalURL)
+        self.assertIn('openid.sreg.postcode=12345', finalURL)
 
     def test_cancel(self):
         self.request.POST['cancel'] = 'Yes'
 
         response = views.processTrustResult(self.request)
 
-        self.failUnlessEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         finalURL = response['location']
-        self.failUnless('openid.mode=cancel' in finalURL, finalURL)
-        self.failIf('openid.identity=' in finalURL, finalURL)
-        self.failIf('openid.sreg.postcode=12345' in finalURL, finalURL)
+        self.assertIn('openid.mode=cancel', finalURL)
+        self.assertNotIn('openid.identity=', finalURL)
+        self.assertNotIn('openid.sreg.postcode=12345', finalURL)
 
 
 class TestShowDecidePage(TestCase):
@@ -98,6 +98,6 @@ class TestGenericXRDS(TestCase):
         requested_url = 'http://requested.invalid/'
         (endpoint,) = applyFilter(requested_url, response.content)
 
-        self.failUnlessEqual(YADIS_CONTENT_TYPE, response['Content-Type'])
-        self.failUnlessEqual(type_uris, endpoint.type_uris)
-        self.failUnlessEqual(endpoint_url, endpoint.uri)
+        self.assertEqual(YADIS_CONTENT_TYPE, response['Content-Type'])
+        self.assertEqual(type_uris, endpoint.type_uris)
+        self.assertEqual(endpoint_url, endpoint.uri)

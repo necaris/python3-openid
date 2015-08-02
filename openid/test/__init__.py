@@ -154,8 +154,8 @@ def djangoExampleTests():
     try:
         import django.test.simple
     except ImportError:
-        warnings.warn("django.test.simple not found; skipping django examples.")
-        return 0
+        raise unittest.SkipTest("Skipping django examples. "
+                                "django.test.simple not found.")
 
     import djopenid.server.models
     import djopenid.consumer.models
