@@ -20,4 +20,10 @@ install:
   - pip install "pip>=7.1.0"
   - pip install -r dev-requirements.txt
   - python setup.py install
-script: ./run_tests.sh
+
+script:
+  - coverage run -m unittest openid.test.test_suite
+  - coverage report
+
+after_success:
+  - coveralls

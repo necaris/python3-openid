@@ -1,0 +1,6 @@
+[run]
+source =
+    examples
+    openid
+omit =
+    openid/test/*
