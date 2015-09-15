@@ -23,7 +23,7 @@ module.
     and limitations under the License.
 """
 
-version_info = (3, 0, 6)
+version_info = (3, 0, 7)
 
 __version__ = ".".join(str(x) for x in version_info)
 
