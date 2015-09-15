@@ -1,4 +1,3 @@
-from html.parser import HTMLParseError
 import os.path
 import unittest
 import sys
@@ -33,8 +32,6 @@ class _TestCase(unittest.TestCase):
 
             msg = "%r != %r for case %s" % (found, self.expected, self.case)
             self.assertEqual(found, self.expected, msg)
-        except HTMLParseError:
-            self.assertTrue(self.expected == 'None', (self.case, self.expected))
         else:
             self.assertTrue(self.expected == 'EOF', (self.case, self.expected))
 

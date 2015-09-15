@@ -1,6 +1,6 @@
 __all__ = ['findHTMLMeta', 'MetaNotFound']
 
-from html.parser import HTMLParser, HTMLParseError
+from html.parser import HTMLParser
 import html.entities
 import re
 
@@ -187,10 +187,6 @@ def findHTMLMeta(stream):
         chunks.append(chunk)
         try:
             parser.feed(chunk)
-        except HTMLParseError as why:
-            # HTML parse error, so bail
-            chunks.append(stream.read())
-            break
         except ParseDone as why:
             uri = why.args[0]
             if uri is None:
