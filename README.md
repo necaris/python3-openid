@@ -3,6 +3,7 @@ to make it Python 3 compatible. It's now a port of that library, including
 cleanups and updates to the code in general.
 
 [![Build Status](https://travis-ci.org/necaris/python3-openid.svg?branch=master)](https://travis-ci.org/necaris/python3-openid)
+[![Coverage Status](https://coveralls.io/repos/necaris/python3-openid/badge.svg?branch=master&service=github)](https://coveralls.io/github/necaris/python3-openid?branch=master)
 
 # REQUIREMENTS
 
@@ -47,7 +48,11 @@ detailed at:
 
 # CONTACT
 
-Going forward, the plan is to maintain this library on GitHub, so any bug
-reports, suggestions, and feature requests should be raised [here](issues).
+Bug reports, suggestions, and feature requests are [very welcome](issues)!
 
 There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
+
+# CONTRIBUTORS
+
+- @necaris
+- @moreati
