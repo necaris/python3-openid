@@ -6,9 +6,11 @@ cache:
     - $HOME/.cache/pip
 
 python:
+  - 3.5
   - 3.4
   - 3.3
   - 3.2
+  - pypy3
 
 env:
   global:

@@ -4,9 +4,16 @@ import time
 import os
 import uuid
 
+try:
+    import psycopg2
+except ImportError:
+    from psycopg2cffi import compat
+    compat.register()
+
 from openid.association import Association
 from openid.cryptutil import randomString
 from openid.store.nonce import mkNonce, split
+
 
 db_host = os.environ.get('TEST_DB_HOST', 'dbtest')
 

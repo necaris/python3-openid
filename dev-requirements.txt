@@ -1,11 +1,11 @@
 # Test dependencies
-coverage
+coverage==3.7.1
 coveralls
 
 # Package dependencies
 Django==1.5
 httplib2
 mysqlclient ; python_version >= '3.3'
-psycopg2
+psycopg2cffi
 pycrypto
 pycurl
