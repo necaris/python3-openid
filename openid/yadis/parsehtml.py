@@ -3,6 +3,7 @@ __all__ = ['findHTMLMeta', 'MetaNotFound']
 from html.parser import HTMLParser
 import html.entities
 import re
+import sys
 
 from openid.yadis.constants import YADIS_HEADER_NAME
 
@@ -96,7 +97,13 @@ class YadisHTMLParser(HTMLParser):
     TERMINATED = 4
 
     def __init__(self):
-        super(YadisHTMLParser, self).__init__()
+        if (sys.version_info.minor <= 2):
+            # Python 3.2 and below actually require the `strict` argument
+            # to `html.parser.HTMLParser` -- otherwise it's deprecated and
+            # we don't want to pass it
+            super(YadisHTMLParser, self).__init__(strict=False)
+        else:
+            super(YadisHTMLParser, self).__init__()
         self.phase = self.TOP
 
     def _terminate(self):
