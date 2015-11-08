@@ -96,7 +96,7 @@ class YadisHTMLParser(HTMLParser):
     TERMINATED = 4
 
     def __init__(self):
-        super(YadisHTMLParser, self).__init__(strict=False)
+        super(YadisHTMLParser, self).__init__()
         self.phase = self.TOP
 
     def _terminate(self):
