@@ -2,7 +2,6 @@
 """
 Utility code for the Django example consumer and server.
 """
-
 from urllib.parse import urljoin
 
 from django.db import connection
@@ -14,6 +13,12 @@ from django.core.urlresolvers import reverse as reverseURL
 from django.shortcuts import render_to_response
 
 from django.conf import settings
+
+try:
+    import psycopg2
+except ImportError:
+    from psycopg2cffi import compat
+    compat.register()
 
 from openid.store.filestore import FileOpenIDStore
 from openid.store import sqlstore
