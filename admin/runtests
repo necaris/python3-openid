@@ -195,7 +195,12 @@ def main():
     fixpath()
     other_failed = otherTests()
     pyunit_result = pyunitTests()
-    django_failures = django_tests()
+
+    try:
+        django_failures = 0
+        django_failures = django_tests()
+    except unittest.SkipTest as e:
+        print(e)
 
     if other_failed:
         print ('Failures:', ', '.join(other_failed))
