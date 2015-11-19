@@ -171,19 +171,27 @@ def django_tests():
 
     _import_djopenid()
 
-    try:
-        import django.test.simple
-    except ImportError as e:
-        raise unittest.SkipTest("django.test.simple not found; "
+    import django
+
+    if django.VERSION < (1, 7):
+        raise unittest.SkipTest("django >= 1.7 not found; "
                                 "django examples not tested.")
+
+    from django.conf import settings
+    from django.test.utils import get_runner
+
+    django.setup()
+
+    test_runner = get_runner(settings)()
+
     import djopenid.server.models, djopenid.consumer.models
     print ("Testing Django examples:")
 
     # These tests do get put in to a pyunit test suite, so we could run them
     # with the other pyunit tests, but django also establishes a test database
     # for them, so we let it do that thing instead.
-    return django.test.simple.run_tests([djopenid.server.models,
-                                         djopenid.consumer.models])
+    return test_runner.run_tests(["djopenid.server.models",
+                                  "djopenid.consumer.models"])
 
 try:
     bool
