@@ -932,6 +932,9 @@ class GenericConsumer(object):
         if not endpoint:
             logging.info('No pre-discovered information supplied.')
             endpoint = self._discoverAndVerify(to_match.claimed_id, [to_match])
+        elif endpoint.isOPIdentifier():
+            logging.info('Pre-discovered information based on OP-ID; need to rediscover.')
+            endpoint = self._discoverAndVerify(to_match.claimed_id, [to_match])
         else:
             # The claimed ID matches, so we use the endpoint that we
             # discovered in initiation. This should be the most common
