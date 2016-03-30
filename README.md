@@ -7,7 +7,7 @@ cleanups and updates to the code in general.
 
 # REQUIREMENTS
 
- - Python 3.x (tested on 3.2, 3.3, 3.4)
+ - Python 3.3+ (tested on 3.3-3.5 and PyPy3)
 
 # INSTALLATION
 
