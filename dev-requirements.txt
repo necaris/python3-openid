@@ -2,8 +2,10 @@
 coverage==3.7.1
 coveralls
 
-# Package dependencies
-Django==1.5
+# Package dependencies -- keep these reasonably up to date, if not bleeding-
+# edge -- also try to maintain compatibility with all the Python versions we
+# support
+Django==1.8
 httplib2
 mysqlclient ; python_version >= '3.3'
 psycopg2cffi

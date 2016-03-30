@@ -19,7 +19,7 @@ env:
     - TEST_POSTGRES_USER=postgres
 
 install:
-  - pip install "pip>=7.1.0"
+  - pip install "pip>=8.0.0"
   - pip install -r dev-requirements.txt
   - python setup.py install
 
