@@ -1,4 +1,4 @@
-#-*-coding: utf-8-*-
+#-*- coding: utf-8 -*-
 """
 This package is an implementation of the OpenID specification in
 Python.  It contains code for both server and consumer

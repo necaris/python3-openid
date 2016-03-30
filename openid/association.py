@@ -1,5 +1,5 @@
 #-*-test-case-name: openid.test.test_association-*-
-#-*-coding: utf-8-*-
+#-*- coding: utf-8 -*-
 """
 This module contains code for dealing with associations between
 consumers and servers. Associations contain a shared secret that is
