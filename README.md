@@ -5,11 +5,11 @@ cleanups and updates to the code in general.
 [![Build Status](https://travis-ci.org/necaris/python3-openid.svg?branch=master)](https://travis-ci.org/necaris/python3-openid)
 [![Coverage Status](https://coveralls.io/repos/necaris/python3-openid/badge.svg?branch=master&service=github)](https://coveralls.io/github/necaris/python3-openid?branch=master)
 
-# REQUIREMENTS
+# requirements
 
  - Python 3.3+ (tested on 3.3-3.5 and PyPy3)
 
-# INSTALLATION
+# installation
 
 The recommended way is to install from PyPI with `pip`:
 
@@ -20,7 +20,7 @@ Alternatively, you can run the following command:
     python setup.py install
 
 
-# GETTING STARTED
+# getting started
 
 The library should follow the existing `python-openid` API as closely as possible.
 
@@ -30,7 +30,7 @@ The library should follow the existing `python-openid` API as closely as possibl
 implementation.  See the README file in that directory for more
 information on running the examples.
 
-# LOGGING
+# logging
 
 This library offers a logging hook that will record unexpected
 conditions that occur in library code. If a condition is recoverable,
@@ -39,20 +39,20 @@ recoverable, the library will raise an exception. See the
 documentation for the `openid.oidutil` module for more on the logging
 hook.
 
-# DOCUMENTATION
+# documentation
 
 The documentation in this library is in Epydoc format, which is
 detailed at:
 
   http://epydoc.sourceforge.net/
 
-# CONTACT
+# contact
 
 Bug reports, suggestions, and feature requests are [very welcome](issues)!
 
 There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
 
-# CONTRIBUTORS
+# contributors
 
 - @necaris
 - @moreati
