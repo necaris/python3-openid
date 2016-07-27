@@ -322,7 +322,7 @@ class CurlHTTPFetcher(HTTPFetcher):
         header_file.seek(0)
 
         # Remove all non "name: value" header lines from the input
-        lines = [line.decode().strip() for line in header_file if ':' in line]
+        lines = [line.decode().strip() for line in header_file if b':' in line]
 
         headers = {}
         for line in lines:
