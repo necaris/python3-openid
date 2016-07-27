@@ -321,18 +321,8 @@ class CurlHTTPFetcher(HTTPFetcher):
     def _parseHeaders(self, header_file):
         header_file.seek(0)
 
-        # Remove the status line from the beginning of the input
-        unused_http_status_line = header_file.readline().lower()
-        if unused_http_status_line.startswith(b'http/1.1 100 '):
-            unused_http_status_line = header_file.readline()
-            unused_http_status_line = header_file.readline()
-
-        lines = [line.decode().strip() for line in header_file]
-
-        # and the blank line from the end
-        empty_line = lines.pop()
-        if empty_line:
-            raise HTTPError("No blank line at end of headers: %r" % (line,))
+        # Remove all non "name: value" header lines from the input
+        lines = [line.decode().strip() for line in header_file if b':' in line]
 
         headers = {}
         for line in lines:
