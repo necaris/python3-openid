@@ -7,8 +7,7 @@ cache:
 
 python:
   - 3.5
-  - 3.4
-  - 3.3
+  - 3.6
   - pypy3
 
 env:
@@ -16,15 +15,44 @@ env:
     - TEST_DB_HOST=localhost
     - TEST_MYSQL_USER=root
     - TEST_POSTGRES_USER=postgres
+  matrix:
+    - TOX_ENV=py33
+    - TOX_ENV=py34
+    - TOX_ENV=py35
+    - TOX_ENV=py36
+    - TOX_ENV=pypy3
+
+matrix:
+  allow_failures:
+    - python: 3.6
+      env: TOX_ENV=py36
+  exclude:
+    - python: 3.5
+      env: TOX_ENV=py33
+    - python: 3.5
+      env: TOX_ENV=py34
+    - python: 3.5
+      env: TOX_ENV=py36
+    - python: 3.5
+      env: TOX_ENV=pypy3
+    - python: pypy3
+      env: TOX_ENV=py33
+    - python: pypy3
+      env: TOX_ENV=py34
+    - python: pypy3
+      env: TOX_ENV=py35
+    - python: pypy3
+      env: TOX_ENV=py36
+    - python: 3.6
+      env: TOX_ENV=py35
+    - python: 3.6
+      env: TOX_ENV=pypy3
 
 install:
-  - pip install "pip>=8.0.0"
-  - pip install -r dev-requirements.txt
-  - python setup.py install
+  - pip install tox
 
 script:
-  - coverage run -m unittest openid.test.test_suite
-  - coverage report
+  - tox -e $TOX_ENV
 
 after_success:
   - coveralls
