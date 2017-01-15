@@ -24,6 +24,13 @@ association.
     does not support C{'no-encryption'} associations. It prefers
     HMAC-SHA1/DH-SHA1 association types if available.
 """
+import time
+import functools
+
+from openid import cryptutil
+from openid import kvform
+from openid import oidutil
+from openid.message import OPENID_NS
 
 __all__ = [
     'default_negotiator',
@@ -31,13 +38,6 @@ __all__ = [
     'SessionNegotiator',
     'Association',
 ]
-
-import time
-
-from openid import cryptutil
-from openid import kvform
-from openid import oidutil
-from openid.message import OPENID_NS
 
 all_association_types = [
     'HMAC-SHA1',
@@ -198,6 +198,7 @@ def getSecretSize(assoc_type):
         raise ValueError('Unsupported association type: %r' % (assoc_type,))
 
 
+@functools.total_ordering
 class Association(object):
     """
     This class represents an association between a server and a
@@ -372,6 +373,16 @@ class Association(object):
             now = int(time.time())
 
         return max(0, self.issued + self.lifetime - now)
+
+    def __lt__(self, other):
+        """
+        Compare two C{L{Association}} instances to determine relative
+        ordering.
+
+        Currently compares object lifetimes -- C{L{Association}} A < B
+        if A.lifetime < B.lifetime.
+        """
+        return self.lifetime < other.lifetime
 
     def __eq__(self, other):
         """
