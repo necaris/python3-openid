@@ -11,7 +11,7 @@ version = openid.__version__
 install_requires = [
     # Ensure that Python <= 3.3 uses an older version of `defusedxml`, which
     # dropped compatibility in 0.5.0
-    'defusedxml' + '<=0.4.1' if sys.version_info < (3, 4) else '',
+    'defusedxml' + ('<=0.4.1' if sys.version_info < (3, 4) else ''),
 ]
 
 setup(
