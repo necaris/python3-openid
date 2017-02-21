@@ -7,9 +7,12 @@ import openid
 
 version = openid.__version__
 
-if 'sdist' in sys.argv:
-    # When building a source distribution, generate documentation
-    os.system('./admin/makedoc')
+
+install_requires = [
+    # Ensure that Python <= 3.3 uses an older version of `defusedxml`, which
+    # dropped compatibility in 0.5.0
+    'defusedxml' + '<=0.4.1' if sys.version_info < (3, 4) else '',
+]
 
 setup(
     name='python3-openid',
@@ -37,9 +40,7 @@ Includes example code and support for a variety of storage back-ends.''',
     maintainer_email='rami.chowdhury@gmail.com',
     download_url=('http://github.com/necaris/python3-openid/tarball'
                   '/v{}'.format(version)),
-    install_requires=[
-        'defusedxml',
-    ],
+    install_requires=install_requires,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
