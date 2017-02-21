@@ -20,7 +20,7 @@ upload:
 test:
 	tox # coverage run -m unittest openid.test.test_suite
 
-release-patch: clean #test
+release-patch: clean test
 	@$(call release,patch)
 
 release-minor: clean test
