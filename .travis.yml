@@ -23,6 +23,9 @@ env:
     - TOX_ENV=pypy3
 
 matrix:
+  allow_failures:
+    - python: pypy3
+      env: TOX_ENV=pypy3
   exclude:
     - python: 3.5
       env: TOX_ENV=py33

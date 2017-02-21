@@ -7,7 +7,7 @@ cleanups and updates to the code in general.
 
 # requirements
 
- - Python 3.3+ (tested on 3.3-3.5 and PyPy3)
+ - Python 3.3+ (tested on CPython 3.3-3.6, and PyPy3 (although some tests may fail on PyPy))
 
 # installation
 
@@ -24,7 +24,8 @@ Alternatively, you can run the following command:
 
 The library should follow the existing `python-openid` API as closely as possible.
 
-*NOTE*: documentation will be auto-generated as soon as I can figure out how to update the documentation tools.
+*NOTE*: documentation will be auto-generated as soon as I can figure out how to
+update the documentation tools.
 
 *NOTE*: The examples directory includes an example server and consumer
 implementation.  See the README file in that directory for more
