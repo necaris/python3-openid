@@ -24,7 +24,7 @@ def test_base64():
         '\x01',
         '\x00' * 100,
         ''.join(map(chr, list(range(256)))),
-        ]
+    ]
 
     for s in cases:
         b64 = oidutil.toBase64(s)
@@ -58,7 +58,6 @@ class AppendArgsTest(unittest.TestCase):
 
 
 class TestUnicodeConversion(unittest.TestCase):
-
     def test_toUnicode(self):
         # Unicode objects pass through
         self.assertTrue(isinstance(oidutil.toUnicode('fööbär'), str))
@@ -87,78 +86,48 @@ class TestSymbol(unittest.TestCase):
 def buildAppendTests():
     simple = 'http://www.example.com/'
     cases = [
-        ('empty list',
-         (simple, []),
-         simple),
-
-        ('empty dict',
-         (simple, {}),
-         simple),
-
-        ('one list',
-         (simple, [('a', 'b')]),
-         simple + '?a=b'),
-
-        ('one dict',
-         (simple, {'a':'b'}),
-         simple + '?a=b'),
-
-        ('two list (same)',
-         (simple, [('a', 'b'), ('a', 'c')]),
+        ('empty list', (simple, []), simple),
+        ('empty dict', (simple, {}), simple),
+        ('one list', (simple, [('a', 'b')]), simple + '?a=b'),
+        ('one dict', (simple, {
+            'a': 'b'
+        }), simple + '?a=b'),
+        ('two list (same)', (simple, [('a', 'b'), ('a', 'c')]),
          simple + '?a=b&a=c'),
-
-        ('two list',
-         (simple, [('a', 'b'), ('b', 'c')]),
-         simple + '?a=b&b=c'),
-
-        ('two list (order)',
-         (simple, [('b', 'c'), ('a', 'b')]),
+        ('two list', (simple, [('a', 'b'), ('b', 'c')]), simple + '?a=b&b=c'),
+        ('two list (order)', (simple, [('b', 'c'), ('a', 'b')]),
          simple + '?b=c&a=b'),
-
-        ('two dict (order)',
-         (simple, {'b':'c', 'a':'b'}),
-         simple + '?a=b&b=c'),
-
-        ('escape',
-         (simple, [('=', '=')]),
-         simple + '?%3D=%3D'),
-
-        ('escape (URL)',
-         (simple, [('this_url', simple)]),
+        ('two dict (order)', (simple, {
+            'b': 'c',
+            'a': 'b'
+        }), simple + '?a=b&b=c'),
+        ('escape', (simple, [('=', '=')]), simple + '?%3D=%3D'),
+        ('escape (URL)', (simple, [('this_url', simple)]),
          simple + '?this_url=http%3A%2F%2Fwww.example.com%2F'),
-
-        ('use dots',
-         (simple, [('openid.stuff', 'bother')]),
+        ('use dots', (simple, [('openid.stuff', 'bother')]),
          simple + '?openid.stuff=bother'),
-
-        ('args exist (empty)',
-         (simple + '?stuff=bother', []),
+        ('args exist (empty)', (simple + '?stuff=bother', []),
          simple + '?stuff=bother'),
-
-        ('args exist',
-         (simple + '?stuff=bother', [('ack', 'ack')]),
+        ('args exist', (simple + '?stuff=bother', [('ack', 'ack')]),
          simple + '?stuff=bother&ack=ack'),
-
-        ('args exist',
-         (simple + '?stuff=bother', [('ack', 'ack')]),
+        ('args exist', (simple + '?stuff=bother', [('ack', 'ack')]),
          simple + '?stuff=bother&ack=ack'),
-
-        ('args exist (dict)',
-         (simple + '?stuff=bother', {'ack': 'ack'}),
-         simple + '?stuff=bother&ack=ack'),
-
-        ('args exist (dict 2)',
-         (simple + '?stuff=bother', {'ack': 'ack', 'zebra':'lion'}),
-         simple + '?stuff=bother&ack=ack&zebra=lion'),
-
-        ('three args (dict)',
-         (simple, {'stuff': 'bother', 'ack': 'ack', 'zebra':'lion'}),
-         simple + '?ack=ack&stuff=bother&zebra=lion'),
-
+        ('args exist (dict)', (simple + '?stuff=bother', {
+            'ack': 'ack'
+        }), simple + '?stuff=bother&ack=ack'),
+        ('args exist (dict 2)', (simple + '?stuff=bother', {
+            'ack': 'ack',
+            'zebra': 'lion'
+        }), simple + '?stuff=bother&ack=ack&zebra=lion'),
+        ('three args (dict)', (simple, {
+            'stuff': 'bother',
+            'ack': 'ack',
+            'zebra': 'lion'
+        }), simple + '?ack=ack&stuff=bother&zebra=lion'),
         ('three args (list)',
          (simple, [('stuff', 'bother'), ('ack', 'ack'), ('zebra', 'lion')]),
          simple + '?stuff=bother&ack=ack&zebra=lion'),
-        ]
+    ]
 
     tests = []
 
@@ -172,7 +141,9 @@ def buildAppendTests():
 def pyUnitTests():
     some = buildAppendTests()
     some.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestSymbol))
-    some.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(TestUnicodeConversion))
+    some.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            TestUnicodeConversion))
     return some
 
 
@@ -188,10 +159,12 @@ def test_appendArgs():
 # specified and tested in oidutil.py These include, but are not
 # limited to appendArgs
 
+
 def test(skipPyUnit=True):
     test_base64()
     if not skipPyUnit:
         test_appendArgs()
+
 
 if __name__ == '__main__':
     test(skipPyUnit=False)

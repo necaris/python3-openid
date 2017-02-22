@@ -3,9 +3,10 @@
 This module contains the HTTP fetcher interface and several implementations.
 """
 
-__all__ = ['fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
-           'HTTPFetcher', 'createHTTPFetcher', 'HTTPFetchingError',
-           'HTTPError']
+__all__ = [
+    'fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
+    'HTTPFetcher', 'createHTTPFetcher', 'HTTPFetchingError', 'HTTPError'
+]
 
 import urllib.request
 import urllib.error
@@ -58,6 +59,7 @@ def createHTTPFetcher():
         fetcher = CurlHTTPFetcher()
 
     return fetcher
+
 
 # Contains the currently set HTTP fetcher. If it is set to None, the
 # library will call createHTTPFetcher() to set it. Do not access this
@@ -123,8 +125,7 @@ class HTTPResponse(object):
         self.body = body
 
     def __repr__(self):
-        return "<%s status %s for %s>" % (self.__class__.__name__,
-                                          self.status,
+        return "<%s status %s for %s>" % (self.__class__.__name__, self.status,
                                           self.final_url)
 
 
@@ -170,6 +171,7 @@ class HTTPFetchingError(Exception):
 
     @ivar why: The exception that caused this exception
     """
+
     def __init__(self, why=None):
         Exception.__init__(self, why)
         self.why = why
@@ -211,14 +213,13 @@ class Urllib2Fetcher(HTTPFetcher):
 
     def fetch(self, url, body=None, headers=None):
         if not _allowedURL(url):
-            raise ValueError('Bad URL scheme: %r' % (url,))
+            raise ValueError('Bad URL scheme: %r' % (url, ))
 
         if headers is None:
             headers = {}
 
-        headers.setdefault(
-            'User-Agent',
-            "%s Python-urllib/%s" % (USER_AGENT, urllib.request.__version__))
+        headers.setdefault('User-Agent', "%s Python-urllib/%s" %
+                           (USER_AGENT, urllib.request.__version__))
 
         if isinstance(body, str):
             body = bytes(body, encoding="utf-8")
@@ -329,8 +330,8 @@ class CurlHTTPFetcher(HTTPFetcher):
             try:
                 name, value = line.split(':', 1)
             except ValueError:
-                raise HTTPError(
-                    "Malformed HTTP header line in response: %r" % (line,))
+                raise HTTPError("Malformed HTTP header line in response: %r" %
+                                (line, ))
 
             value = value.strip()
 
@@ -353,7 +354,7 @@ class CurlHTTPFetcher(HTTPFetcher):
             headers = {}
 
         headers.setdefault('User-Agent',
-                           "%s %s" % (USER_AGENT, pycurl.version,))
+                           "%s %s" % (USER_AGENT, pycurl.version, ))
 
         header_list = []
         if headers is not None:
@@ -375,7 +376,7 @@ class CurlHTTPFetcher(HTTPFetcher):
 
             while off > 0:
                 if not self._checkURL(url):
-                    raise HTTPError("Fetching URL not allowed: %r" % (url,))
+                    raise HTTPError("Fetching URL not allowed: %r" % (url, ))
 
                 data = io.BytesIO()
 
@@ -416,7 +417,7 @@ class CurlHTTPFetcher(HTTPFetcher):
 
                 off = stop - int(time.time())
 
-            raise HTTPError("Timed out fetching: %r" % (url,))
+            raise HTTPError("Timed out fetching: %r" % (url, ))
         finally:
             c.close()
 
@@ -464,7 +465,7 @@ class HTTPLib2Fetcher(HTTPFetcher):
         # httplib2 doesn't check to make sure that the URL's scheme is
         # 'http' so we do it here.
         if not (url.startswith('http://') or url.startswith('https://')):
-            raise ValueError('URL is not a HTTP URL: %r' % (url,))
+            raise ValueError('URL is not a HTTP URL: %r' % (url, ))
 
         httplib2_response, content = self.httplib2.request(
             url, method, body=body, headers=headers)
@@ -486,8 +487,7 @@ class HTTPLib2Fetcher(HTTPFetcher):
             final_url = url
 
         return HTTPResponse(
-            body=content.decode(), # TODO Don't assume ASCII
+            body=content.decode(),  # TODO Don't assume ASCII
             final_url=final_url,
             headers=dict(list(httplib2_response.items())),
-            status=httplib2_response.status,
-            )
+            status=httplib2_response.status, )

@@ -35,7 +35,7 @@ def specialCaseTests():
         try:
             test_mod = __import__(module_name, {}, {}, [None])
         except ImportError:
-            print(('Failed to import test %r' % (module_name,)))
+            print(('Failed to import test %r' % (module_name, )))
         else:
             suite.addTest(unittest.FunctionTestCase(test_mod.test))
 
@@ -72,7 +72,7 @@ def pyUnitTests():
     test_modules = [
         __import__('openid.test.test_{}'.format(name), {}, {}, ['unused'])
         for name in test_module_names
-        ]
+    ]
 
     try:
         from openid.test import test_examples
@@ -103,7 +103,7 @@ def pyUnitTests():
         'test_urinorm',
         'test_yadis_discover',
         'trustroot',
-        ]
+    ]
 
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
@@ -118,7 +118,7 @@ def pyUnitTests():
         except AttributeError:
             # because the AttributeError doesn't actually say which
             # object it was.
-            print(("Error loading tests from %s:" % (name,)))
+            print(("Error loading tests from %s:" % (name, )))
             raise
 
     return suite
@@ -159,7 +159,7 @@ def djangoExampleTests():
 
     import djopenid.server.models
     import djopenid.consumer.models
-    print ("Testing Django examples:")
+    print("Testing Django examples:")
 
     runner = django.test.simple.DjangoTestSuiteRunner()
     return runner.run_tests(['server', 'consumer'])
@@ -167,9 +167,8 @@ def djangoExampleTests():
     # These tests do get put into a test suite, so we could run them with the
     # other tests, but django also establishes a test database for them, so we
     # let it do that thing instead.
-    return django.test.simple.run_tests([djopenid.server.models,
-                                         djopenid.consumer.models])
-
+    return django.test.simple.run_tests(
+        [djopenid.server.models, djopenid.consumer.models])
 
 
 def test_suite():

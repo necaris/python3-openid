@@ -1,4 +1,3 @@
-
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns(
@@ -8,5 +7,4 @@ urlpatterns = patterns(
     (r'^processTrustResult/$', 'processTrustResult'),
     (r'^user/$', 'idPage'),
     (r'^endpoint/$', 'endpoint'),
-    (r'^trust/$', 'trustPage'),
-)
+    (r'^trust/$', 'trustPage'), )

@@ -18,8 +18,8 @@ def test_cryptrand():
     assert len(t) == 32
     assert s != t
 
-    a = cryptutil.randrange(2 ** 128)
-    b = cryptutil.randrange(2 ** 128)
+    a = cryptutil.randrange(2**128)
+    b = cryptutil.randrange(2**128)
     assert type(a) is int
     assert type(b) is int
     assert b != a
@@ -39,10 +39,10 @@ def test_reversed():
             ('abcdefg', 'gfedcba'),
             ([], []),
             ([1], [1]),
-            ([1,2], [2,1]),
-            ([1,2,3], [3,2,1]),
+            ([1, 2], [2, 1]),
+            ([1, 2, 3], [3, 2, 1]),
             (list(range(1000)), list(range(999, -1, -1))),
-            ]
+        ]
 
         for case, expected in cases:
             expected = list(expected)
@@ -64,16 +64,9 @@ def test_binaryLongConvert():
         n_prime = cryptutil.binaryToLong(s)
         assert n == n_prime, (n, n_prime)
 
-    cases = [
-        (b'\x00', 0),
-        (b'\x01', 1),
-        (b'\x7F', 127),
-        (b'\x00\xFF', 255),
-        (b'\x00\x80', 128),
-        (b'\x00\x81', 129),
-        (b'\x00\x80\x00', 32768),
-        (b'OpenID is cool', 1611215304203901150134421257416556)
-        ]
+    cases = [(b'\x00', 0), (b'\x01', 1), (b'\x7F', 127), (b'\x00\xFF', 255),
+             (b'\x00\x80', 128), (b'\x00\x81', 129), (b'\x00\x80\x00', 32768),
+             (b'OpenID is cool', 1611215304203901150134421257416556)]
 
     for s, n in cases:
         n_prime = cryptutil.binaryToLong(s)
@@ -110,6 +103,7 @@ def test():
     test_cryptrand()
     test_longToBase64()
     test_base64ToLong()
+
 
 if __name__ == '__main__':
     test()

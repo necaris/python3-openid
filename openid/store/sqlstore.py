@@ -106,14 +106,14 @@ class SQLStore(OpenIDStore):
         self._table_names = {
             'associations': associations_table or self.associations_table,
             'nonces': nonces_table or self.nonces_table,
-            }
-        self.max_nonce_age = 6 * 60 * 60 # Six hours, in seconds
+        }
+        self.max_nonce_age = 6 * 60 * 60  # Six hours, in seconds
 
         # DB API extension: search for "Connection Attributes .Error,
         # .ProgrammingError, etc." in
         # http://www.python.org/dev/peps/pep-0249/
         if (hasattr(self.conn, 'IntegrityError') and
-            hasattr(self.conn, 'OperationalError')):
+                hasattr(self.conn, 'OperationalError')):
             self.exceptions = self.conn
 
         if not (hasattr(self.exceptions, 'IntegrityError') and
@@ -143,6 +143,7 @@ class SQLStore(OpenIDStore):
 
     def _execSQL(self, sql_name, *args):
         sql = self._getSQL(sql_name)
+
         # Kludge because we have reports of postgresql not quoting
         # arguments if they are passed in as unicode instead of str.
         # Currently the strings in our tables just have ascii in them,
@@ -152,6 +153,7 @@ class SQLStore(OpenIDStore):
                 return str(arg)
             else:
                 return arg
+
         str_args = list(map(unicode_to_str, args))
         self.cur.execute(sql, str_args)
 
@@ -161,12 +163,14 @@ class SQLStore(OpenIDStore):
         # as an attribute of this object and executes it.
         if attr[:3] == 'db_':
             sql_name = attr[3:] + '_sql'
+
             def func(*args):
                 return self._execSQL(sql_name, *args)
+
             setattr(self, attr, func)
             return func
         else:
-            raise AttributeError('Attribute %r not found' % (attr,))
+            raise AttributeError('Attribute %r not found' % (attr, ))
 
     def _callInTransaction(self, func, *args, **kwargs):
         """Execute the given function inside of a transaction, with an
@@ -207,13 +211,9 @@ class SQLStore(OpenIDStore):
         Association -> NoneType
         """
         a = association
-        self.db_set_assoc(
-            server_url,
-            a.handle,
-            self.blobEncode(a.secret),
-            a.issued,
-            a.lifetime,
-            a.assoc_type)
+        self.db_set_assoc(server_url, a.handle,
+                          self.blobEncode(a.secret), a.issued, a.lifetime,
+                          a.assoc_type)
 
     storeAssociation = _inTxn(txn_storeAssociation)
 
@@ -257,7 +257,7 @@ class SQLStore(OpenIDStore):
         (str, str) -> bool
         """
         self.db_remove_assoc(server_url, handle)
-        return self.cur.rowcount > 0 # -1 is undefined
+        return self.cur.rowcount > 0  # -1 is undefined
 
     removeAssociation = _inTxn(txn_removeAssociation)
 
@@ -362,6 +362,7 @@ class SQLiteStore(SQLStore):
             else:
                 raise
 
+
 class MySQLStore(SQLStore):
     """
     This is a MySQL-based specialization of C{L{SQLStore}}.
@@ -457,7 +458,8 @@ class PostgreSQLStore(SQLStore):
     );
     """
 
-    def db_set_assoc(self, server_url, handle, secret, issued, lifetime, assoc_type):
+    def db_set_assoc(self, server_url, handle, secret, issued, lifetime,
+                     assoc_type):
         """
         Set an association.  This is implemented as a method because
         REPLACE INTO is not supported by PostgreSQL (and is not

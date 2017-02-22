@@ -41,10 +41,10 @@ from openid.extension import Extension
 import logging
 
 try:
-    str #pylint:disable-msg=W0104
+    str  #pylint:disable-msg=W0104
 except NameError:
     # For Python 2.2
-    str = (str, str) #pylint:disable-msg=W0622
+    str = (str, str)  #pylint:disable-msg=W0622
 
 __all__ = [
     'SRegRequest',
@@ -54,20 +54,21 @@ __all__ = [
     'ns_uri_1_0',
     'ns_uri_1_1',
     'supportsSReg',
-    ]
+]
 
 # The data fields that are listed in the sreg spec
 data_fields = {
-    'fullname':'Full Name',
-    'nickname':'Nickname',
-    'dob':'Date of Birth',
-    'email':'E-mail Address',
-    'gender':'Gender',
-    'postcode':'Postal Code',
-    'country':'Country',
-    'language':'Language',
-    'timezone':'Time Zone',
-    }
+    'fullname': 'Full Name',
+    'nickname': 'Nickname',
+    'dob': 'Date of Birth',
+    'email': 'E-mail Address',
+    'gender': 'Gender',
+    'postcode': 'Postal Code',
+    'country': 'Country',
+    'language': 'Language',
+    'timezone': 'Time Zone',
+}
+
 
 def checkFieldName(field_name):
     """Check to see that the given value is a valid simple
@@ -78,7 +79,8 @@ def checkFieldName(field_name):
     """
     if field_name not in data_fields:
         raise ValueError('%r is not a defined simple registration field' %
-                         (field_name,))
+                         (field_name, ))
+
 
 # URI used in the wild for Yadis documents advertising simple
 # registration support
@@ -95,8 +97,9 @@ ns_uri = ns_uri_1_1
 try:
     registerNamespaceAlias(ns_uri_1_1, 'sreg')
 except NamespaceAliasRegistrationError as e:
-    logging.exception('registerNamespaceAlias(%r, %r) failed: %s' % (ns_uri_1_1,
-                                                               'sreg', str(e),))
+    logging.exception('registerNamespaceAlias(%r, %r) failed: %s' %
+                      (ns_uri_1_1, 'sreg', str(e), ))
+
 
 def supportsSReg(endpoint):
     """Does the given endpoint advertise support for simple
@@ -111,6 +114,7 @@ def supportsSReg(endpoint):
     return (endpoint.usesExtension(ns_uri_1_1) or
             endpoint.usesExtension(ns_uri_1_0))
 
+
 class SRegNamespaceError(ValueError):
     """The simple registration namespace was not found and could not
     be created using the expected name (there's another extension
@@ -124,6 +128,7 @@ class SRegNamespaceError(ValueError):
     should not happen unless some code has modified the namespaces for
     the message that is being processed.
     """
+
 
 def getSRegNS(message):
     """Extract the simple registration namespace URI from the given
@@ -163,7 +168,8 @@ def getSRegNS(message):
 
     # we know that sreg_ns_uri defined, because it's defined in the
     # else clause of the loop as well, so disable the warning
-    return sreg_ns_uri #pylint:disable-msg=W0631
+    return sreg_ns_uri  #pylint:disable-msg=W0631
+
 
 class SRegRequest(Extension):
     """An object to hold the state of a simple registration request.
@@ -185,7 +191,10 @@ class SRegRequest(Extension):
 
     ns_alias = 'sreg'
 
-    def __init__(self, required=None, optional=None, policy_url=None,
+    def __init__(self,
+                 required=None,
+                 optional=None,
+                 policy_url=None,
                  sreg_ns_uri=ns_uri):
         """Initialize an empty simple registration request"""
         Extension.__init__(self)
@@ -287,8 +296,7 @@ class SRegRequest(Extension):
 
     def __contains__(self, field_name):
         """Was this field in the request?"""
-        return (field_name in self.required or
-                field_name in self.optional)
+        return (field_name in self.required or field_name in self.optional)
 
     def requestField(self, field_name, required=False, strict=False):
         """Request the specified field from the OpenID user
@@ -345,7 +353,7 @@ class SRegRequest(Extension):
         """
         if isinstance(field_names, str):
             raise TypeError('Fields should be passed as a list of '
-                            'strings (not %r)' % (type(field_names),))
+                            'strings (not %r)' % (type(field_names), ))
 
         for field_name in field_names:
             self.requestField(field_name, required, strict=strict)
@@ -372,6 +380,7 @@ class SRegRequest(Extension):
             args['policy_url'] = self.policy_url
 
         return args
+
 
 class SRegResponse(Extension):
     """Represents the data returned in a simple registration response

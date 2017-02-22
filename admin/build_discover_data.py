@@ -37,6 +37,7 @@ manifest_header = """\
 
 """
 
+
 def buildDiscover(base_url, out_dir):
     """
     Convert all files in a directory to apache mod_asis files in
@@ -48,8 +49,8 @@ def buildDiscover(base_url, out_dir):
         """Helper to generate an output data file for a given test name."""
         template = test_data[test_name]
 
-        data = discoverdata.fillTemplate(
-            test_name, template, base_url, discoverdata.example_xrds)
+        data = discoverdata.fillTemplate(test_name, template, base_url,
+                                         discoverdata.example_xrds)
 
         out_file_name = os.path.join(out_dir, test_name)
         out_file = open(out_file_name, 'w', encoding="utf-8")
@@ -72,6 +73,7 @@ def buildDiscover(base_url, out_dir):
     with open(manifest_file_name, 'w', encoding="utf-8") as manifest_file:
         for chunk in manifest:
             manifest_file.write(chunk)
+
 
 if __name__ == '__main__':
     buildDiscover(*sys.argv[1:])

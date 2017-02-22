@@ -2,17 +2,19 @@
 from openid.consumer.discover import discover, DiscoveryFailure
 from openid.fetchers import HTTPFetchingError
 
-names = [["server_url",  "Server URL  "],
-         ["local_id",    "Local ID    "],
-         ["canonicalID", "Canonical ID"],
-        ]
+names = [
+    ["server_url", "Server URL  "],
+    ["local_id", "Local ID    "],
+    ["canonicalID", "Canonical ID"],
+]
+
 
 def show_services(user_input, normalized, services):
     print " Claimed identifier:", normalized
     if services:
         print " Discovered OpenID services:"
         for n, service in enumerate(services):
-            print " %s." % (n,)
+            print " %s." % (n, )
             for attr, name in names:
                 val = getattr(service, attr, None)
                 if val is not None:
@@ -27,6 +29,7 @@ def show_services(user_input, normalized, services):
     else:
         print " No OpenID services found"
         print
+
 
 if __name__ == "__main__":
     import sys

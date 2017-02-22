@@ -1,4 +1,3 @@
-
 from django import http
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
@@ -15,11 +14,10 @@ PAPE_POLICIES = [
     'AUTH_PHISHING_RESISTANT',
     'AUTH_MULTI_FACTOR',
     'AUTH_MULTI_FACTOR_PHYSICAL',
-    ]
+]
 
 # List of (name, uri) for use in generating the request form.
-POLICY_PAIRS = [(p, getattr(pape, p))
-                for p in PAPE_POLICIES]
+POLICY_PAIRS = [(p, getattr(pape, p)) for p in PAPE_POLICIES]
 
 
 def getOpenIDStore():
@@ -41,8 +39,7 @@ def renderIndexPage(request, **template_args):
     template_args['consumer_url'] = util.getViewURL(request, startOpenID)
     template_args['pape_policies'] = POLICY_PAIRS
 
-    response = TemplateView(
-        request, 'consumer/index.html', template_args)
+    response = TemplateView(request, 'consumer/index.html', template_args)
     response[YADIS_HEADER_NAME] = util.getViewURL(request, rpXRDS)
     return response
 
@@ -73,7 +70,7 @@ def startOpenID(request):
             auth_request = c.begin(openid_url)
         except DiscoveryFailure as e:
             # Some other protocol-level failure occurred.
-            error = "OpenID discovery error: %s" % (str(e),)
+            error = "OpenID discovery error: %s" % (str(e), )
 
         if error:
             # Render the page with an error.
@@ -83,8 +80,8 @@ def startOpenID(request):
         # are optional, some are required.  It's possible that the
         # server doesn't support sreg or won't return any of the
         # fields.
-        sreg_request = sreg.SRegRequest(optional=['email', 'nickname'],
-                                        required=['dob'])
+        sreg_request = sreg.SRegRequest(
+            optional=['email', 'nickname'], required=['dob'])
         auth_request.addExtension(sreg_request)
 
         # Add Attribute Exchange request information.
@@ -92,11 +89,12 @@ def startOpenID(request):
         # XXX - uses myOpenID-compatible schema values, which are
         # not those listed at axschema.org.
         ax_request.add(
-            ax.AttrInfo('http://schema.openid.net/namePerson',
-                        required=True))
+            ax.AttrInfo('http://schema.openid.net/namePerson', required=True))
         ax_request.add(
-            ax.AttrInfo('http://schema.openid.net/contact/web/default',
-                        required=False, count=ax.UNLIMITED_VALUES))
+            ax.AttrInfo(
+                'http://schema.openid.net/contact/web/default',
+                required=False,
+                count=ax.UNLIMITED_VALUES))
         auth_request.addExtension(ax_request)
 
         # Add PAPE request information.  We'll ask for
@@ -130,10 +128,10 @@ def startOpenID(request):
             # users will have to click the form submit button to
             # initiate OpenID authentication.
             form_id = 'openid_message'
-            form_html = auth_request.formMarkup(trust_root, return_to,
-                                                False, {'id': form_id})
-            return TemplateView(
-                request, 'consumer/request_form.html', {'html': form_html})
+            form_html = auth_request.formMarkup(trust_root, return_to, False,
+                                                {'id': form_id})
+            return TemplateView(request, 'consumer/request_form.html',
+                                {'html': form_html})
 
     return renderIndexPage(request)
 
@@ -174,11 +172,12 @@ def finishOpenID(request):
             ax_response = ax.FetchResponse.fromSuccessResponse(response)
             if ax_response:
                 ax_items = {
-                    'fullname': ax_response.get(
-                        'http://schema.openid.net/namePerson'),
-                    'web': ax_response.get(
+                    'fullname':
+                    ax_response.get('http://schema.openid.net/namePerson'),
+                    'web':
+                    ax_response.get(
                         'http://schema.openid.net/contact/web/default'),
-                    }
+                }
 
         # Get a PAPE response object if response information was
         # included in the OpenID response.
@@ -191,18 +190,19 @@ def finishOpenID(request):
 
         # Map different consumer status codes to template contexts.
         results = {
-            consumer.CANCEL:
-            {'message': 'OpenID authentication cancelled.'},
-
-            consumer.FAILURE:
-            {'error': 'OpenID authentication failed.'},
-
-            consumer.SUCCESS:
-            {'url': response.getDisplayIdentifier(),
-             'sreg': sreg_response and list(sreg_response.items()),
-             'ax': list(ax_items.items()),
-             'pape': pape_response}
+            consumer.CANCEL: {
+                'message': 'OpenID authentication cancelled.'
+            },
+            consumer.FAILURE: {
+                'error': 'OpenID authentication failed.'
+            },
+            consumer.SUCCESS: {
+                'url': response.getDisplayIdentifier(),
+                'sreg': sreg_response and list(sreg_response.items()),
+                'ax': list(ax_items.items()),
+                'pape': pape_response
             }
+        }
 
         result = results[response.status]
 
@@ -220,7 +220,5 @@ def rpXRDS(request):
     """
     Return a relying party verification XRDS document
     """
-    return util.renderXRDS(
-        request,
-        [RP_RETURN_TO_URL_TYPE],
-        [util.getViewURL(request, finishOpenID)])
+    return util.renderXRDS(request, [RP_RETURN_TO_URL_TYPE],
+                           [util.getViewURL(request, finishOpenID)])

@@ -8,11 +8,11 @@ except ValueError:
         (0xA0, 0xD7FF),
         (0xF900, 0xFDCF),
         (0xFDF0, 0xFFEF),
-        ]
+    ]
 
     IPRIVATE = [
         (0xE000, 0xF8FF),
-        ]
+    ]
 else:
     UCSCHAR = [
         (0xA0, 0xD7FF),
@@ -32,13 +32,13 @@ else:
         (0xC0000, 0xCFFFD),
         (0xD0000, 0xDFFFD),
         (0xE1000, 0xEFFFD),
-        ]
+    ]
 
     IPRIVATE = [
         (0xE000, 0xF8FF),
         (0xF0000, 0xFFFFD),
         (0x100000, 0x10FFFD),
-        ]
+    ]
 
 _ESCAPE_RANGES = UCSCHAR + IPRIVATE
 
@@ -86,5 +86,6 @@ def _pct_escape_handler(err):
     chunk = err.object[err.start:err.end]
     replacements = _pct_encoded_replacements(chunk)
     return ("".join(replacements), err.end)
+
 
 codecs.register_error("oid_percent_escape", _pct_escape_handler)

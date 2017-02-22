@@ -14,8 +14,8 @@ class AssociationSerializationTest(unittest.TestCase):
         issued = int(time.time())
         lifetime = 600
         handle = 'a-QoU6tM*#!*R\'q\\w<W>X`90>tj7d{[t~Wv@(j(V9(jcx:ZeGYbT0;N]"C}bxQ$aDjf{)"z6@+W<Wb$Vm`k9j0/tZ=\\J[0Qmp35ex[H9g<nUC9UGj4.Hlq7"Q]`w:w6Q'
-        assoc = association.Association(
-            handle, 'secret', issued, lifetime, 'HMAC-SHA1')
+        assoc = association.Association(handle, 'secret', issued, lifetime,
+                                        'HMAC-SHA1')
         s = assoc.serialize()
         assoc2 = association.Association.deserialize(s)
         self.assertEqual(assoc.handle, assoc2.handle)
@@ -48,18 +48,17 @@ class DiffieHellmanSessionTest(datadriven.DataDrivenTestCase):
         '\xff' * 20,
         ' ' * 20,
         'This is a secret....',
-        ]
+    ]
 
     session_factories = [
         (DiffieHellmanSHA1ConsumerSession, DiffieHellmanSHA1ServerSession),
         (createNonstandardConsumerDH, DiffieHellmanSHA1ServerSession),
         (PlainTextConsumerSession, PlainTextServerSession),
-        ]
+    ]
 
     def generateCases(cls):
         return [(c, s, sec)
-                for c, s in cls.session_factories
-                for sec in cls.secrets]
+                for c, s in cls.session_factories for sec in cls.secrets]
 
     generateCases = classmethod(generateCases)
 
@@ -89,7 +88,7 @@ class TestMakePairs(unittest.TestCase):
             'identifier': '=example',
             'signed': 'identifier,mode',
             'sig': 'cephalopod',
-            })
+        })
         m.updateArgs(BARE_NS, {'xey': 'value'})
         self.assoc = association.Association.fromExpiresIn(
             3600, '{sha1}', 'very_secret', "HMAC-SHA1")
@@ -100,14 +99,13 @@ class TestMakePairs(unittest.TestCase):
         expected = [
             ('identifier', '=example'),
             ('mode', 'id_res'),
-            ]
+        ]
         self.assertEqual(pairs, expected)
 
 
 class TestMac(unittest.TestCase):
     def setUp(self):
-        self.pairs = [('key1', 'value1'),
-                      ('key2', 'value2')]
+        self.pairs = [('key1', 'value1'), ('key2', 'value2')]
 
     def test_sha1(self):
         assoc = association.Association.fromExpiresIn(
@@ -118,6 +116,7 @@ class TestMac(unittest.TestCase):
         self.assertEqual(sig, expected)
 
     if cryptutil.SHA256_AVAILABLE:
+
         def test_sha256(self):
             assoc = association.Association.fromExpiresIn(
                 3600, '{sha256SA}', 'very_secret', "HMAC-SHA256")
@@ -130,42 +129,45 @@ class TestMac(unittest.TestCase):
 class TestMessageSigning(unittest.TestCase):
     def setUp(self):
         self.message = m = Message(OPENID2_NS)
-        m.updateArgs(OPENID2_NS, {'mode': 'id_res',
-                                  'identifier': '=example'})
+        m.updateArgs(OPENID2_NS, {'mode': 'id_res', 'identifier': '=example'})
         m.updateArgs(BARE_NS, {'xey': 'value'})
-        self.args = {'openid.mode': 'id_res',
-                     'openid.identifier': '=example',
-                     'xey': 'value'}
+        self.args = {
+            'openid.mode': 'id_res',
+            'openid.identifier': '=example',
+            'xey': 'value'
+        }
 
     def test_signSHA1(self):
         assoc = association.Association.fromExpiresIn(
             3600, '{sha1}', 'very_secret', "HMAC-SHA1")
         signed = assoc.signMessage(self.message)
         self.assertTrue(signed.getArg(OPENID_NS, "sig"))
-        self.assertEqual(signed.getArg(OPENID_NS, "signed"),
-                             "assoc_handle,identifier,mode,ns,signed")
-        self.assertEqual(signed.getArg(BARE_NS, "xey"), "value",
-                             signed)
+        self.assertEqual(
+            signed.getArg(OPENID_NS, "signed"),
+            "assoc_handle,identifier,mode,ns,signed")
+        self.assertEqual(signed.getArg(BARE_NS, "xey"), "value", signed)
 
     if cryptutil.SHA256_AVAILABLE:
+
         def test_signSHA256(self):
             assoc = association.Association.fromExpiresIn(
                 3600, '{sha1}', 'very_secret', "HMAC-SHA256")
             signed = assoc.signMessage(self.message)
             self.assertTrue(signed.getArg(OPENID_NS, "sig"))
-            self.assertEqual(signed.getArg(OPENID_NS, "signed"),
-                                 "assoc_handle,identifier,mode,ns,signed")
-            self.assertEqual(signed.getArg(BARE_NS, "xey"), "value",
-                                 signed)
+            self.assertEqual(
+                signed.getArg(OPENID_NS, "signed"),
+                "assoc_handle,identifier,mode,ns,signed")
+            self.assertEqual(signed.getArg(BARE_NS, "xey"), "value", signed)
 
 
 class TestCheckMessageSignature(unittest.TestCase):
     def test_aintGotSignedList(self):
         m = Message(OPENID2_NS)
-        m.updateArgs(OPENID2_NS, {'mode': 'id_res',
-                                  'identifier': '=example',
-                                  'sig': 'coyote',
-                                  })
+        m.updateArgs(OPENID2_NS, {
+            'mode': 'id_res',
+            'identifier': '=example',
+            'sig': 'coyote',
+        })
         m.updateArgs(BARE_NS, {'xey': 'value'})
         assoc = association.Association.fromExpiresIn(
             3600, '{sha1}', 'very_secret', "HMAC-SHA1")
@@ -174,6 +176,7 @@ class TestCheckMessageSignature(unittest.TestCase):
 
 def pyUnitTests():
     return datadriven.loadTests(__name__)
+
 
 if __name__ == '__main__':
     suite = pyUnitTests()

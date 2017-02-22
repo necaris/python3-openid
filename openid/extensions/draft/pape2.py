@@ -13,7 +13,7 @@ __all__ = [
     'AUTH_PHISHING_RESISTANT',
     'AUTH_MULTI_FACTOR',
     'AUTH_MULTI_FACTOR_PHYSICAL',
-    ]
+]
 
 from openid.extension import Extension
 import re
@@ -75,8 +75,8 @@ class Request(Extension):
         """@see: C{L{Extension.getExtensionArgs}}
         """
         ns_args = {
-            'preferred_auth_policies':' '.join(self.preferred_auth_policies)
-            }
+            'preferred_auth_policies': ' '.join(self.preferred_auth_policies)
+        }
 
         if self.max_auth_age is not None:
             ns_args['max_auth_age'] = str(self.max_auth_age)
@@ -147,8 +147,9 @@ class Request(Extension):
 
         @returntype: [str]
         """
-        return list(filter(self.preferred_auth_policies.__contains__,
-                      supported_types))
+        return list(
+            filter(self.preferred_auth_policies.__contains__, supported_types))
+
 
 Request.ns_uri = ns_uri
 
@@ -160,7 +161,9 @@ class Response(Extension):
 
     ns_alias = 'pape'
 
-    def __init__(self, auth_policies=None, auth_time=None,
+    def __init__(self,
+                 auth_policies=None,
+                 auth_time=None,
                  nist_auth_level=None):
         super(Response, self).__init__()
         if auth_policies:
@@ -262,7 +265,7 @@ class Response(Extension):
         else:
             ns_args = {
                 'auth_policies': ' '.join(self.auth_policies),
-                }
+            }
 
         if self.nist_auth_level is not None:
             if self.nist_auth_level not in list(range(0, 5)):
@@ -277,5 +280,6 @@ class Response(Extension):
             ns_args['auth_time'] = self.auth_time
 
         return ns_args
+
 
 Response.ns_uri = ns_uri

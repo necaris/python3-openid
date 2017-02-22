@@ -13,21 +13,22 @@ uri_re = re.compile(uri_pattern)
 #
 # unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
 
-uri_illegal_char_re = re.compile(
-    "[^-A-Za-z0-9:/?#[\]@!$&'()*+,;=._~%]", re.UNICODE)
+uri_illegal_char_re = re.compile("[^-A-Za-z0-9:/?#[\]@!$&'()*+,;=._~%]",
+                                 re.UNICODE)
 
 authority_pattern = r'^([^@]*@)?([^:]*)(:.*)?'
 authority_re = re.compile(authority_pattern)
 
-
 pct_encoded_pattern = r'%([0-9A-Fa-f]{2})'
 pct_encoded_re = re.compile(pct_encoded_pattern)
 
-
 _unreserved = [False] * 256
-for _ in range(ord('A'), ord('Z') + 1): _unreserved[_] = True
-for _ in range(ord('0'), ord('9') + 1): _unreserved[_] = True
-for _ in range(ord('a'), ord('z') + 1): _unreserved[_] = True
+for _ in range(ord('A'), ord('Z') + 1):
+    _unreserved[_] = True
+for _ in range(ord('0'), ord('9') + 1):
+    _unreserved[_] = True
+for _ in range(ord('a'), ord('z') + 1):
+    _unreserved[_] = True
 _unreserved[ord('-')] = True
 _unreserved[ord('.')] = True
 _unreserved[ord('_')] = True
@@ -112,15 +113,15 @@ def urinorm(uri):
 
     scheme = scheme.lower()
     if scheme not in ('http', 'https'):
-        raise ValueError('Not an absolute HTTP or HTTPS URI: %r' % (uri,))
+        raise ValueError('Not an absolute HTTP or HTTPS URI: %r' % (uri, ))
 
     authority = uri_mo.group(4)
     if authority is None:
-        raise ValueError('Not an absolute URI: %r' % (uri,))
+        raise ValueError('Not an absolute URI: %r' % (uri, ))
 
     authority_mo = authority_re.match(authority)
     if authority_mo is None:
-        raise ValueError('URI does not have a valid authority: %r' % (uri,))
+        raise ValueError('URI does not have a valid authority: %r' % (uri, ))
 
     userinfo, host, port = authority_mo.groups()
 
@@ -135,8 +136,7 @@ def urinorm(uri):
         host = host.lower()
 
     if port:
-        if (port == ':' or
-            (scheme == 'http' and port == ':80') or
+        if (port == ':' or (scheme == 'http' and port == ':80') or
             (scheme == 'https' and port == ':443')):
             port = ''
     else:

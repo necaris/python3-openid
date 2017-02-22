@@ -4,7 +4,6 @@ from openid.consumer.discover import \
 
 from openid.yadis.services import applyFilter
 
-
 XRDS_BOILERPLATE = '''\
 <?xml version="1.0" encoding="UTF-8"?>
 <xrds:XRDS xmlns:xrds="xri://$xrds"
@@ -16,9 +15,11 @@ XRDS_BOILERPLATE = '''\
 </xrds:XRDS>
 '''
 
+
 def mkXRDS(services):
-    xrds = XRDS_BOILERPLATE % (services,)
+    xrds = XRDS_BOILERPLATE % (services, )
     return xrds.encode('utf-8')
+
 
 def mkService(uris=None, type_uris=None, local_id=None, dent='        '):
     chunks = [dent, '<Service>\n']
@@ -47,16 +48,19 @@ def mkService(uris=None, type_uris=None, local_id=None, dent='        '):
 
     return ''.join(chunks)
 
+
 # Different sets of server URLs for use in the URI tag
 server_url_options = [
-    [], # This case should not generate an endpoint object
+    [],  # This case should not generate an endpoint object
     ['http://server.url/'],
     ['https://server.url/'],
     ['https://server.url/', 'http://server.url/'],
-    ['https://server.url/',
-     'http://server.url/',
-     'http://example.server.url/'],
-    ]
+    [
+        'https://server.url/', 'http://server.url/',
+        'http://example.server.url/'
+    ],
+]
+
 
 # Used for generating test data
 def subsets(l):
@@ -66,12 +70,13 @@ def subsets(l):
         subsets_list += [[x] + t for t in subsets_list]
     return subsets_list
 
+
 # A couple of example extension type URIs. These are not at all
 # official, but are just here for testing.
 ext_types = [
     'http://janrain.com/extension/blah',
     'http://openid.net/sreg/1.0',
-    ]
+]
 
 # All valid combinations of Type tags that should produce an OpenID endpoint
 type_uri_options = [
@@ -83,22 +88,20 @@ type_uri_options = [
 
     # All combinations of extension types (including empty extenstion list)
     for exts in subsets(ext_types)
-    ]
+]
 
 # Range of valid Delegate tag values for generating test data
 local_id_options = [
     None,
     'http://vanity.domain/',
     'https://somewhere/yadis/',
-    ]
+]
 
 # All combinations of valid URIs, Type URIs and Delegate tags
-data = [
-    (uris, type_uris, local_id)
-    for uris in server_url_options
-    for type_uris in type_uri_options
-    for local_id in local_id_options
-    ]
+data = [(uris, type_uris, local_id)
+        for uris in server_url_options for type_uris in type_uri_options
+        for local_id in local_id_options]
+
 
 class OpenIDYadisTest(unittest.TestCase):
     def __init__(self, uris, type_uris, local_id):
@@ -115,15 +118,14 @@ class OpenIDYadisTest(unittest.TestCase):
         self.yadis_url = 'http://unit.test/'
 
         # Create an XRDS document to parse
-        services = mkService(uris=self.uris,
-                             type_uris=self.type_uris,
-                             local_id=self.local_id)
+        services = mkService(
+            uris=self.uris, type_uris=self.type_uris, local_id=self.local_id)
         self.xrds = mkXRDS(services)
 
     def runTest(self):
         # Parse into endpoint objects that we will check
-        endpoints = applyFilter(
-            self.yadis_url, self.xrds, OpenIDServiceEndpoint)
+        endpoints = applyFilter(self.yadis_url, self.xrds,
+                                OpenIDServiceEndpoint)
 
         # make sure there are the same number of endpoints as
         # URIs. This assumes that the type_uris contains at least one
@@ -157,6 +159,7 @@ class OpenIDYadisTest(unittest.TestCase):
 
         # Make sure we saw all URIs, and saw each one once
         self.assertEqual(uris, seen_uris)
+
 
 def pyUnitTests():
     cases = []

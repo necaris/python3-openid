@@ -14,8 +14,8 @@ class XriDiscoveryTestCase(TestCase):
 
 class XriEscapingTestCase(TestCase):
     def test_escaping_percents(self):
-        self.assertEqual(xri.escapeForIRI('@example/abc%2Fd/ef'),
-                             '@example/abc%252Fd/ef')
+        self.assertEqual(
+            xri.escapeForIRI('@example/abc%2Fd/ef'), '@example/abc%252Fd/ef')
 
     def test_escaping_xref(self):
         # no escapes
@@ -23,12 +23,12 @@ class XriEscapingTestCase(TestCase):
         self.assertEqual('@example/foo/(@bar)', esc('@example/foo/(@bar)'))
         # escape slashes
         self.assertEqual('@example/foo/(@bar%2Fbaz)',
-                             esc('@example/foo/(@bar/baz)'))
+                         esc('@example/foo/(@bar/baz)'))
         self.assertEqual('@example/foo/(@bar%2Fbaz)/(+a%2Fb)',
-                             esc('@example/foo/(@bar/baz)/(+a/b)'))
+                         esc('@example/foo/(@bar/baz)/(+a/b)'))
         # escape query ? and fragment #
         self.assertEqual('@example/foo/(@baz%3Fp=q%23r)?i=j#k',
-                             esc('@example/foo/(@baz?p=q#r)?i=j#k'))
+                         esc('@example/foo/(@baz?p=q#r)?i=j#k'))
 
 
 class XriTransformationTestCase(TestCase):
@@ -76,6 +76,7 @@ class TestGetRootAuthority(TestCase):
         def test(self):
             actual_root = xri.rootAuthority(the_xri)
             self.assertEqual(actual_root, xri.XRI(expected_root))
+
         return test
 
     test_at = mkTest("@foo", "@")
@@ -96,6 +97,7 @@ class TestGetRootAuthority(TestCase):
     # would mean something else.
     ##("example.com*bar/(=baz)", "example.com*bar"),
     ##("baz.example.com!01/foo", "baz.example.com!01"),
+
 
 if __name__ == '__main__':
     import unittest

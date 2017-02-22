@@ -15,7 +15,7 @@ def test_strxor():
         (b'\x01', b'\x02', b'\x03'),
         (b'\xf0', b'\x0f', b'\xff'),
         (b'\xff', b'\x0f', b'\xf0'),
-        ]
+    ]
 
     for aa, bb, expected in cases:
         actual = strxor(aa, bb)
@@ -25,9 +25,8 @@ def test_strxor():
         ('', 'a'),
         ('foo', 'ba'),
         (NUL * 3, NUL * 4),
-        (''.join(map(chr, range(256))),
-         ''.join(map(chr, range(128)))),
-        ]
+        (''.join(map(chr, range(256))), ''.join(map(chr, range(128)))),
+    ]
 
     for aa, bb in exc_cases:
         try:
@@ -35,7 +34,7 @@ def test_strxor():
         except ValueError:
             pass
         else:
-            assert False, 'Expected ValueError, got %r' % (unexpected,)
+            assert False, 'Expected ValueError, got %r' % (unexpected, )
 
 
 def test1():
@@ -70,6 +69,7 @@ def test():
     test_exchange()
     test_public()
     test_strxor()
+
 
 if __name__ == '__main__':
     test()

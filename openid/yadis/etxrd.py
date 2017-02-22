@@ -16,7 +16,7 @@ __all__ = [
     'iterServices',
     'expandService',
     'expandServices',
-    ]
+]
 
 import sys
 import random
@@ -100,6 +100,7 @@ def mkXRDSTag(t):
     with ElementTree
     """
     return nsTag(XRDS_NS, t)
+
 
 # Tags that are used in Yadis documents
 root_tag = mkXRDSTag('XRDS')
@@ -206,11 +207,13 @@ class _Max(object):
     Should only be used as a singleton. Implemented for use as a
     priority value for when a priority is not specified.
     """
+
     def __lt__(self, other):
         return isinstance(other, self.__class__)
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)
+
 
 Max = _Max()
 
@@ -266,15 +269,18 @@ def iterServices(xrd_tree):
 def sortedURIs(service_element):
     """Given a Service element, return a list of the contents of all
     URI tags in priority order."""
-    return [uri_element.text for uri_element
-            in prioSort(service_element.findall(uri_tag))]
+    return [
+        uri_element.text
+        for uri_element in prioSort(service_element.findall(uri_tag))
+    ]
 
 
 def getTypeURIs(service_element):
     """Given a Service element, return a list of the contents of all
     Type tags"""
-    return [type_element.text for type_element
-            in service_element.findall(type_tag)]
+    return [
+        type_element.text for type_element in service_element.findall(type_tag)
+    ]
 
 
 def expandService(service_element):

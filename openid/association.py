@@ -76,7 +76,7 @@ def getSessionTypes(assoc_type):
     assoc_to_session = {
         'HMAC-SHA1': ['DH-SHA1', 'no-encryption'],
         'HMAC-SHA256': ['DH-SHA256', 'no-encryption'],
-        }
+    }
     return assoc_to_session.get(assoc_type, [])
 
 
@@ -84,9 +84,8 @@ def checkSessionType(assoc_type, session_type):
     """Check to make sure that this pair of assoc type and session
     type are allowed"""
     if session_type not in getSessionTypes(assoc_type):
-        raise ValueError(
-            'Session type %r not valid for assocation type %r'
-            % (session_type, assoc_type))
+        raise ValueError('Session type %r not valid for assocation type %r' %
+                         (session_type, assoc_type))
 
 
 class SessionNegotiator(object):
@@ -163,7 +162,7 @@ class SessionNegotiator(object):
 
             if not available:
                 raise ValueError('No session available for association type %r'
-                                 % (assoc_type,))
+                                 % (assoc_type, ))
 
             for session_type in getSessionTypes(assoc_type):
                 self.addAllowedType(assoc_type, session_type)
@@ -185,6 +184,7 @@ class SessionNegotiator(object):
         except IndexError:
             return (None, None)
 
+
 default_negotiator = SessionNegotiator(default_association_order)
 encrypted_negotiator = SessionNegotiator(only_encrypted_association_order)
 
@@ -195,7 +195,7 @@ def getSecretSize(assoc_type):
     elif assoc_type == 'HMAC-SHA256':
         return 32
     else:
-        raise ValueError('Unsupported association type: %r' % (assoc_type,))
+        raise ValueError('Unsupported association type: %r' % (assoc_type, ))
 
 
 @functools.total_ordering
@@ -340,7 +340,7 @@ class Association(object):
         """
         if assoc_type not in all_association_types:
             fmt = '%r is not a supported association type'
-            raise ValueError(fmt % (assoc_type,))
+            raise ValueError(fmt % (assoc_type, ))
 
         # secret_size = getSecretSize(assoc_type)
         # if len(secret) != secret_size:
@@ -483,8 +483,8 @@ class Association(object):
         try:
             mac = self._macs[self.assoc_type]
         except KeyError:
-            raise ValueError(
-                'Unknown association type: %r' % (self.assoc_type,))
+            raise ValueError('Unknown association type: %r' %
+                             (self.assoc_type, ))
 
         return mac(self.secret, kv)
 
@@ -511,7 +511,7 @@ class Association(object):
         @rtype: L{openid.message.Message}
         """
         if (message.hasKey(OPENID_NS, 'sig') or
-            message.hasKey(OPENID_NS, 'signed')):
+                message.hasKey(OPENID_NS, 'signed')):
             raise ValueError('Message already has signed list or signature')
 
         extant_handle = message.getArg(OPENID_NS, 'assoc_handle')
@@ -521,8 +521,7 @@ class Association(object):
         signed_message = message.copy()
         signed_message.setArg(OPENID_NS, 'assoc_handle', self.handle)
         message_keys = list(signed_message.toPostArgs().keys())
-        signed_list = [k[7:] for k in message_keys
-                       if k.startswith('openid.')]
+        signed_list = [k[7:] for k in message_keys if k.startswith('openid.')]
         signed_list.append('signed')
         signed_list.sort()
         signed_message.setArg(OPENID_NS, 'signed', ','.join(signed_list))
@@ -539,7 +538,7 @@ class Association(object):
         """
         message_sig = message.getArg(OPENID_NS, 'sig')
         if not message_sig:
-            raise ValueError("%s has no sig." % (message,))
+            raise ValueError("%s has no sig." % (message, ))
         calculated_sig = self.getMessageSignature(message)
         # remember, getMessageSignature returns bytes
         calculated_sig = calculated_sig.decode('utf-8')
@@ -548,7 +547,7 @@ class Association(object):
     def _makePairs(self, message):
         signed = message.getArg(OPENID_NS, 'signed')
         if not signed:
-            raise ValueError('Message has no signed list: %s' % (message,))
+            raise ValueError('Message has no signed list: %s' % (message, ))
 
         signed_list = signed.split(',')
         pairs = []
@@ -558,8 +557,6 @@ class Association(object):
         return pairs
 
     def __repr__(self):
-        return "<%s.%s %s %s>" % (
-            self.__class__.__module__,
-            self.__class__.__name__,
-            self.assoc_type,
-            self.handle)
+        return "<%s.%s %s %s>" % (self.__class__.__module__,
+                                  self.__class__.__name__, self.assoc_type,
+                                  self.handle)

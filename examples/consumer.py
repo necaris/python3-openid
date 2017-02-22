@@ -14,9 +14,11 @@ import urllib.parse
 import cgitb
 import sys
 
+
 def quoteattr(s):
     qs = cgi.escape(s, 1)
-    return '"%s"' % (qs,)
+    return '"%s"' % (qs, )
+
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -43,13 +45,14 @@ from openid.extensions import pape, sreg
 
 # Used with an OpenID provider affiliate program.
 OPENID_PROVIDER_NAME = 'MyOpenID'
-OPENID_PROVIDER_URL ='https://www.myopenid.com/affiliate_signup?affiliate_id=39'
+OPENID_PROVIDER_URL = 'https://www.myopenid.com/affiliate_signup?affiliate_id=39'
 
 
 class OpenIDHTTPServer(HTTPServer):
     """http server that contains a reference to an OpenID consumer and
     knows its base URL.
     """
+
     def __init__(self, store, *args, **kwargs):
         HTTPServer.__init__(self, *args, **kwargs)
         self.sessions = {}
@@ -59,7 +62,8 @@ class OpenIDHTTPServer(HTTPServer):
             self.base_url = ('http://%s:%s/' %
                              (self.server_name, self.server_port))
         else:
-            self.base_url = 'http://%s/' % (self.server_name,)
+            self.base_url = 'http://%s/' % (self.server_name, )
+
 
 class OpenIDRequestHandler(BaseHTTPRequestHandler):
     """Request handler that knows how to verify an OpenID identity."""
@@ -150,7 +154,8 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.setSessionCookie()
             self.end_headers()
-            self.wfile.write(bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
+            self.wfile.write(
+                bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
 
     def doVerify(self):
         """Process the form submission, initating OpenID verification.
@@ -159,27 +164,30 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
         # First, make sure that the user entered something
         openid_url = self.query.get('openid_identifier')
         if not openid_url:
-            self.render('Enter an OpenID Identifier to verify.',
-                        css_class='error', form_contents=openid_url)
+            self.render(
+                'Enter an OpenID Identifier to verify.',
+                css_class='error',
+                form_contents=openid_url)
             return
 
         immediate = 'immediate' in self.query
         use_sreg = 'use_sreg' in self.query
         use_pape = 'use_pape' in self.query
         use_stateless = 'use_stateless' in self.query
-        oidconsumer = self.getConsumer(stateless = use_stateless)
+        oidconsumer = self.getConsumer(stateless=use_stateless)
         try:
             request = oidconsumer.begin(openid_url)
         except consumer.DiscoveryFailure as exc:
             fetch_error_string = 'Error in discovery: %s' % (
                 cgi.escape(str(exc)))
-            self.render(fetch_error_string,
-                        css_class='error',
-                        form_contents=openid_url)
+            self.render(
+                fetch_error_string,
+                css_class='error',
+                form_contents=openid_url)
         else:
             if request is None:
                 msg = 'No OpenID services found for <code>%s</code>' % (
-                    cgi.escape(openid_url),)
+                    cgi.escape(openid_url), )
                 self.render(msg, css_class='error', form_contents=openid_url)
             else:
                 # Then, ask the library to begin the authorization.
@@ -203,8 +211,9 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
                     self.end_headers()
                 else:
                     form_html = request.htmlMarkup(
-                        trust_root, return_to,
-                        form_tag_attrs={'id':'openid_message'},
+                        trust_root,
+                        return_to,
+                        form_tag_attrs={'id': 'openid_message'},
                         immediate=immediate)
 
                     self.wfile.write(bytes(form_html, 'utf-8'))
@@ -227,7 +236,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
         # us.  Status is a code indicating the response type. info is
         # either None or a string containing more information about
         # the return type.
-        url = 'http://'+self.headers.get('Host')+self.path
+        url = 'http://' + self.headers.get('Host') + self.path
         info = oidconsumer.complete(self.query, url)
 
         sreg_resp = None
@@ -240,8 +249,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             # URL that we were verifying. We include it in the error
             # message to help the user figure out what happened.
             fmt = "Verification of %s failed: %s"
-            message = fmt % (cgi.escape(display_identifier),
-                             info.message)
+            message = fmt % (cgi.escape(display_identifier), info.message)
         elif info.status == consumer.SUCCESS:
             # Success means that the transaction completed without
             # error. If info is None, it means that the user cancelled
@@ -252,7 +260,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             # was a real application, we would do our login,
             # comment posting, etc. here.
             fmt = "You have successfully verified %s as your identity."
-            message = fmt % (cgi.escape(display_identifier),)
+            message = fmt % (cgi.escape(display_identifier), )
             sreg_resp = sreg.SRegResponse.fromSuccessResponse(info)
             pape_resp = pape.Response.fromSuccessResponse(info)
             if info.endpoint.canonicalID:
@@ -261,14 +269,14 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
                 # way their account with you is not compromised if their
                 # i-name registration expires and is bought by someone else.
                 message += ("  This is an i-name, and its persistent ID is %s"
-                            % (cgi.escape(info.endpoint.canonicalID),))
+                            % (cgi.escape(info.endpoint.canonicalID), ))
         elif info.status == consumer.CANCEL:
             # cancelled
             message = 'Verification cancelled'
         elif info.status == consumer.SETUP_NEEDED:
             if info.setup_url:
                 message = '<a href=%s>Setup needed</a>' % (
-                    quoteattr(info.setup_url),)
+                    quoteattr(info.setup_url), )
             else:
                 # This means auth didn't succeed, but you're welcome to try
                 # non-immediate mode.
@@ -280,8 +288,12 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             # information in a log.
             message = 'Verification failed.'
 
-        self.render(message, css_class, display_identifier,
-                    sreg_data=sreg_resp, pape_data=pape_resp)
+        self.render(
+            message,
+            css_class,
+            display_identifier,
+            sreg_data=sreg_resp,
+            pape_data=pape_resp)
 
     def doAffiliate(self):
         """Direct the user sign up with an affiliate OpenID provider."""
@@ -294,20 +306,26 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
 
     def renderSREG(self, sreg_data):
         if not sreg_data:
-            self.wfile.write(bytes('<div class="alert">No registration data was returned</div>', 'utf-8'))
+            self.wfile.write(
+                bytes(
+                    '<div class="alert">No registration data was returned</div>',
+                    'utf-8'))
         else:
             sreg_list = list(sreg_data.items())
             sreg_list.sort()
-            self.wfile.write(bytes('<h2>Registration Data</h2>'
-                '<table class="sreg">'
-                '<thead><tr><th>Field</th><th>Value</th></tr></thead>'
-                '<tbody>', 'utf-8'))
+            self.wfile.write(
+                bytes('<h2>Registration Data</h2>'
+                      '<table class="sreg">'
+                      '<thead><tr><th>Field</th><th>Value</th></tr></thead>'
+                      '<tbody>', 'utf-8'))
 
             odd = ' class="odd"'
             for k, v in sreg_list:
                 field_name = sreg.data_fields.get(k, k)
                 value = cgi.escape(v.encode('UTF-8'))
-                self.wfile.write(bytes('<tr%s><td>%s</td><td>%s</td></tr>' % (odd, field_name, value), 'utf-8'))
+                self.wfile.write(
+                    bytes('<tr%s><td>%s</td><td>%s</td></tr>' % (
+                        odd, field_name, value), 'utf-8'))
                 if odd:
                     odd = ''
                 else:
@@ -317,15 +335,22 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
 
     def renderPAPE(self, pape_data):
         if not pape_data:
-            self.wfile.write(bytes('<div class="alert">No PAPE data was returned</div>', 'utf-8'))
+            self.wfile.write(
+                bytes('<div class="alert">No PAPE data was returned</div>',
+                      'utf-8'))
         else:
-            self.wfile.write(bytes('<div class="alert">Effective Auth Policies<ul>', 'utf-8'))
+            self.wfile.write(
+                bytes('<div class="alert">Effective Auth Policies<ul>',
+                      'utf-8'))
 
             for policy_uri in pape_data.auth_policies:
-                self.wfile.write(bytes('<li><tt>%s</tt></li>' % (cgi.escape(policy_uri),), 'utf-8'))
+                self.wfile.write(
+                    bytes('<li><tt>%s</tt></li>' % (cgi.escape(policy_uri), ),
+                          'utf-8'))
 
             if not pape_data.auth_policies:
-                self.wfile.write(bytes('<li>No policies were applied.</li>', 'utf-8'))
+                self.wfile.write(
+                    bytes('<li>No policies were applied.</li>', 'utf-8'))
 
             self.wfile.write(bytes('</ul></div>', 'utf-8'))
 
@@ -338,20 +363,26 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
     def notFound(self):
         """Render a page with a 404 return code and a message."""
         fmt = 'The path <q>%s</q> was not understood by this server.'
-        msg = fmt % (self.path,)
+        msg = fmt % (self.path, )
         openid_url = self.query.get('openid_identifier')
         self.render(msg, 'error', openid_url, status=404)
 
-    def render(self, message=None, css_class='alert', form_contents=None,
-               status=200, title="Python OpenID Consumer Example",
-               sreg_data=None, pape_data=None):
+    def render(self,
+               message=None,
+               css_class='alert',
+               form_contents=None,
+               status=200,
+               title="Python OpenID Consumer Example",
+               sreg_data=None,
+               pape_data=None):
         """Render a page."""
         self.send_response(status)
         self.send_header("Content-type", "text/html")
         self.end_headers()
         self.pageHeader(title)
         if message:
-            self.wfile.write(("<div class='%s'>" % (css_class,)).encode('utf-8'))
+            self.wfile.write(
+                ("<div class='%s'>" % (css_class, )).encode('utf-8'))
             self.wfile.write(message.encode('utf-8'))
             self.wfile.write("</div>".encode('utf-8'))
 
@@ -366,7 +397,8 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
     def pageHeader(self, title):
         """Render the page header"""
         self.setSessionCookie()
-        self.wfile.write(bytes('''<html>
+        self.wfile.write(
+            bytes('''<html>
   <head><title>%s</title></head>
   <style type="text/css">
       * {
@@ -425,7 +457,8 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
         """Render the page footer"""
         if not form_contents:
             form_contents = ''
-        self.wfile.write(bytes('''\
+        self.wfile.write(
+            bytes('''\
     <div id="verify-form">
       <form method="get" accept-charset="UTF-8" action=%s>
         Identifier:
@@ -440,6 +473,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
   </body>
 </html>
 ''' % (quoteattr(self.buildURL('verify')), quoteattr(form_contents)), 'UTF-8'))
+
 
 def main(host, port, data_path, weak_ssl=False):
     # Instantiate OpenID consumer store and OpenID consumer.  If you
@@ -460,6 +494,7 @@ def main(host, port, data_path, weak_ssl=False):
     print(server.base_url)
     server.serve_forever()
 
+
 if __name__ == '__main__':
     host = 'localhost'
     port = 8001
@@ -468,24 +503,37 @@ if __name__ == '__main__':
     try:
         import optparse
     except ImportError:
-        pass # Use defaults (for Python 2.2)
+        pass  # Use defaults (for Python 2.2)
     else:
         parser = optparse.OptionParser('Usage:\n %prog [options]')
         parser.add_option(
-            '-d', '--data-path', dest='data_path',
+            '-d',
+            '--data-path',
+            dest='data_path',
             help='Data directory for storing OpenID consumer state. '
             'Setting this option implies using a "FileStore."')
         parser.add_option(
-            '-p', '--port', dest='port', type='int', default=port,
+            '-p',
+            '--port',
+            dest='port',
+            type='int',
+            default=port,
             help='Port on which to listen for HTTP requests. '
             'Defaults to port %default.')
         parser.add_option(
-            '-s', '--host', dest='host', default=host,
+            '-s',
+            '--host',
+            dest='host',
+            default=host,
             help='Host on which to listen for HTTP requests. '
             'Also used for generating URLs. Defaults to %default.')
         parser.add_option(
-            '-w', '--weakssl', dest='weakssl', default=False,
-            action='store_true', help='Skip ssl cert verification')
+            '-w',
+            '--weakssl',
+            dest='weakssl',
+            default=False,
+            action='store_true',
+            help='Skip ssl cert verification')
 
         options, args = parser.parse_args()
         if args:

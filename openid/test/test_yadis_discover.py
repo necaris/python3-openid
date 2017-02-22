@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """Tests for yadis.discover.
 
 @todo: Now that yadis.discover uses urljr.fetchers, we should be able to do
@@ -55,8 +54,8 @@ class TestFetcher(object):
             try:
                 data = discoverdata.generateSample(path, self.base_url)
             except KeyError:
-                return fetchers.HTTPResponse(status=404, final_url=current_url,
-                                             headers={}, body='')
+                return fetchers.HTTPResponse(
+                    status=404, final_url=current_url, headers={}, body='')
 
             response = mkResponse(data)
             if response.status in [301, 302, 303, 307]:
@@ -76,7 +75,7 @@ class TestSecondGet(unittest.TestCase):
             if self.count == 1:
                 headers = {
                     'X-XRDS-Location'.lower(): 'http://unittest/404',
-                    }
+                }
                 return fetchers.HTTPResponse(uri, 200, headers, '')
             else:
                 return fetchers.HTTPResponse(uri, 404)
@@ -109,14 +108,11 @@ class _TestCase(unittest.TestCase):
         unittest.TestCase.__init__(self, methodName='runCustomTest')
 
     def setUp(self):
-        fetchers.setDefaultFetcher(TestFetcher(self.base_url),
-                                   wrap_exceptions=False)
+        fetchers.setDefaultFetcher(
+            TestFetcher(self.base_url), wrap_exceptions=False)
 
         self.input_url, self.expected = discoverdata.generateResult(
-            self.base_url,
-            self.input_name,
-            self.id_name,
-            self.result_name,
+            self.base_url, self.input_name, self.id_name, self.result_name,
             self.success)
 
     def tearDown(self):
@@ -124,21 +120,20 @@ class _TestCase(unittest.TestCase):
 
     def runCustomTest(self):
         if self.expected is DiscoveryFailure:
-            self.assertRaises(DiscoveryFailure,
-                                  discover, self.input_url)
+            self.assertRaises(DiscoveryFailure, discover, self.input_url)
         else:
             result = discover(self.input_url)
             self.assertEqual(self.input_url, result.request_uri)
 
             msg = 'Identity URL mismatch: actual = %r, expected = %r' % (
                 result.normalized_uri, self.expected.normalized_uri)
-            self.assertEqual(
-                self.expected.normalized_uri, result.normalized_uri, msg)
+            self.assertEqual(self.expected.normalized_uri,
+                             result.normalized_uri, msg)
 
             msg = 'Content mismatch: actual = %r, expected = %r' % (
                 result.response_text, self.expected.response_text)
-            self.assertEqual(
-                self.expected.response_text, result.response_text, msg)
+            self.assertEqual(self.expected.response_text, result.response_text,
+                             msg)
 
             expected_keys = dir(self.expected)
             expected_keys.sort()
@@ -161,9 +156,7 @@ class _TestCase(unittest.TestCase):
         except AttributeError:
             # run before setUp, or if setUp did not complete successfully.
             n = self.input_name
-        return "%s (%s)" % (
-            n,
-            self.__class__.__module__)
+        return "%s (%s)" % (n, self.__class__.__module__)
 
 
 def pyUnitTests():
@@ -178,6 +171,7 @@ def pyUnitTests():
 def test():
     runner = unittest.TextTestRunner()
     return runner.run(pyUnitTests())
+
 
 if __name__ == '__main__':
     test()

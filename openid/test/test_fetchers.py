@@ -30,7 +30,6 @@ def failUnlessResponseExpected(expected, actual, extra):
 
 
 def test_fetcher(fetcher, should_raise_exc, server):
-
     def geturl(path):
         host, port = server.server_address
         return 'http://%s:%s%s' % (host, port, path)
@@ -56,7 +55,7 @@ def test_fetcher(fetcher, should_raise_exc, server):
         plain('forbidden', 403),
         plain('error', 500),
         plain('server_error', 503),
-        ]
+    ]
 
     for path, expected in cases:
         fetch_url = geturl(path)
@@ -74,7 +73,7 @@ def test_fetcher(fetcher, should_raise_exc, server):
             'http://invalid.janrain.com/',
             'not:a/url',
             'ftp://janrain.com/pub/',
-            ]:
+    ]:
         try:
             result = fetcher.fetch(err_url)
         except (KeyboardInterrupt, SystemExit):
@@ -89,8 +88,8 @@ def test_fetcher(fetcher, should_raise_exc, server):
         except Exception as e:
             assert should_raise_exc
         else:
-            assert False, 'An exception was expected for %r (%r)' % (
-                fetcher, result)
+            assert False, 'An exception was expected for %r (%r)' % (fetcher,
+                                                                     result)
 
 
 def run_fetcher_tests(server):
@@ -99,20 +98,21 @@ def run_fetcher_tests(server):
         (fetchers.Urllib2Fetcher, 'urllib2'),
         (fetchers.CurlHTTPFetcher, 'pycurl'),
         (fetchers.HTTPLib2Fetcher, 'httplib2'),
-        ]:
+    ]:
         try:
             exc_fetchers.append(klass())
         except RuntimeError as why:
-            if str(why).startswith('Cannot find %s library' % (library_name,)):
+            if str(why).startswith('Cannot find %s library' %
+                                   (library_name, )):
                 try:
                     __import__(library_name)
                 except ImportError:
                     raise unittest.SkipTest(
                         'Skipping tests for %r fetcher because '
-                        'the library did not import.' % (library_name,))
+                        'the library did not import.' % (library_name, ))
                 else:
-                    assert False, ('%s present but not detected' % (
-                        library_name,))
+                    assert False, ('%s present but not detected' %
+                                   (library_name, ))
             else:
                 raise
 
@@ -125,6 +125,7 @@ def run_fetcher_tests(server):
 
     for f in non_exc_fetchers:
         test_fetcher(f, False, server)
+
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -141,7 +142,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
         '/forbidden': (403, None),
         '/error': (500, None),
         '/server_error': (503, None),
-        }
+    }
 
     def log_request(self, *args):
         pass
@@ -161,7 +162,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
                 extra_headers = [('Content-type', 'text/plain')]
                 if location is not None:
                     host, port = self.server.server_address
-                    base = ('http://%s:%s' % (host, port,))
+                    base = ('http://%s:%s' % (host, port, ))
                     location = base + location
                     extra_headers.append(('Location', location))
                 self._respond(http_code, extra_headers, self.path)
@@ -185,7 +186,7 @@ class FetcherTestHandler(BaseHTTPRequestHandler):
         req = [
             ('HTTP method', self.command),
             ('path', self.path),
-            ]
+        ]
         if message:
             req.append(('message', message))
 
@@ -269,11 +270,11 @@ class DefaultFetcherTest(unittest.TestCase):
         """Make sure that the default fetcher instance wraps
         exceptions by default"""
         default_fetcher = fetchers.getDefaultFetcher()
-        self.assertIsInstance(
-            default_fetcher, fetchers.ExceptionWrappingFetcher)
+        self.assertIsInstance(default_fetcher,
+                              fetchers.ExceptionWrappingFetcher)
 
-        self.assertRaises(fetchers.HTTPFetchingError,
-                          fetchers.fetch, 'http://invalid.janrain.com/')
+        self.assertRaises(fetchers.HTTPFetchingError, fetchers.fetch,
+                          'http://invalid.janrain.com/')
 
     def test_notWrapped(self):
         """Make sure that if we set a non-wrapped fetcher as default,
@@ -283,8 +284,9 @@ class DefaultFetcherTest(unittest.TestCase):
         fetcher = fetchers.Urllib2Fetcher()
         fetchers.setDefaultFetcher(fetcher, wrap_exceptions=False)
 
-        self.assertFalse(isinstance(fetchers.getDefaultFetcher(),
-                                    fetchers.ExceptionWrappingFetcher))
+        self.assertFalse(
+            isinstance(fetchers.getDefaultFetcher(),
+                       fetchers.ExceptionWrappingFetcher))
 
         try:
             fetchers.fetch('http://invalid.janrain.com/')
@@ -299,6 +301,7 @@ class DefaultFetcherTest(unittest.TestCase):
 
 class Urllib2FetcherTests(unittest.TestCase):
     '''Make sure a few of the utility methods are also covered by tests.'''
+
     def setUp(self):
         self.fetcher = fetchers.Urllib2Fetcher()
 
@@ -306,8 +309,10 @@ class Urllib2FetcherTests(unittest.TestCase):
         '''
         Test that the _allowedURL function only lets through the right things.
         '''
-        for url in ["file://localhost/thing.txt", "ftp://server/path",
-                    "sftp://server/path", "ssh://server/path"]:
+        for url in [
+                "file://localhost/thing.txt", "ftp://server/path",
+                "sftp://server/path", "ssh://server/path"
+        ]:
             self.assertEqual(fetchers._allowedURL(url), False)
 
     def test_lowerCaseKeys(self):
@@ -317,11 +322,16 @@ class Urllib2FetcherTests(unittest.TestCase):
 
     def test_parseHeaderValue(self):
         headers_parsed = [
-            ("text/html; charset=latin-1",
-             ("text/html", {"charset": "latin-1"})),
-            ("1; mode=block", ("1", {"mode": "block"})),
-            ("foo; bar=baz; thing=quux",
-             ("foo", {"bar": "baz", "thing": "quux"})),
+            ("text/html; charset=latin-1", ("text/html", {
+                "charset": "latin-1"
+            })),
+            ("1; mode=block", ("1", {
+                "mode": "block"
+            })),
+            ("foo; bar=baz; thing=quux", ("foo", {
+                "bar": "baz",
+                "thing": "quux"
+            })),
         ]
         for s, p in headers_parsed:
             self.assertEqual(self.fetcher._parseHeaderValue(s), p)

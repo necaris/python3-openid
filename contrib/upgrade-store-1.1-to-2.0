@@ -23,15 +23,17 @@ from optparse import OptionParser
 def askForPassword():
     return getpass.getpass("DB Password: ")
 
-def askForConfirmation(dbname,tablename):
+
+def askForConfirmation(dbname, tablename):
     print """The table %s from the database %s will be dropped, and
-    an empty table with the new nonce table schema will replace it."""%(
-    tablename, dbname)
+    an empty table with the new nonce table schema will replace it.""" % (
+        tablename, dbname)
     return raw_input("Continue? ").lower().strip().startswith('y')
+
 
 def doSQLiteUpgrade(db_conn, nonce_table_name='oid_nonces'):
     cur = db_conn.cursor()
-    cur.execute('DROP TABLE %s'%nonce_table_name)
+    cur.execute('DROP TABLE %s' % nonce_table_name)
     sql = """
     CREATE TABLE %s (
         server_url VARCHAR,
@@ -39,13 +41,14 @@ def doSQLiteUpgrade(db_conn, nonce_table_name='oid_nonces'):
         salt CHAR(40),
         UNIQUE(server_url, timestamp, salt)
     );
-    """%nonce_table_name
+    """ % nonce_table_name
     cur.execute(sql)
     cur.close()
 
+
 def doMySQLUpgrade(db_conn, nonce_table_name='oid_nonces'):
     cur = db_conn.cursor()
-    cur.execute('DROP TABLE %s'%nonce_table_name)
+    cur.execute('DROP TABLE %s' % nonce_table_name)
     sql = """
     CREATE TABLE %s (
         server_url BLOB,
@@ -54,13 +57,14 @@ def doMySQLUpgrade(db_conn, nonce_table_name='oid_nonces'):
         PRIMARY KEY (server_url(255), timestamp, salt)
     )
     TYPE=InnoDB;
-    """%nonce_table_name
+    """ % nonce_table_name
     cur.execute(sql)
     cur.close()
 
+
 def doPostgreSQLUpgrade(db_conn, nonce_table_name='oid_nonces'):
     cur = db_conn.cursor()
-    cur.execute('DROP TABLE %s'%nonce_table_name)
+    cur.execute('DROP TABLE %s' % nonce_table_name)
     sql = """
     CREATE TABLE %s (
         server_url VARCHAR(2047),
@@ -68,32 +72,49 @@ def doPostgreSQLUpgrade(db_conn, nonce_table_name='oid_nonces'):
         salt CHAR(40),
         PRIMARY KEY (server_url, timestamp, salt)
     );
-    """%nonce_table_name
+    """ % nonce_table_name
     cur.execute(sql)
     cur.close()
     db_conn.commit()
 
+
 def main(argv=None):
     parser = OptionParser()
-    parser.add_option("-u", "--user", dest="username",
-                      default=os.environ.get('USER'),
-                      help="User name to use to connect to the DB.  "
-                      "Defaults to USER environment variable.")
-    parser.add_option('-t', '--table', dest='tablename', default='oid_nonces',
-                      help='The name of the nonce table to drop and recreate. '
-                      ' Defaults to "oid_nonces", the default table name for '
-                      'the openid stores.')
-    parser.add_option('--mysql', dest='mysql_db_name',
-                      help='Upgrade a table from this MySQL database.  '
-                      'Requires username for database.')
-    parser.add_option('--pg', '--postgresql', dest='postgres_db_name',
-                      help='Upgrade a table from this PostgreSQL database.  '
-                      'Requires username for database.')
-    parser.add_option('--sqlite', dest='sqlite_db_name',
-                      help='Upgrade a table from this SQLite database file.')
-    parser.add_option('--host', dest='db_host',
-                      default='localhost',
-                      help='Host on which to find MySQL or PostgreSQL DB.')
+    parser.add_option(
+        "-u",
+        "--user",
+        dest="username",
+        default=os.environ.get('USER'),
+        help="User name to use to connect to the DB.  "
+        "Defaults to USER environment variable.")
+    parser.add_option(
+        '-t',
+        '--table',
+        dest='tablename',
+        default='oid_nonces',
+        help='The name of the nonce table to drop and recreate. '
+        ' Defaults to "oid_nonces", the default table name for '
+        'the openid stores.')
+    parser.add_option(
+        '--mysql',
+        dest='mysql_db_name',
+        help='Upgrade a table from this MySQL database.  '
+        'Requires username for database.')
+    parser.add_option(
+        '--pg',
+        '--postgresql',
+        dest='postgres_db_name',
+        help='Upgrade a table from this PostgreSQL database.  '
+        'Requires username for database.')
+    parser.add_option(
+        '--sqlite',
+        dest='sqlite_db_name',
+        help='Upgrade a table from this SQLite database file.')
+    parser.add_option(
+        '--host',
+        dest='db_host',
+        default='localhost',
+        help='Host on which to find MySQL or PostgreSQL DB.')
     (options, args) = parser.parse_args(argv)
 
     db_conn = None
@@ -129,10 +150,11 @@ def main(argv=None):
                 return 1
 
         try:
-            db_conn = psycopg2.connect(database = options.postgres_db_name,
-                                      user = options.username,
-                                      host = options.db_host,
-                                      password = password)
+            db_conn = psycopg2.connect(
+                database=options.postgres_db_name,
+                user=options.username,
+                host=options.db_host,
+                password=password)
         except Exception, e:
             print "Could not connect to PostgreSQL database:", str(e)
             return 1

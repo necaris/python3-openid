@@ -34,14 +34,15 @@ class Extension(object):
             warnings.warn(
                 'Passing None to Extension.toMessage is deprecated. '
                 'Creating a message assuming you want OpenID 2.',
-                DeprecationWarning, stacklevel=2)
+                DeprecationWarning,
+                stacklevel=2)
             message = message_module.Message(message_module.OPENID2_NS)
 
         implicit = message.isOpenID1()
 
         try:
-            message.namespaces.addAlias(self.ns_uri, self.ns_alias,
-                                        implicit=implicit)
+            message.namespaces.addAlias(
+                self.ns_uri, self.ns_alias, implicit=implicit)
         except KeyError:
             if message.namespaces.getAlias(self.ns_uri) != self.ns_alias:
                 raise

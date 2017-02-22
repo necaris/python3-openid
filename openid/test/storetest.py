@@ -14,7 +14,6 @@ from openid.association import Association
 from openid.cryptutil import randomString
 from openid.store.nonce import mkNonce, split
 
-
 db_host = os.environ.get('TEST_DB_HOST', 'dbtest')
 
 allowed_handle = []
@@ -60,11 +59,12 @@ def testStore(store):
 
     def checkRetrieve(url, handle=None, expected=None):
         retrieved_assoc = store.getAssociation(url, handle)
-        assert retrieved_assoc == expected, (retrieved_assoc.__dict__, expected.__dict__)
+        assert retrieved_assoc == expected, (retrieved_assoc.__dict__,
+                                             expected.__dict__)
         if expected is not None:
             if retrieved_assoc is expected:
-                print ('Unexpected: retrieved a reference to the expected '
-                       'value instead of a new object')
+                print('Unexpected: retrieved a reference to the expected '
+                      'value instead of a new object')
             assert retrieved_assoc.handle == expected.handle
             assert retrieved_assoc.secret == expected.secret
 
@@ -200,7 +200,7 @@ def testStore(store):
         # Nonces from when the universe was an hour old should not pass now.
         old_nonce = mkNonce(3600)
         checkUseNonce(old_nonce, False, url,
-                      "Old nonce (%r) passed." % (old_nonce,))
+                      "Old nonce (%r) passed." % (old_nonce, ))
 
     old_nonce1 = mkNonce(now - 20000)
     old_nonce2 = mkNonce(now - 10000)
@@ -219,7 +219,7 @@ def testStore(store):
 
         nonceModule.SKEW = 3600
         cleaned = store.cleanupNonces()
-        assert cleaned == 2, "Cleaned %r nonces." % (cleaned,)
+        assert cleaned == 2, "Cleaned %r nonces." % (cleaned, )
 
         nonceModule.SKEW = 100000
         # A roundabout method of checking that the old nonces were cleaned is
@@ -271,13 +271,13 @@ def test_mysql():
 
         # Change this connect line to use the right user and password
         try:
-            conn = MySQLdb.connect(user=db_user, passwd=db_passwd,
-                                   host=db_host)
+            conn = MySQLdb.connect(
+                user=db_user, passwd=db_passwd, host=db_host)
         except MySQLdb.OperationalError as why:
             if why.args[0] == 2005:
-                raise unittest.SkipTest('Skipping MySQL store test. '
-                                        'Cannot connect to server on host %r.'
-                                        % (db_host,))
+                raise unittest.SkipTest(
+                    'Skipping MySQL store test. '
+                    'Cannot connect to server on host %r.' % (db_host, ))
             else:
                 raise
 
@@ -337,22 +337,21 @@ def test_postgresql():
         # Connect once to create the database; reconnect to access the
         # new database.
         try:
-            conn_create = psycopg2.connect(database='template1', user=db_user,
-                                           host=db_host)
+            conn_create = psycopg2.connect(
+                database='template1', user=db_user, host=db_host)
         except psycopg2.OperationalError as why:
-            raise unittest.SkipTest('Skipping PostgreSQL store test: %s'
-                                     % why)
+            raise unittest.SkipTest('Skipping PostgreSQL store test: %s' % why)
 
         conn_create.autocommit = True
 
         # Create the test database.
         cursor = conn_create.cursor()
-        cursor.execute('CREATE DATABASE %s;' % (db_name,))
+        cursor.execute('CREATE DATABASE %s;' % (db_name, ))
         conn_create.close()
 
         # Connect to the test database.
-        conn_test = psycopg2.connect(database=db_name, user=db_user,
-                                    host=db_host)
+        conn_test = psycopg2.connect(
+            database=db_name, user=db_user, host=db_host)
 
         # OK, we're in the right environment. Create the store
         # instance and create the tables.
@@ -373,12 +372,12 @@ def test_postgresql():
         time.sleep(1)
 
         # Remove the database now that the test is over.
-        conn_remove = psycopg2.connect(database='template1', user=db_user,
-                                      host=db_host)
+        conn_remove = psycopg2.connect(
+            database='template1', user=db_user, host=db_host)
         conn_remove.autocommit = True
 
         cursor = conn_remove.cursor()
-        cursor.execute('DROP DATABASE %s;' % (db_name,))
+        cursor.execute('DROP DATABASE %s;' % (db_name, ))
         conn_remove.close()
 
 
@@ -386,18 +385,20 @@ def test_memstore():
     from openid.store import memstore
     testStore(memstore.MemoryStore())
 
+
 test_functions = [
     test_filestore,
     test_sqlite,
     test_mysql,
     test_postgresql,
     test_memstore,
-    ]
+]
 
 
 def pyUnitTests():
     tests = list(map(unittest.FunctionTestCase, test_functions))
     return unittest.TestSuite(tests)
+
 
 if __name__ == '__main__':
     import sys

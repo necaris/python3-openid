@@ -54,6 +54,7 @@ class YadisServiceManager(object):
         """Store this object in the session, by its session key."""
         session[self.session_key] = self
 
+
 class Discovery(object):
     """State management for discovery.
 

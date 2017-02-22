@@ -1,4 +1,3 @@
-
 from openid.extensions import pape
 
 import unittest

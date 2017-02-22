@@ -17,6 +17,7 @@ def seqToKV(seq, strict=False):
     @return: A string representation of the sequence
     @rtype: bytes
     """
+
     def err(msg):
         formatted = 'seqToKV warning: %s: %r' % (msg, seq)
         if strict:
@@ -34,27 +35,28 @@ def seqToKV(seq, strict=False):
 
         if '\n' in k:
             raise KVFormError(
-                'Invalid input for seqToKV: key contains newline: %r' % (k,))
+                'Invalid input for seqToKV: key contains newline: %r' % (k, ))
 
         if ':' in k:
             raise KVFormError(
-                'Invalid input for seqToKV: key contains colon: %r' % (k,))
+                'Invalid input for seqToKV: key contains colon: %r' % (k, ))
 
         if k.strip() != k:
-            err('Key has whitespace at beginning or end: %r' % (k,))
+            err('Key has whitespace at beginning or end: %r' % (k, ))
 
         if isinstance(v, bytes):
             v = v.decode('utf-8')
         elif not isinstance(v, str):
-            err('Converting value to string: %r' % (v,))
+            err('Converting value to string: %r' % (v, ))
             v = str(v)
 
         if '\n' in v:
             raise KVFormError(
-                'Invalid input for seqToKV: value contains newline: %r' % (v,))
+                'Invalid input for seqToKV: value contains newline: %r' %
+                (v, ))
 
         if v.strip() != v:
-            err('Value has whitespace at beginning or end: %r' % (v,))
+            err('Value has whitespace at beginning or end: %r' % (v, ))
 
         lines.append(k + ':' + v + '\n')
 
@@ -71,6 +73,7 @@ def kvToSeq(data, strict=False):
 
     @return str
     """
+
     def err(msg):
         formatted = 'kvToSeq warning: %s: %r' % (msg, data)
         if strict:
@@ -106,7 +109,7 @@ def kvToSeq(data, strict=False):
                 err(fmt % (line_num, k))
 
             if not k_s:
-                err('In line %d, got empty key' % (line_num,))
+                err('In line %d, got empty key' % (line_num, ))
 
             v_s = v.strip()
             if v_s != v:

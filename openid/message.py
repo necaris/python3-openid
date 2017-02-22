@@ -1,8 +1,10 @@
 """Extension argument processing code
 """
-__all__ = ['Message', 'NamespaceMap', 'no_default', 'registerNamespaceAlias',
-           'OPENID_NS', 'BARE_NS', 'OPENID1_NS', 'OPENID2_NS', 'SREG_URI',
-           'IDENTIFIER_SELECT']
+__all__ = [
+    'Message', 'NamespaceMap', 'no_default', 'registerNamespaceAlias',
+    'OPENID_NS', 'BARE_NS', 'OPENID1_NS', 'OPENID2_NS', 'SREG_URI',
+    'IDENTIFIER_SELECT'
+]
 
 import copy
 import warnings
@@ -51,12 +53,29 @@ OPENID1_URL_LIMIT = 2047
 
 # All OpenID protocol fields.  Used to check namespace aliases.
 OPENID_PROTOCOL_FIELDS = [
-    'ns', 'mode', 'error', 'return_to', 'contact', 'reference',
-    'signed', 'assoc_type', 'session_type', 'dh_modulus', 'dh_gen',
-    'dh_consumer_public', 'claimed_id', 'identity', 'realm',
-    'invalidate_handle', 'op_endpoint', 'response_nonce', 'sig',
-    'assoc_handle', 'trust_root', 'openid',
-    ]
+    'ns',
+    'mode',
+    'error',
+    'return_to',
+    'contact',
+    'reference',
+    'signed',
+    'assoc_type',
+    'session_type',
+    'dh_modulus',
+    'dh_gen',
+    'dh_consumer_public',
+    'claimed_id',
+    'identity',
+    'realm',
+    'invalidate_handle',
+    'op_endpoint',
+    'response_nonce',
+    'sig',
+    'assoc_handle',
+    'trust_root',
+    'openid',
+]
 
 
 class UndefinedOpenIDNamespace(ValueError):
@@ -69,10 +88,11 @@ class InvalidOpenIDNamespace(ValueError):
 
     For recognized values, see L{Message.allowed_openid_namespaces}
     """
+
     def __str__(self):
         s = "Invalid OpenID Namespace"
         if self.args:
-            s += " %r" % (self.args[0],)
+            s += " %r" % (self.args[0], )
         return s
 
 
@@ -107,11 +127,11 @@ def registerNamespaceAlias(namespace_uri, alias):
 
     if namespace_uri in list(registered_aliases.values()):
         raise NamespaceAliasRegistrationError(
-            'Namespace uri %r already registered' % (namespace_uri,))
+            'Namespace uri %r already registered' % (namespace_uri, ))
 
     if alias in registered_aliases:
-        raise NamespaceAliasRegistrationError(
-            'Alias %r already registered' % (alias,))
+        raise NamespaceAliasRegistrationError('Alias %r already registered' %
+                                              (alias, ))
 
     registered_aliases[alias] = namespace_uri
 
@@ -157,9 +177,8 @@ class Message(object):
         openid_args = {}
         for key, value in args.items():
             if isinstance(value, list):
-                raise TypeError(
-                    "query dict must have one value for each key, "
-                    "not lists of values.  Query is %r" % (args,))
+                raise TypeError("query dict must have one value for each key, "
+                                "not lists of values.  Query is %r" % (args, ))
 
             try:
                 prefix, rest = key.split('.', 1)
@@ -306,7 +325,9 @@ class Message(object):
 
         return kvargs
 
-    def toFormMarkup(self, action_url, form_tag_attrs=None,
+    def toFormMarkup(self,
+                     action_url,
+                     form_tag_attrs=None,
                      submit_text="Continue"):
         """Generate HTML form markup that contains the values in this
         message, to be HTTP POSTed as x-www-form-urlencoded UTF-8.
@@ -345,14 +366,17 @@ class Message(object):
         form.attrib['enctype'] = 'application/x-www-form-urlencoded'
 
         for name, value in self.toPostArgs().items():
-            attrs = {'type': 'hidden',
-                     'name': oidutil.toUnicode(name),
-                     'value': oidutil.toUnicode(value)}
+            attrs = {
+                'type': 'hidden',
+                'name': oidutil.toUnicode(name),
+                'value': oidutil.toUnicode(value)
+            }
             form.append(ElementTree.Element('input', attrs))
 
         submit = ElementTree.Element(
             'input',
-            {'type': 'submit', 'value': oidutil.toUnicode(submit_text)})
+            {'type': 'submit',
+             'value': oidutil.toUnicode(submit_text)})
         form.append(submit)
 
         return str(ElementTree.tostring(form, encoding='utf-8'),
@@ -393,16 +417,18 @@ class Message(object):
 
         if namespace != BARE_NS and not isinstance(namespace, str):
             raise TypeError(
-                "Namespace must be BARE_NS, OPENID_NS or a string. got %r"
-                % (namespace,))
+                "Namespace must be BARE_NS, OPENID_NS or a string. got %r" %
+                (namespace, ))
 
         if namespace != BARE_NS and ':' not in namespace:
             fmt = 'OpenID 2.0 namespace identifiers SHOULD be URIs. Got %r'
-            warnings.warn(fmt % (namespace,), DeprecationWarning)
+            warnings.warn(fmt % (namespace, ), DeprecationWarning)
 
             if namespace == 'sreg':
                 fmt = 'Using %r instead of "sreg" as namespace'
-                warnings.warn(fmt % (SREG_URI,), DeprecationWarning,)
+                warnings.warn(
+                    fmt % (SREG_URI, ),
+                    DeprecationWarning, )
                 return SREG_URI
 
         return namespace
@@ -508,8 +534,7 @@ class Message(object):
 
     def __repr__(self):
         return "<%s.%s %r>" % (self.__class__.__module__,
-                               self.__class__.__name__,
-                               self.args)
+                               self.__class__.__name__, self.args)
 
     def __eq__(self, other):
         return self.args == other.args
@@ -549,6 +574,7 @@ class Message(object):
 class NamespaceMap(object):
     """Maintains a bijective map between namespace uris and aliases.
     """
+
     def __init__(self):
         self.alias_to_namespace = {}
         self.namespace_to_alias = {}
@@ -594,17 +620,14 @@ class NamespaceMap(object):
         # Check that there is not a namespace already defined for
         # the desired alias
         current_namespace_uri = self.alias_to_namespace.get(desired_alias)
-        if (current_namespace_uri is not None
-            and current_namespace_uri != namespace_uri):
+        if (current_namespace_uri is not None and
+                current_namespace_uri != namespace_uri):
 
             fmt = ('Cannot map %r to alias %r. '
                    '%r is already mapped to alias %r')
 
-            msg = fmt % (
-                namespace_uri,
-                desired_alias,
-                current_namespace_uri,
-                desired_alias)
+            msg = fmt % (namespace_uri, desired_alias, current_namespace_uri,
+                         desired_alias)
             raise KeyError(msg)
 
         # Check that there is not already a (different) alias for

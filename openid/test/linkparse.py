@@ -108,6 +108,7 @@ def pyUnitTests():
 
     return unittest.TestSuite(tests)
 
+
 if __name__ == '__main__':
     suite = pyUnitTests()
     runner = unittest.TextTestRunner()

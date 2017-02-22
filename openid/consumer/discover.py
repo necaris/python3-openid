@@ -11,7 +11,7 @@ __all__ = [
     'OPENID_IDP_2_0_TYPE',
     'OpenIDServiceEndpoint',
     'discover',
-    ]
+]
 
 import urllib.parse
 import logging
@@ -37,6 +37,7 @@ OPENID_1_0_TYPE = 'http://openid.net/signon/1.0'
 from openid.message import OPENID1_NS as OPENID_1_0_MESSAGE_NS
 from openid.message import OPENID2_NS as OPENID_2_0_MESSAGE_NS
 
+
 class OpenIDServiceEndpoint(object):
     """Object representing an OpenID service endpoint.
 
@@ -48,11 +49,10 @@ class OpenIDServiceEndpoint(object):
     # ordering of this list affects yadis and XRI service discovery.
     openid_type_uris = [
         OPENID_IDP_2_0_TYPE,
-
         OPENID_2_0_TYPE,
         OPENID_1_1_TYPE,
         OPENID_1_0_TYPE,
-        ]
+    ]
 
     def __init__(self):
         self.claimed_id = None
@@ -60,7 +60,7 @@ class OpenIDServiceEndpoint(object):
         self.type_uris = []
         self.local_id = None
         self.canonicalID = None
-        self.used_yadis = False # whether this came from an XRDS
+        self.used_yadis = False  # whether this came from an XRDS
         self.display_identifier = None
 
     def usesExtension(self, extension_uri):
@@ -68,7 +68,7 @@ class OpenIDServiceEndpoint(object):
 
     def preferredNamespace(self):
         if (OPENID_IDP_2_0_TYPE in self.type_uris or
-            OPENID_2_0_TYPE in self.type_uris):
+                OPENID_2_0_TYPE in self.type_uris):
             return OPENID_2_0_MESSAGE_NS
         else:
             return OPENID_1_0_MESSAGE_NS
@@ -78,10 +78,8 @@ class OpenIDServiceEndpoint(object):
 
         I consider C{/server} endpoints to implicitly support C{/signon}.
         """
-        return (
-            (type_uri in self.type_uris) or
-            (type_uri == OPENID_2_0_TYPE and self.isOPIdentifier())
-            )
+        return ((type_uri in self.type_uris) or
+                (type_uri == OPENID_2_0_TYPE and self.isOPIdentifier()))
 
     def getDisplayIdentifier(self):
         """Return the display_identifier if set, else return the claimed_id.
@@ -138,11 +136,9 @@ class OpenIDServiceEndpoint(object):
         # specified, then this is an OpenID endpoint
         if type_uris and endpoint.uri is not None:
             openid_endpoint = cls()
-            openid_endpoint.parseService(
-                endpoint.yadis_url,
-                endpoint.uri,
-                endpoint.type_uris,
-                endpoint.service_element)
+            openid_endpoint.parseService(endpoint.yadis_url, endpoint.uri,
+                                         endpoint.type_uris,
+                                         endpoint.service_element)
         else:
             openid_endpoint = None
 
@@ -159,20 +155,20 @@ class OpenIDServiceEndpoint(object):
         discovery_types = [
             (OPENID_2_0_TYPE, 'openid2.provider', 'openid2.local_id'),
             (OPENID_1_1_TYPE, 'openid.server', 'openid.delegate'),
-            ]
+        ]
 
         link_attrs = html_parse.parseLinkAttrs(html)
         services = []
         for type_uri, op_endpoint_rel, local_id_rel in discovery_types:
-            op_endpoint_url = html_parse.findFirstHref(
-                link_attrs, op_endpoint_rel)
+            op_endpoint_url = html_parse.findFirstHref(link_attrs,
+                                                       op_endpoint_rel)
             if op_endpoint_url is None:
                 continue
 
             service = cls()
             service.claimed_id = uri
-            service.local_id = html_parse.findFirstHref(
-                link_attrs, local_id_rel)
+            service.local_id = html_parse.findFirstHref(link_attrs,
+                                                        local_id_rel)
             service.server_url = op_endpoint_url
             service.type_uris = [type_uri]
 
@@ -181,7 +177,6 @@ class OpenIDServiceEndpoint(object):
         return services
 
     fromHTML = classmethod(fromHTML)
-
 
     def fromXRDS(cls, uri, xrds):
         """Parse the given document as XRDS looking for OpenID services.
@@ -195,7 +190,6 @@ class OpenIDServiceEndpoint(object):
         return extractServices(uri, xrds, cls)
 
     fromXRDS = classmethod(fromXRDS)
-
 
     def fromDiscoveryResult(cls, discoveryResult):
         """Create endpoints from a DiscoveryResult.
@@ -217,7 +211,6 @@ class OpenIDServiceEndpoint(object):
 
     fromDiscoveryResult = classmethod(fromDiscoveryResult)
 
-
     def fromOPEndpointURL(cls, op_endpoint_url):
         """Construct an OP-Identifier OpenIDServiceEndpoint object for
         a given OP Endpoint URL
@@ -232,7 +225,6 @@ class OpenIDServiceEndpoint(object):
 
     fromOPEndpointURL = classmethod(fromOPEndpointURL)
 
-
     def __str__(self):
         return ("<%s.%s "
                 "server_url=%r "
@@ -240,14 +232,9 @@ class OpenIDServiceEndpoint(object):
                 "local_id=%r "
                 "canonicalID=%r "
                 "used_yadis=%s "
-                ">"
-                 % (self.__class__.__module__, self.__class__.__name__,
-                    self.server_url,
-                    self.claimed_id,
-                    self.local_id,
-                    self.canonicalID,
-                    self.used_yadis))
-
+                ">" % (self.__class__.__module__, self.__class__.__name__,
+                       self.server_url, self.claimed_id, self.local_id,
+                       self.canonicalID, self.used_yadis))
 
 
 def findOPLocalIdentifier(service_element, type_uris):
@@ -279,8 +266,7 @@ def findOPLocalIdentifier(service_element, type_uris):
 
     # Build the list of tags that could contain the OP-Local Identifier
     local_id_tags = []
-    if (OPENID_1_1_TYPE in type_uris or
-        OPENID_1_0_TYPE in type_uris):
+    if (OPENID_1_1_TYPE in type_uris or OPENID_1_0_TYPE in type_uris):
         local_id_tags.append(nsTag(OPENID_1_0_NS, 'Delegate'))
 
     if OPENID_2_0_TYPE in type_uris:
@@ -295,10 +281,11 @@ def findOPLocalIdentifier(service_element, type_uris):
                 local_id = local_id_element.text
             elif local_id != local_id_element.text:
                 format = 'More than one %r tag found in one service element'
-                message = format % (local_id_tag,)
+                message = format % (local_id_tag, )
                 raise DiscoveryFailure(message, None)
 
     return local_id
+
 
 def normalizeURL(url):
     """Normalize a URL, converting normalization failures to
@@ -306,15 +293,17 @@ def normalizeURL(url):
     try:
         normalized = urinorm.urinorm(url)
     except ValueError as why:
-        raise DiscoveryFailure('Normalizing identifier: %s' % (why,), None)
+        raise DiscoveryFailure('Normalizing identifier: %s' % (why, ), None)
     else:
         return urllib.parse.urldefrag(normalized)[0]
+
 
 def normalizeXRI(xri):
     """Normalize an XRI, stripping its scheme if present"""
     if xri.startswith("xri://"):
         xri = xri[6:]
     return xri
+
 
 def arrangeByType(service_list, preferred_types):
     """Rearrange service_list in a new list so services are ordered by
@@ -355,6 +344,7 @@ def arrangeByType(service_list, preferred_types):
 
     return prio_services
 
+
 def getOPOrUserServices(openid_services):
     """Extract OP Identifier services.  If none found, return the
     rest, sorted with most preferred first according to
@@ -370,6 +360,7 @@ def getOPOrUserServices(openid_services):
                                     OpenIDServiceEndpoint.openid_type_uris)
 
     return op_services or openid_services
+
 
 def discoverYadis(uri):
     """Discover OpenID services for a URI. Tries Yadis and falls back
@@ -412,6 +403,7 @@ def discoverYadis(uri):
 
     return (yadis_url, getOPOrUserServices(openid_services))
 
+
 def discoverXRI(iname):
     endpoints = []
     iname = normalizeXRI(iname)
@@ -420,7 +412,7 @@ def discoverXRI(iname):
             iname, OpenIDServiceEndpoint.openid_type_uris)
 
         if canonicalID is None:
-            raise XRDSError('No CanonicalID found for XRI %r' % (iname,))
+            raise XRDSError('No CanonicalID found for XRI %r' % (iname, ))
 
         flt = filters.mkFilter(OpenIDServiceEndpoint)
         for service_element in services:
@@ -444,12 +436,13 @@ def discoverNoYadis(uri):
     if http_resp.status not in (200, 206):
         raise DiscoveryFailure(
             'HTTP Response status from identity URL host is not 200. '
-            'Got status %r' % (http_resp.status,), http_resp)
+            'Got status %r' % (http_resp.status, ), http_resp)
 
     claimed_id = http_resp.final_url
-    openid_services = OpenIDServiceEndpoint.fromHTML(
-        claimed_id, http_resp.body)
+    openid_services = OpenIDServiceEndpoint.fromHTML(claimed_id,
+                                                     http_resp.body)
     return claimed_id, openid_services
+
 
 def discoverURI(uri):
     parsed = urllib.parse.urlparse(uri)
@@ -463,6 +456,7 @@ def discoverURI(uri):
     claimed_id, openid_services = discoverYadis(uri)
     claimed_id = normalizeURL(claimed_id)
     return claimed_id, openid_services
+
 
 def discover(identifier):
     if xri.identifierScheme(identifier) == "XRI":

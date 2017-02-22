@@ -10,7 +10,7 @@ __all__ = [
     'FetchResponse',
     'StoreRequest',
     'StoreResponse',
-    ]
+]
 
 from openid import extension
 from openid.server.trustroot import TrustRoot
@@ -31,9 +31,9 @@ def checkAlias(alias):
     found.  Return None if the alias is valid.
     """
     if ',' in alias:
-        raise AXError("Alias %r must not contain comma" % (alias,))
+        raise AXError("Alias %r must not contain comma" % (alias, ))
     if '.' in alias:
-        raise AXError("Alias %r must not contain period" % (alias,))
+        raise AXError("Alias %r must not contain period" % (alias, ))
 
 
 class AXError(ValueError):
@@ -85,8 +85,7 @@ class AXMessage(extension.Extension):
             if not mode:
                 raise NotAXMessage()
             else:
-                raise AXError(
-                    'Expected mode %r; got %r' % (self.mode, mode))
+                raise AXError('Expected mode %r; got %r' % (self.mode, mode))
 
     def _newArgs(self):
         """Return a set of attribute exchange arguments containing the
@@ -175,8 +174,8 @@ def toTypeURIs(namespace_map, alias_list_s):
         for alias in alias_list_s.split(','):
             type_uri = namespace_map.getNamespaceURI(alias)
             if type_uri is None:
-                raise KeyError(
-                    'No type is defined for attribute name %r' % (alias,))
+                raise KeyError('No type is defined for attribute name %r' %
+                               (alias, ))
             else:
                 uris.append(type_uri)
 
@@ -215,8 +214,8 @@ class FetchRequest(AXMessage):
             present in this fetch request.
         """
         if attribute.type_uri in self.requested_attributes:
-            raise KeyError('The attribute %r has already been requested'
-                           % (attribute.type_uri,))
+            raise KeyError('The attribute %r has already been requested' %
+                           (attribute.type_uri, ))
 
         self.requested_attributes[attribute.type_uri] = attribute
 
@@ -318,14 +317,15 @@ class FetchRequest(AXMessage):
                                    message.getArg(OPENID_NS, 'return_to'))
 
             if not realm:
-                raise AXError(("Cannot validate update_url %r " +
-                               "against absent realm") % (self.update_url,))
+                raise AXError(
+                    ("Cannot validate update_url %r " + "against absent realm")
+                    % (self.update_url, ))
 
             tr = TrustRoot.parse(realm)
             if not tr.validateURL(self.update_url):
                 raise AXError(
                     "Update URL %r failed validation against realm %r" %
-                    (self.update_url, realm,))
+                    (self.update_url, realm, ))
 
         return self
 
@@ -368,12 +368,11 @@ class FetchRequest(AXMessage):
                         if count <= 0:
                             raise AXError(
                                 "Count %r must be greater than zero, got %r" %
-                                (count_key, count_s,))
+                                (count_key, count_s, ))
                     except ValueError:
                         if count_s != UNLIMITED_VALUES:
-                            raise AXError(
-                                "Invalid count value for %r: %r" %
-                                (count_key, count_s,))
+                            raise AXError("Invalid count value for %r: %r" %
+                                          (count_key, count_s, ))
                         count = count_s
                 else:
                     count = 1
@@ -391,9 +390,9 @@ class FetchRequest(AXMessage):
 
         for type_uri in aliases.iterNamespaceURIs():
             if type_uri not in all_type_uris:
-                raise AXError(
-                    'Type URI %r was in the request but not '
-                    'present in "required" or "if_available"' % (type_uri,))
+                raise AXError('Type URI %r was in the request but not '
+                              'present in "required" or "if_available"' %
+                              (type_uri, ))
 
         self.update_url = ax_args.get('update_url')
 
@@ -560,8 +559,7 @@ class AXKeyValueMessage(AXMessage):
         elif len(values) == 1:
             return values[0]
         else:
-            raise AXError(
-                'More than one value present for %r' % (type_uri,))
+            raise AXError('More than one value present for %r' % (type_uri, ))
 
     def get(self, type_uri):
         """Get the list of values for this attribute in the
@@ -644,8 +642,8 @@ class FetchResponse(AXKeyValueMessage):
             for type_uri in self.data:
                 if type_uri not in self.request:
                     raise KeyError(
-                        'Response attribute not present in request: %r'
-                        % (type_uri,))
+                        'Response attribute not present in request: %r' %
+                        (type_uri, ))
 
             for attr_info in self.request.iterAttrs():
                 # Copy the aliases from the request so that reading
@@ -665,7 +663,7 @@ class FetchResponse(AXKeyValueMessage):
                        (attr_info.count < len(values)):
                     raise AXError(
                         'More than the number of requested values were '
-                        'specified for %r' % (attr_info.type_uri,))
+                        'specified for %r' % (attr_info.type_uri, ))
 
         kv_args = self._getExtensionKVArgs(aliases)
 
@@ -680,8 +678,8 @@ class FetchResponse(AXKeyValueMessage):
             kv_args['type.' + alias] = attr_info.type_uri
             kv_args['count.' + alias] = '0'
 
-        update_url = ((self.request and self.request.update_url)
-                      or self.update_url)
+        update_url = ((self.request and self.request.update_url) or
+                      self.update_url)
 
         if update_url:
             ax_args['update_url'] = update_url
@@ -762,7 +760,7 @@ class StoreResponse(AXMessage):
 
         if succeeded and error_message is not None:
             raise AXError('An error message may only be included in a '
-                             'failing fetch response')
+                          'failing fetch response')
         if succeeded:
             self.mode = self.SUCCESS_MODE
         else:

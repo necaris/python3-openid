@@ -79,15 +79,21 @@ class KVSeqTest(KVBaseTest):
         self.assertEqual(seq, clean_seq)
         self.checkWarnings(self.expected_warnings)
 
+
 kvdict_cases = [
     # (kvform, parsed dictionary, expected warnings)
     ('', {}, 0),
-    ('college:harvey mudd\n', {'college':'harvey mudd'}, 0),
-    ('city:claremont\nstate:CA\n',
-     {'city':'claremont', 'state':'CA'}, 0),
-    ('is_valid:true\ninvalidate_handle:{HMAC-SHA1:2398410938412093}\n',
-     {'is_valid':'true',
-      'invalidate_handle':'{HMAC-SHA1:2398410938412093}'}, 0),
+    ('college:harvey mudd\n', {
+        'college': 'harvey mudd'
+    }, 0),
+    ('city:claremont\nstate:CA\n', {
+        'city': 'claremont',
+        'state': 'CA'
+    }, 0),
+    ('is_valid:true\ninvalidate_handle:{HMAC-SHA1:2398410938412093}\n', {
+        'is_valid': 'true',
+        'invalidate_handle': '{HMAC-SHA1:2398410938412093}'
+    }, 0),
 
     # Warnings from lines with no colon:
     ('x\n', {}, 1),
@@ -98,18 +104,33 @@ kvdict_cases = [
     ('x\n\n', {}, 1),
 
     # Warning from empty key
-    (':\n', {'':''}, 1),
-    (':missing key\n', {'':'missing key'}, 1),
+    (':\n', {
+        '': ''
+    }, 1),
+    (':missing key\n', {
+        '': 'missing key'
+    }, 1),
 
     # Warnings from leading or trailing whitespace in key or value
-    (' street:foothill blvd\n', {'street':'foothill blvd'}, 1),
-    ('major: computer science\n', {'major':'computer science'}, 1),
-    (' dorm : east \n', {'dorm':'east'}, 2),
+    (' street:foothill blvd\n', {
+        'street': 'foothill blvd'
+    }, 1),
+    ('major: computer science\n', {
+        'major': 'computer science'
+    }, 1),
+    (' dorm : east \n', {
+        'dorm': 'east'
+    }, 2),
 
     # Warnings from missing trailing newline
-    ('e^(i*pi)+1:0', {'e^(i*pi)+1':'0'}, 1),
-    ('east:west\nnorth:south', {'east':'west', 'north':'south'}, 1),
-    ]
+    ('e^(i*pi)+1:0', {
+        'e^(i*pi)+1': '0'
+    }, 1),
+    ('east:west\nnorth:south', {
+        'east': 'west',
+        'north': 'south'
+    }, 1),
+]
 
 kvseq_cases = [
     ([], '', 0),
@@ -120,23 +141,21 @@ kvseq_cases = [
     # If it's a UTF-8 str, make sure that it's equivalent to the same
     # string, decoded.
     ([('\xce\xbbx', 'x')], '\xce\xbbx:x\n', 0),
-
     ([('openid', 'useful'), ('a', 'b')], 'openid:useful\na:b\n', 0),
 
     # Warnings about leading whitespace
     ([(' openid', 'useful'), ('a', 'b')], ' openid:useful\na:b\n', 2),
 
     # Warnings about leading and trailing whitespace
-    ([(' openid ', ' useful '),
-      (' a ', ' b ')], ' openid : useful \n a : b \n', 8),
+    ([(' openid ', ' useful '), (' a ', ' b ')],
+     ' openid : useful \n a : b \n', 8),
 
     # warnings about leading and trailing whitespace, but not about
     # internal whitespace.
-    ([(' open id ', ' use ful '),
-      (' a ', ' b ')], ' open id : use ful \n a : b \n', 8),
-
+    ([(' open id ', ' use ful '), (' a ', ' b ')],
+     ' open id : use ful \n a : b \n', 8),
     ([('foo', 'bar')], 'foo:bar\n', 0),
-    ]
+]
 
 kvexc_cases = [
     [('openid', 'use\nful')],
@@ -145,7 +164,7 @@ kvexc_cases = [
     [('open:id', 'useful')],
     [('foo', 'bar'), ('ba\n d', 'seed')],
     [('foo', 'bar'), ('bad:', 'seed')],
-    ]
+]
 
 
 class KVExcTest(unittest.TestCase):
@@ -154,7 +173,7 @@ class KVExcTest(unittest.TestCase):
         self.seq = seq
 
     def shortDescription(self):
-        return 'KVExcTest for %r' % (self.seq,)
+        return 'KVExcTest for %r' % (self.seq, )
 
     def runTest(self):
         self.assertRaises(ValueError, kvform.seqToKV, self.seq)
@@ -175,6 +194,7 @@ def pyUnitTests():
     tests.extend([KVExcTest(case) for case in kvexc_cases])
     tests.append(unittest.defaultTestLoader.loadTestsFromTestCase(GeneralTest))
     return unittest.TestSuite(tests)
+
 
 if __name__ == '__main__':
     suite = pyUnitTests()

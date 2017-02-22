@@ -15,7 +15,7 @@ __all__ = [
     'AUTH_MULTI_FACTOR_PHYSICAL',
     'LEVELS_NIST',
     'LEVELS_JISA',
-    ]
+]
 
 from openid.extension import Extension
 import warnings
@@ -42,7 +42,7 @@ class PAPEExtension(Extension):
     _default_auth_level_aliases = {
         'nist': LEVELS_NIST,
         'jisa': LEVELS_JISA,
-        }
+    }
 
     def __init__(self):
         self.auth_level_aliases = self._default_auth_level_aliases.copy()
@@ -73,7 +73,7 @@ class PAPEExtension(Extension):
     def _generateAlias(self):
         """Return an unused auth level alias"""
         for i in range(1000):
-            alias = 'cust%d' % (i,)
+            alias = 'cust%d' % (i, )
             if alias not in self.auth_level_aliases:
                 return alias
 
@@ -112,7 +112,9 @@ class Request(PAPEExtension):
 
     ns_alias = 'pape'
 
-    def __init__(self, preferred_auth_policies=None, max_auth_age=None,
+    def __init__(self,
+                 preferred_auth_policies=None,
+                 max_auth_age=None,
                  preferred_auth_level_types=None):
         super(Request, self).__init__()
         if preferred_auth_policies is None:
@@ -153,8 +155,8 @@ class Request(PAPEExtension):
         """@see: C{L{Extension.getExtensionArgs}}
         """
         ns_args = {
-            'preferred_auth_policies':' '.join(self.preferred_auth_policies),
-            }
+            'preferred_auth_policies': ' '.join(self.preferred_auth_policies),
+        }
 
         if self.max_auth_age is not None:
             ns_args['max_auth_age'] = str(self.max_auth_age)
@@ -164,7 +166,7 @@ class Request(PAPEExtension):
 
             for auth_level_uri in self.preferred_auth_level_types:
                 alias = self._getAlias(auth_level_uri)
-                ns_args['auth_level.ns.%s' % (alias,)] = auth_level_uri
+                ns_args['auth_level.ns.%s' % (alias, )] = auth_level_uri
                 preferred_types.append(alias)
 
             ns_args['preferred_auth_level_types'] = ' '.join(preferred_types)
@@ -234,7 +236,7 @@ class Request(PAPEExtension):
             aliases = preferred_auth_level_types.strip().split()
 
             for alias in aliases:
-                key = 'auth_level.ns.%s' % (alias,)
+                key = 'auth_level.ns.%s' % (alias, )
                 try:
                     uri = args[key]
                 except KeyError:
@@ -246,7 +248,7 @@ class Request(PAPEExtension):
                 if uri is None:
                     if strict:
                         raise ValueError('preferred auth level %r is not '
-                                         'defined in this message' % (alias,))
+                                         'defined in this message' % (alias, ))
                 else:
                     self.addAuthLevel(uri, alias)
 
@@ -266,8 +268,9 @@ class Request(PAPEExtension):
 
         @returntype: [str]
         """
-        return list(filter(self.preferred_auth_policies.__contains__,
-                      supported_types))
+        return list(
+            filter(self.preferred_auth_policies.__contains__, supported_types))
+
 
 Request.ns_uri = ns_uri
 
@@ -282,8 +285,7 @@ class Response(PAPEExtension):
 
     ns_alias = 'pape'
 
-    def __init__(self, auth_policies=None, auth_time=None,
-                 auth_levels=None):
+    def __init__(self, auth_policies=None, auth_time=None, auth_levels=None):
         super(Response, self).__init__()
         if auth_policies:
             self.auth_policies = auth_policies
@@ -403,7 +405,7 @@ class Response(PAPEExtension):
 
         if (len(auth_policies) > 1 and strict and AUTH_NONE in auth_policies):
             raise ValueError('Got some auth policies, as well as the special '
-                             '"none" URI: %r' % (auth_policies,))
+                             '"none" URI: %r' % (auth_policies, ))
 
         if 'none' in auth_policies:
             msg = '"none" used as a policy URI (see PAPE draft < 5)'
@@ -412,8 +414,9 @@ class Response(PAPEExtension):
             else:
                 warnings.warn(msg, stacklevel=2)
 
-        auth_policies = [u for u in auth_policies
-                         if u not in ['none', AUTH_NONE]]
+        auth_policies = [
+            u for u in auth_policies if u not in ['none', AUTH_NONE]
+        ]
 
         self.auth_policies = auth_policies
 
@@ -426,7 +429,7 @@ class Response(PAPEExtension):
                     continue
 
                 try:
-                    uri = args['auth_level.ns.%s' % (alias,)]
+                    uri = args['auth_level.ns.%s' % (alias, )]
                 except KeyError:
                     if is_openid1:
                         uri = self._default_auth_level_aliases.get(alias)
@@ -435,8 +438,8 @@ class Response(PAPEExtension):
 
                 if uri is None:
                     if strict:
-                        raise ValueError(
-                            'Undefined auth level alias: %r' % (alias,))
+                        raise ValueError('Undefined auth level alias: %r' %
+                                         (alias, ))
                 else:
                     self.setAuthLevel(uri, val, alias)
 
@@ -458,13 +461,13 @@ class Response(PAPEExtension):
             }
         else:
             ns_args = {
-                'auth_policies':' '.join(self.auth_policies),
-                }
+                'auth_policies': ' '.join(self.auth_policies),
+            }
 
         for level_type, level in self.auth_levels.items():
             alias = self._getAlias(level_type)
-            ns_args['auth_level.ns.%s' % (alias,)] = level_type
-            ns_args['auth_level.%s' % (alias,)] = str(level)
+            ns_args['auth_level.ns.%s' % (alias, )] = level_type
+            ns_args['auth_level.%s' % (alias, )] = str(level)
 
         if self.auth_time is not None:
             if not TIME_VALIDATOR.match(self.auth_time):
@@ -473,5 +476,6 @@ class Response(PAPEExtension):
             ns_args['auth_time'] = self.auth_time
 
         return ns_args
+
 
 Response.ns_uri = ns_uri

@@ -2,6 +2,7 @@ import os
 import unittest
 import openid.urinorm
 
+
 class UrinormTest(unittest.TestCase):
     def __init__(self, desc, case, expected):
         unittest.TestCase.__init__(self)
@@ -51,6 +52,7 @@ def pyUnitTests():
 
     tests = parseTests(test_data)
     return unittest.TestSuite(tests)
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

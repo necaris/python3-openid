@@ -38,7 +38,7 @@ class SupportsSRegTest(unittest.TestCase):
         endpoint = FakeEndpoint([])
         self.assertFalse(sreg.supportsSReg(endpoint))
         self.assertEqual([sreg.ns_uri_1_1, sreg.ns_uri_1_0],
-                             endpoint.checked_uris)
+                         endpoint.checked_uris)
 
     def test_supported_1_1(self):
         endpoint = FakeEndpoint([sreg.ns_uri_1_1])
@@ -49,7 +49,7 @@ class SupportsSRegTest(unittest.TestCase):
         endpoint = FakeEndpoint([sreg.ns_uri_1_0])
         self.assertTrue(sreg.supportsSReg(endpoint))
         self.assertEqual([sreg.ns_uri_1_1, sreg.ns_uri_1_0],
-                             endpoint.checked_uris)
+                         endpoint.checked_uris)
 
 
 class FakeMessage(object):
@@ -91,21 +91,19 @@ class GetNSTest(unittest.TestCase):
                     self.msg.openid1 = openid_version
                     self.msg.namespaces.addAlias(sreg_version, alias)
                     ns_uri = sreg.getSRegNS(self.msg)
-                    self.assertEqual(self.msg.namespaces.getAlias(ns_uri),
-                                         alias)
+                    self.assertEqual(
+                        self.msg.namespaces.getAlias(ns_uri), alias)
                     self.assertEqual(sreg_version, ns_uri)
 
     def test_openID1DefinedBadly(self):
         self.msg.openid1 = True
         self.msg.namespaces.addAlias('http://invalid/', 'sreg')
-        self.assertRaises(sreg.SRegNamespaceError,
-                              sreg.getSRegNS, self.msg)
+        self.assertRaises(sreg.SRegNamespaceError, sreg.getSRegNS, self.msg)
 
     def test_openID2DefinedBadly(self):
         self.msg.openid1 = False
         self.msg.namespaces.addAlias('http://invalid/', 'sreg')
-        self.assertRaises(sreg.SRegNamespaceError,
-                              sreg.getSRegNS, self.msg)
+        self.assertRaises(sreg.SRegNamespaceError, sreg.getSRegNS, self.msg)
 
     def test_openID2Defined_1_0(self):
         self.msg.namespaces.add(sreg.ns_uri_1_0)
@@ -116,7 +114,7 @@ class GetNSTest(unittest.TestCase):
         args = {
             'sreg.optional': 'nickname',
             'sreg.required': 'dob',
-            }
+        }
 
         m = Message.fromOpenIDArgs(args)
 
@@ -133,20 +131,15 @@ class SRegRequestTest(unittest.TestCase):
         self.assertEqual(sreg.ns_uri, req.ns_uri)
 
     def test_constructFields(self):
-        req = sreg.SRegRequest(
-            ['nickname'],
-            ['gender'],
-            'http://policy',
-            'http://sreg.ns_uri')
+        req = sreg.SRegRequest(['nickname'], ['gender'], 'http://policy',
+                               'http://sreg.ns_uri')
         self.assertEqual(['gender'], req.optional)
         self.assertEqual(['nickname'], req.required)
         self.assertEqual('http://policy', req.policy_url)
         self.assertEqual('http://sreg.ns_uri', req.ns_uri)
 
     def test_constructBadFields(self):
-        self.assertRaises(
-            ValueError,
-            sreg.SRegRequest, ['elvis'])
+        self.assertRaises(ValueError, sreg.SRegRequest, ['elvis'])
 
     def test_fromOpenIDRequest(self):
         args = {}
@@ -201,7 +194,8 @@ class SRegRequestTest(unittest.TestCase):
         req = sreg.SRegRequest()
         self.assertRaises(
             ValueError,
-            req.parseExtensionArgs, {'required': 'beans'}, strict=True)
+            req.parseExtensionArgs, {'required': 'beans'},
+            strict=True)
 
     def test_parseExtensionArgs_policy(self):
         req = sreg.SRegRequest()
@@ -242,8 +236,10 @@ class SRegRequestTest(unittest.TestCase):
 
     def test_parseExtensionArgs_bothNonStrict(self):
         req = sreg.SRegRequest()
-        req.parseExtensionArgs({'optional': 'nickname',
-                                'required': 'nickname'})
+        req.parseExtensionArgs({
+            'optional': 'nickname',
+            'required': 'nickname'
+        })
         self.assertEqual([], req.optional)
         self.assertEqual(['nickname'], req.required)
 
@@ -258,8 +254,12 @@ class SRegRequestTest(unittest.TestCase):
 
     def test_parseExtensionArgs_bothList(self):
         req = sreg.SRegRequest()
-        req.parseExtensionArgs({'optional': 'nickname,email',
-                                'required': 'country,postcode'}, strict=True)
+        req.parseExtensionArgs(
+            {
+                'optional': 'nickname,email',
+                'required': 'country,postcode'
+            },
+            strict=True)
         self.assertEqual(['nickname', 'email'], req.optional)
         self.assertEqual(['country', 'postcode'], req.required)
 
@@ -295,13 +295,10 @@ class SRegRequestTest(unittest.TestCase):
 
     def test_requestField_bogus(self):
         req = sreg.SRegRequest()
-        self.assertRaises(
-            ValueError,
-            req.requestField, 'something else')
+        self.assertRaises(ValueError, req.requestField, 'something else')
 
         self.assertRaises(
-            ValueError,
-            req.requestField, 'something else', strict=True)
+            ValueError, req.requestField, 'something else', strict=True)
 
     def test_requestField(self):
         # Add all of the fields, one at a time
@@ -388,24 +385,29 @@ class SRegRequestTest(unittest.TestCase):
         self.assertEqual({'optional': 'nickname'}, req.getExtensionArgs())
 
         req.requestField('email')
-        self.assertEqual({'optional': 'nickname,email'},
-                             req.getExtensionArgs())
+        self.assertEqual({
+            'optional': 'nickname,email'
+        }, req.getExtensionArgs())
 
         req.requestField('gender', required=True)
-        self.assertEqual({'optional': 'nickname,email',
-                              'required': 'gender'},
-                             req.getExtensionArgs())
+        self.assertEqual({
+            'optional': 'nickname,email',
+            'required': 'gender'
+        }, req.getExtensionArgs())
 
         req.requestField('postcode', required=True)
-        self.assertEqual({'optional': 'nickname,email',
-                              'required': 'gender,postcode'},
-                             req.getExtensionArgs())
+        self.assertEqual({
+            'optional': 'nickname,email',
+            'required': 'gender,postcode'
+        }, req.getExtensionArgs())
 
         req.policy_url = 'http://policy.invalid/'
-        self.assertEqual({'optional': 'nickname,email',
-                              'required': 'gender,postcode',
-                              'policy_url': 'http://policy.invalid/'},
-                             req.getExtensionArgs())
+        self.assertEqual({
+            'optional': 'nickname,email',
+            'required': 'gender,postcode',
+            'policy_url': 'http://policy.invalid/'
+        }, req.getExtensionArgs())
+
 
 data = {
     'nickname': 'linusaur',
@@ -416,7 +418,7 @@ data = {
     'email': 'president@whitehouse.gov',
     'dob': '0000-00-00',
     'language': 'en-us',
-    }
+}
 
 
 class DummySuccessResponse(object):
@@ -442,7 +444,7 @@ class SRegResponseTest(unittest.TestCase):
     def test_fromSuccessResponse_signed(self):
         message = Message.fromOpenIDArgs({
             'sreg.nickname': 'The Mad Stork',
-            })
+        })
         success_resp = DummySuccessResponse(message, {})
         sreg_resp = sreg.SRegResponse.fromSuccessResponse(success_resp)
         self.assertFalse(sreg_resp)
@@ -450,19 +452,19 @@ class SRegResponseTest(unittest.TestCase):
     def test_fromSuccessResponse_unsigned(self):
         message = Message.fromOpenIDArgs({
             'sreg.nickname': 'The Mad Stork',
-            })
+        })
         success_resp = DummySuccessResponse(message, {})
-        sreg_resp = sreg.SRegResponse.fromSuccessResponse(success_resp,
-                                                          signed_only=False)
+        sreg_resp = sreg.SRegResponse.fromSuccessResponse(
+            success_resp, signed_only=False)
         self.assertEqual([('nickname', 'The Mad Stork')],
-                             list(sreg_resp.items()))
+                         list(sreg_resp.items()))
 
 
 class SendFieldsTest(unittest.TestCase):
     def test(self):
         # Create a request message with simple registration fields
-        sreg_req = sreg.SRegRequest(required=['nickname', 'email'],
-                                    optional=['fullname'])
+        sreg_req = sreg.SRegRequest(
+            required=['nickname', 'email'], optional=['fullname'])
         req_msg = Message()
         req_msg.updateArgs(sreg.ns_uri, sreg_req.getExtensionArgs())
 
@@ -486,10 +488,11 @@ class SendFieldsTest(unittest.TestCase):
         # Extract the fields that were sent
         sreg_data_resp = resp_msg.getArgs(sreg.ns_uri)
         self.assertEqual({
-                'nickname': 'linusaur',
-                'email': 'president@whitehouse.gov',
-                'fullname': 'Leonhard Euler',
-                }, sreg_data_resp)
+            'nickname': 'linusaur',
+            'email': 'president@whitehouse.gov',
+            'fullname': 'Leonhard Euler',
+        }, sreg_data_resp)
+
 
 if __name__ == '__main__':
     unittest.main()

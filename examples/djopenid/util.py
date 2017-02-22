@@ -1,4 +1,3 @@
-
 """
 Utility code for the Django example consumer and server.
 """
@@ -60,13 +59,13 @@ def getOpenIDStore(filestore_path, table_prefix):
     tablenames = {
         'associations_table': table_prefix + 'openid_associations',
         'nonces_table': table_prefix + 'openid_nonces',
-        }
+    }
 
     types = {
         'django.db.backends.postgresql_psycopg2': sqlstore.PostgreSQLStore,
         'django.db.backends.mysql': sqlstore.MySQLStore,
         'django.db.backends.sqlite3': sqlstore.SQLiteStore,
-        }
+    }
 
     if db_engine not in types:
         raise ImproperlyConfigured(
@@ -127,7 +126,7 @@ def getBaseURL(req):
     if port in [80, 443] or not port:
         port = ''
     else:
-        port = ':%s' % (port,)
+        port = ':%s' % (port, )
 
     url = "%s://%s%s/" % (proto, name, port)
     return url
@@ -150,9 +149,9 @@ def renderXRDS(request, type_uris, endpoint_urls):
     URLs in one service block, and return a response with the
     appropriate content-type.
     """
-    response = render_to_response('xrds.xml',
-                                  {'type_uris': type_uris,
-                                   'endpoint_urls': endpoint_urls},
-                                  context_instance=RequestContext(request))
+    response = render_to_response(
+        'xrds.xml', {'type_uris': type_uris,
+                     'endpoint_urls': endpoint_urls},
+        context_instance=RequestContext(request))
     response['Content-Type'] = YADIS_CONTENT_TYPE
     return response

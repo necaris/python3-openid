@@ -58,9 +58,8 @@ class ToTypeURIsTest(unittest.TestCase):
             self.assertEqual([], uris)
 
     def test_undefined(self):
-        self.assertRaises(
-            KeyError,
-            ax.toTypeURIs, self.aliases, 'http://janrain.com/')
+        self.assertRaises(KeyError, ax.toTypeURIs, self.aliases,
+                          'http://janrain.com/')
 
     def test_one(self):
         uri = 'http://janrain.com/'
@@ -102,24 +101,23 @@ class ParseAXValuesTest(unittest.TestCase):
         self.failUnlessAXKeyError({'type.foo': 'urn:foo'})
 
     def test_countPresentButNotValue(self):
-        self.failUnlessAXKeyError({'type.foo': 'urn:foo',
-                                   'count.foo': '1'})
+        self.failUnlessAXKeyError({'type.foo': 'urn:foo', 'count.foo': '1'})
 
     def test_invalidCountValue(self):
         msg = ax.FetchRequest()
-        self.assertRaises(ax.AXError,
-                              msg.parseExtensionArgs,
-                              {'type.foo': 'urn:foo',
-                               'count.foo': 'bogus'})
+        self.assertRaises(ax.AXError, msg.parseExtensionArgs,
+                          {'type.foo': 'urn:foo',
+                           'count.foo': 'bogus'})
 
     def test_requestUnlimitedValues(self):
         msg = ax.FetchRequest()
 
-        msg.parseExtensionArgs(
-            {'mode': 'fetch_request',
-             'required': 'foo',
-             'type.foo': 'urn:foo',
-             'count.foo': ax.UNLIMITED_VALUES})
+        msg.parseExtensionArgs({
+            'mode': 'fetch_request',
+            'required': 'foo',
+            'type.foo': 'urn:foo',
+            'count.foo': ax.UNLIMITED_VALUES
+        })
 
         attrs = list(msg.iterAttrs())
         foo = attrs[0]
@@ -133,64 +131,65 @@ class ParseAXValuesTest(unittest.TestCase):
         alias = 'x' * ax.MINIMUM_SUPPORTED_ALIAS_LENGTH
 
         msg = ax.AXKeyValueMessage()
-        msg.parseExtensionArgs(
-            {'type.%s' % (alias,): 'urn:foo',
-             'count.%s' % (alias,): '1',
-             'value.%s.1' % (alias,): 'first'}
-            )
+        msg.parseExtensionArgs({
+            'type.%s' % (alias, ): 'urn:foo',
+            'count.%s' % (alias, ): '1',
+            'value.%s.1' % (alias, ): 'first'
+        })
 
     def test_invalidAlias(self):
-        types = [
-            ax.AXKeyValueMessage,
-            ax.FetchRequest
-            ]
+        types = [ax.AXKeyValueMessage, ax.FetchRequest]
 
         inputs = [
-            {'type.a.b':'urn:foo',
-             'count.a.b':'1'},
-            {'type.a,b':'urn:foo',
-             'count.a,b':'1'},
-            ]
+            {
+                'type.a.b': 'urn:foo',
+                'count.a.b': '1'
+            },
+            {
+                'type.a,b': 'urn:foo',
+                'count.a,b': '1'
+            },
+        ]
 
         for typ in types:
             for input in inputs:
                 msg = typ()
-                self.assertRaises(ax.AXError, msg.parseExtensionArgs,
-                                      input)
+                self.assertRaises(ax.AXError, msg.parseExtensionArgs, input)
 
     def test_countPresentAndIsZero(self):
-        self.failUnlessAXValues(
-            {'type.foo': 'urn:foo',
-             'count.foo': '0',
-             }, {'urn:foo': []})
+        self.failUnlessAXValues({
+            'type.foo': 'urn:foo',
+            'count.foo': '0',
+        }, {'urn:foo': []})
 
     def test_singletonEmpty(self):
-        self.failUnlessAXValues(
-            {'type.foo': 'urn:foo',
-             'value.foo': '',
-             }, {'urn:foo': []})
+        self.failUnlessAXValues({
+            'type.foo': 'urn:foo',
+            'value.foo': '',
+        }, {'urn:foo': []})
 
     def test_doubleAlias(self):
-        self.failUnlessAXKeyError(
-            {'type.foo': 'urn:foo',
-             'value.foo': '',
-             'type.bar': 'urn:foo',
-             'value.bar': '',
-             })
+        self.failUnlessAXKeyError({
+            'type.foo': 'urn:foo',
+            'value.foo': '',
+            'type.bar': 'urn:foo',
+            'value.bar': '',
+        })
 
     def test_doubleSingleton(self):
-        self.failUnlessAXValues(
-            {'type.foo': 'urn:foo',
-             'value.foo': '',
-             'type.bar': 'urn:bar',
-             'value.bar': '',
-             }, {'urn:foo': [], 'urn:bar': []})
+        self.failUnlessAXValues({
+            'type.foo': 'urn:foo',
+            'value.foo': '',
+            'type.bar': 'urn:bar',
+            'value.bar': '',
+        }, {'urn:foo': [],
+            'urn:bar': []})
 
     def test_singletonValue(self):
-        self.failUnlessAXValues(
-            {'type.foo': 'urn:foo',
-             'value.foo': 'Westfall',
-             }, {'urn:foo': ['Westfall']})
+        self.failUnlessAXValues({
+            'type.foo': 'urn:foo',
+            'value.foo': 'Westfall',
+        }, {'urn:foo': ['Westfall']})
 
 
 class FetchRequestTest(unittest.TestCase):
@@ -232,7 +231,7 @@ class FetchRequestTest(unittest.TestCase):
     def test_getExtensionArgs_empty(self):
         expected_args = {
             'mode': 'fetch_request',
-            }
+        }
         self.assertEqual(expected_args, self.msg.getExtensionArgs())
 
     def test_getExtensionArgs_noAlias(self):
@@ -249,30 +248,28 @@ class FetchRequestTest(unittest.TestCase):
         self.failUnlessExtensionArgs({
             'type.' + alias: attr.type_uri,
             'if_available': alias,
-            })
+        })
 
     def test_getExtensionArgs_alias_if_available(self):
         attr = ax.AttrInfo(
             type_uri='type://of.transportation',
-            alias='transport',
-            )
+            alias='transport', )
         self.msg.add(attr)
         self.failUnlessExtensionArgs({
             'type.' + attr.alias: attr.type_uri,
             'if_available': attr.alias,
-            })
+        })
 
     def test_getExtensionArgs_alias_req(self):
         attr = ax.AttrInfo(
             type_uri='type://of.transportation',
             alias='transport',
-            required=True,
-            )
+            required=True, )
         self.msg.add(attr)
         self.failUnlessExtensionArgs({
             'type.' + attr.alias: attr.type_uri,
             'required': attr.alias,
-            })
+        })
 
     def failUnlessExtensionArgs(self, expected_args):
         """Make sure that getExtensionArgs has the expected result
@@ -294,16 +291,16 @@ class FetchRequestTest(unittest.TestCase):
         extension_args = {
             'mode': 'fetch_request',
             'type.' + self.alias_a: self.type_a,
-            }
-        self.assertRaises(ValueError,
-                              self.msg.parseExtensionArgs, extension_args)
+        }
+        self.assertRaises(ValueError, self.msg.parseExtensionArgs,
+                          extension_args)
 
     def test_parseExtensionArgs(self):
         extension_args = {
             'mode': 'fetch_request',
             'type.' + self.alias_a: self.type_a,
             'if_available': self.alias_a
-            }
+        }
         self.msg.parseExtensionArgs(extension_args)
         self.assertTrue(self.type_a in self.msg)
         self.assertEqual([self.type_a], list(self.msg))
@@ -319,7 +316,7 @@ class FetchRequestTest(unittest.TestCase):
             'mode': 'fetch_request',
             'type.' + self.alias_a: self.type_a,
             'if_available': self.alias_a
-            }
+        }
         self.msg.parseExtensionArgs(extension_args)
         self.assertEqual(extension_args, self.msg.getExtensionArgs())
         self.assertFalse(self.msg.requested_attributes[self.type_a].required)
@@ -330,7 +327,7 @@ class FetchRequestTest(unittest.TestCase):
             'type.' + self.alias_a: self.type_a,
             'count.' + self.alias_a: '2',
             'required': self.alias_a
-            }
+        }
         self.msg.parseExtensionArgs(extension_args)
         self.assertEqual(extension_args, self.msg.getExtensionArgs())
         self.assertTrue(self.msg.requested_attributes[self.type_a].required)
@@ -341,62 +338,83 @@ class FetchRequestTest(unittest.TestCase):
             'type.' + self.alias_a: self.type_a,
             'count.' + self.alias_a: '1',
             'if_available': self.alias_a,
-            }
+        }
         extension_args_norm = {
             'mode': 'fetch_request',
             'type.' + self.alias_a: self.type_a,
             'if_available': self.alias_a,
-            }
+        }
         self.msg.parseExtensionArgs(extension_args)
         self.assertEqual(extension_args_norm, self.msg.getExtensionArgs())
 
     def test_openidNoRealm(self):
         openid_req_msg = Message.fromOpenIDArgs({
-            'mode': 'checkid_setup',
-            'ns': OPENID2_NS,
-            'ns.ax': ax.AXMessage.ns_uri,
-            'ax.update_url': 'http://different.site/path',
-            'ax.mode': 'fetch_request',
-            })
-        self.assertRaises(ax.AXError,
-                              ax.FetchRequest.fromOpenIDRequest,
-                              DummyRequest(openid_req_msg))
+            'mode':
+            'checkid_setup',
+            'ns':
+            OPENID2_NS,
+            'ns.ax':
+            ax.AXMessage.ns_uri,
+            'ax.update_url':
+            'http://different.site/path',
+            'ax.mode':
+            'fetch_request',
+        })
+        self.assertRaises(ax.AXError, ax.FetchRequest.fromOpenIDRequest,
+                          DummyRequest(openid_req_msg))
 
     def test_openidUpdateURLVerificationError(self):
         openid_req_msg = Message.fromOpenIDArgs({
-            'mode': 'checkid_setup',
-            'ns': OPENID2_NS,
-            'realm': 'http://example.com/realm',
-            'ns.ax': ax.AXMessage.ns_uri,
-            'ax.update_url': 'http://different.site/path',
-            'ax.mode': 'fetch_request',
-            })
+            'mode':
+            'checkid_setup',
+            'ns':
+            OPENID2_NS,
+            'realm':
+            'http://example.com/realm',
+            'ns.ax':
+            ax.AXMessage.ns_uri,
+            'ax.update_url':
+            'http://different.site/path',
+            'ax.mode':
+            'fetch_request',
+        })
 
-        self.assertRaises(ax.AXError,
-                              ax.FetchRequest.fromOpenIDRequest,
-                              DummyRequest(openid_req_msg))
+        self.assertRaises(ax.AXError, ax.FetchRequest.fromOpenIDRequest,
+                          DummyRequest(openid_req_msg))
 
     def test_openidUpdateURLVerificationSuccess(self):
         openid_req_msg = Message.fromOpenIDArgs({
-            'mode': 'checkid_setup',
-            'ns': OPENID2_NS,
-            'realm': 'http://example.com/realm',
-            'ns.ax': ax.AXMessage.ns_uri,
-            'ax.update_url': 'http://example.com/realm/update_path',
-            'ax.mode': 'fetch_request',
-            })
+            'mode':
+            'checkid_setup',
+            'ns':
+            OPENID2_NS,
+            'realm':
+            'http://example.com/realm',
+            'ns.ax':
+            ax.AXMessage.ns_uri,
+            'ax.update_url':
+            'http://example.com/realm/update_path',
+            'ax.mode':
+            'fetch_request',
+        })
 
         fr = ax.FetchRequest.fromOpenIDRequest(DummyRequest(openid_req_msg))
 
     def test_openidUpdateURLVerificationSuccessReturnTo(self):
         openid_req_msg = Message.fromOpenIDArgs({
-            'mode': 'checkid_setup',
-            'ns': OPENID2_NS,
-            'return_to': 'http://example.com/realm',
-            'ns.ax': ax.AXMessage.ns_uri,
-            'ax.update_url': 'http://example.com/realm/update_path',
-            'ax.mode': 'fetch_request',
-            })
+            'mode':
+            'checkid_setup',
+            'ns':
+            OPENID2_NS,
+            'return_to':
+            'http://example.com/realm',
+            'ns.ax':
+            ax.AXMessage.ns_uri,
+            'ax.update_url':
+            'http://example.com/realm/update_path',
+            'ax.mode':
+            'fetch_request',
+        })
 
         fr = ax.FetchRequest.fromOpenIDRequest(DummyRequest(openid_req_msg))
 
@@ -405,21 +423,26 @@ class FetchRequestTest(unittest.TestCase):
         openid_req_msg = Message.fromOpenIDArgs({
             'mode': 'checkid_setup',
             'ns': OPENID2_NS,
-            })
+        })
         oreq = DummyRequest(openid_req_msg)
         r = ax.FetchRequest.fromOpenIDRequest(oreq)
-        self.assertTrue(r is None, "%s is not None" % (r,))
+        self.assertTrue(r is None, "%s is not None" % (r, ))
 
     def test_fromOpenIDRequestWithoutData(self):
         """return something for SuccessResponse with AX paramaters,
         even if it is the empty set."""
         openid_req_msg = Message.fromOpenIDArgs({
-            'mode': 'checkid_setup',
-            'realm': 'http://example.com/realm',
-            'ns': OPENID2_NS,
-            'ns.ax': ax.AXMessage.ns_uri,
-            'ax.mode': 'fetch_request',
-            })
+            'mode':
+            'checkid_setup',
+            'realm':
+            'http://example.com/realm',
+            'ns':
+            OPENID2_NS,
+            'ns.ax':
+            ax.AXMessage.ns_uri,
+            'ax.mode':
+            'fetch_request',
+        })
         oreq = DummyRequest(openid_req_msg)
         r = ax.FetchRequest.fromOpenIDRequest(oreq)
         self.assertTrue(r is not None)
@@ -440,13 +463,13 @@ class FetchResponseTest(unittest.TestCase):
     def test_getExtensionArgs_empty(self):
         expected_args = {
             'mode': 'fetch_response',
-            }
+        }
         self.assertEqual(expected_args, self.msg.getExtensionArgs())
 
     def test_getExtensionArgs_empty_request(self):
         expected_args = {
             'mode': 'fetch_response',
-            }
+        }
         req = ax.FetchRequest()
         msg = ax.FetchResponse(request=req)
         self.assertEqual(expected_args, msg.getExtensionArgs())
@@ -457,9 +480,9 @@ class FetchResponseTest(unittest.TestCase):
 
         expected_args = {
             'mode': 'fetch_response',
-            'type.%s' % (alias,): uri,
-            'count.%s' % (alias,): '0'
-            }
+            'type.%s' % (alias, ): uri,
+            'count.%s' % (alias, ): '0'
+        }
         req = ax.FetchRequest()
         req.add(ax.AttrInfo(uri))
         msg = ax.FetchResponse(request=req)
@@ -472,9 +495,9 @@ class FetchResponseTest(unittest.TestCase):
         expected_args = {
             'mode': 'fetch_response',
             'update_url': self.request_update_url,
-            'type.%s' % (alias,): uri,
-            'count.%s' % (alias,): '0'
-            }
+            'type.%s' % (alias, ): uri,
+            'count.%s' % (alias, ): '0'
+        }
         req = ax.FetchRequest(update_url=self.request_update_url)
         req.add(ax.AttrInfo(uri))
         msg = ax.FetchResponse(request=req)
@@ -486,7 +509,7 @@ class FetchResponseTest(unittest.TestCase):
             'type.' + self.alias_a: self.type_a,
             'value.' + self.alias_a + '.1': self.value_a,
             'count.' + self.alias_a: '1'
-            }
+        }
         req = ax.FetchRequest()
         req.add(ax.AttrInfo(self.type_a, alias=self.alias_a))
         msg = ax.FetchResponse(request=req)
@@ -519,7 +542,7 @@ class FetchResponseTest(unittest.TestCase):
         args = {
             'mode': 'id_res',
             'ns': OPENID2_NS,
-            }
+        }
         sf = ['openid.' + i for i in list(args.keys())]
         msg = Message.fromOpenIDArgs(args)
 
@@ -528,7 +551,7 @@ class FetchResponseTest(unittest.TestCase):
 
         oreq = SuccessResponse(Endpoint(), msg, signed_fields=sf)
         r = ax.FetchResponse.fromSuccessResponse(oreq)
-        self.assertTrue(r is None, "%s is not None" % (r,))
+        self.assertTrue(r is None, "%s is not None" % (r, ))
 
     def test_fromSuccessResponseWithoutData(self):
         """return something for SuccessResponse with AX paramaters,
@@ -538,7 +561,7 @@ class FetchResponseTest(unittest.TestCase):
             'ns': OPENID2_NS,
             'ns.ax': ax.AXMessage.ns_uri,
             'ax.mode': 'fetch_response',
-            }
+        }
         sf = ['openid.' + i for i in list(args.keys())]
         msg = Message.fromOpenIDArgs(args)
 
@@ -562,7 +585,7 @@ class FetchResponseTest(unittest.TestCase):
             'ax.type.' + name: uri,
             'ax.count.' + name: '1',
             'ax.value.%s.1' % name: value,
-            }
+        }
         sf = ['openid.' + i for i in list(args.keys())]
         msg = Message.fromOpenIDArgs(args)
 
@@ -589,7 +612,7 @@ class StoreRequestTest(unittest.TestCase):
         args = self.msg.getExtensionArgs()
         expected_args = {
             'mode': 'store_request',
-            }
+        }
         self.assertEqual(expected_args, args)
 
     def test_getExtensionArgs_nonempty(self):
@@ -602,9 +625,9 @@ class StoreRequestTest(unittest.TestCase):
             'mode': 'store_request',
             'type.' + self.alias_a: self.type_a,
             'count.' + self.alias_a: '2',
-            'value.%s.1' % (self.alias_a,): 'foo',
-            'value.%s.2' % (self.alias_a,): 'bar',
-            }
+            'value.%s.1' % (self.alias_a, ): 'foo',
+            'value.%s.2' % (self.alias_a, ): 'bar',
+        }
         self.assertEqual(expected_args, args)
 
 
@@ -613,20 +636,24 @@ class StoreResponseTest(unittest.TestCase):
         msg = ax.StoreResponse()
         self.assertTrue(msg.succeeded())
         self.assertFalse(msg.error_message)
-        self.assertEqual({'mode': 'store_response_success'},
-                         msg.getExtensionArgs())
+        self.assertEqual({
+            'mode': 'store_response_success'
+        }, msg.getExtensionArgs())
 
     def test_fail_nomsg(self):
         msg = ax.StoreResponse(False)
         self.assertFalse(msg.succeeded())
         self.assertFalse(msg.error_message)
-        self.assertEqual({'mode': 'store_response_failure'},
-                         msg.getExtensionArgs())
+        self.assertEqual({
+            'mode': 'store_response_failure'
+        }, msg.getExtensionArgs())
 
     def test_fail_msg(self):
         reason = 'no reason, really'
         msg = ax.StoreResponse(False, reason)
         self.assertFalse(msg.succeeded())
         self.assertEqual(reason, msg.error_message)
-        self.assertEqual({'mode': 'store_response_failure',
-                          'error': reason}, msg.getExtensionArgs())
+        self.assertEqual({
+            'mode': 'store_response_failure',
+            'error': reason
+        }, msg.getExtensionArgs())

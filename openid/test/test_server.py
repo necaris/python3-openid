@@ -27,16 +27,19 @@ class TestProtocolError(unittest.TestCase):
         return_to = "http://rp.unittest/consumer"
         # will be a ProtocolError raised by Decode or CheckIDRequest.answer
         args = Message.fromPostArgs({
-            'openid.mode': 'monkeydance',
-            'openid.identity': 'http://wagu.unittest/',
-            'openid.return_to': return_to,
-            })
+            'openid.mode':
+            'monkeydance',
+            'openid.identity':
+            'http://wagu.unittest/',
+            'openid.return_to':
+            return_to,
+        })
         e = server.ProtocolError(args, "plucky")
         self.assertTrue(e.hasReturnTo())
         expected_args = {
             'openid.mode': ['error'],
             'openid.error': ['plucky'],
-            }
+        }
 
         rt_base, result_args = e.encodeToURL().split('?', 1)
         result_args = parse_qs(result_args)
@@ -46,19 +49,24 @@ class TestProtocolError(unittest.TestCase):
         return_to = "http://rp.unittest/consumer"
         # will be a ProtocolError raised by Decode or CheckIDRequest.answer
         args = Message.fromPostArgs({
-            'openid.ns': OPENID2_NS,
-            'openid.mode': 'monkeydance',
-            'openid.identity': 'http://wagu.unittest/',
-            'openid.claimed_id': 'http://wagu.unittest/',
-            'openid.return_to': return_to,
-            })
+            'openid.ns':
+            OPENID2_NS,
+            'openid.mode':
+            'monkeydance',
+            'openid.identity':
+            'http://wagu.unittest/',
+            'openid.claimed_id':
+            'http://wagu.unittest/',
+            'openid.return_to':
+            return_to,
+        })
         e = server.ProtocolError(args, "plucky")
         self.assertTrue(e.hasReturnTo())
         expected_args = {
             'openid.ns': [OPENID2_NS],
             'openid.mode': ['error'],
             'openid.error': ['plucky'],
-            }
+        }
 
         rt_base, result_args = e.encodeToURL().split('?', 1)
         result_args = parse_qs(result_args)
@@ -68,19 +76,24 @@ class TestProtocolError(unittest.TestCase):
         return_to = "http://rp.unittest/consumer" + ('x' * OPENID1_URL_LIMIT)
         # will be a ProtocolError raised by Decode or CheckIDRequest.answer
         args = Message.fromPostArgs({
-            'openid.ns': OPENID2_NS,
-            'openid.mode': 'monkeydance',
-            'openid.identity': 'http://wagu.unittest/',
-            'openid.claimed_id': 'http://wagu.unittest/',
-            'openid.return_to': return_to,
-            })
+            'openid.ns':
+            OPENID2_NS,
+            'openid.mode':
+            'monkeydance',
+            'openid.identity':
+            'http://wagu.unittest/',
+            'openid.claimed_id':
+            'http://wagu.unittest/',
+            'openid.return_to':
+            return_to,
+        })
         e = server.ProtocolError(args, "plucky")
         self.assertTrue(e.hasReturnTo())
         expected_args = {
             'openid.ns': [OPENID2_NS],
             'openid.mode': ['error'],
             'openid.error': ['plucky'],
-            }
+        }
 
         self.assertTrue(e.whichEncoding() == server.ENCODE_HTML_FORM)
         self.assertTrue(e.toFormMarkup() == e.toMessage().toFormMarkup(
@@ -90,16 +103,19 @@ class TestProtocolError(unittest.TestCase):
         return_to = "http://rp.unittest/consumer" + ('x' * OPENID1_URL_LIMIT)
         # will be a ProtocolError raised by Decode or CheckIDRequest.answer
         args = Message.fromPostArgs({
-            'openid.mode': 'monkeydance',
-            'openid.identity': 'http://wagu.unittest/',
-            'openid.return_to': return_to,
-            })
+            'openid.mode':
+            'monkeydance',
+            'openid.identity':
+            'http://wagu.unittest/',
+            'openid.return_to':
+            return_to,
+        })
         e = server.ProtocolError(args, "plucky")
         self.assertTrue(e.hasReturnTo())
         expected_args = {
             'openid.mode': ['error'],
             'openid.error': ['plucky'],
-            }
+        }
 
         self.assertTrue(e.whichEncoding() == server.ENCODE_URL)
 
@@ -112,7 +128,7 @@ class TestProtocolError(unittest.TestCase):
         args = Message.fromPostArgs({
             'openid.mode': 'zebradance',
             'openid.identity': 'http://wagu.unittest/',
-            })
+        })
         e = server.ProtocolError(args, "waffles")
         self.assertFalse(e.hasReturnTo())
         expected = b"""error:waffles
@@ -148,14 +164,14 @@ class TestDecode(unittest.TestCase):
         args = {
             'pony': 'spotted',
             'sreg.mutant_power': 'decaffinator',
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_bad(self):
         args = {
             'openid.mode': 'twos-compliment',
             'openid.pants': 'zippered',
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_dictOfLists(self):
@@ -165,13 +181,13 @@ class TestDecode(unittest.TestCase):
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': self.rt_url,
             'openid.trust_root': self.tr_url,
-            }
+        }
         try:
             result = self.decode(args)
         except TypeError as err:
             self.assertTrue(str(err).find('values') != -1, err)
         else:
-            self.fail("Expected TypeError, but got result %s" % (result,))
+            self.fail("Expected TypeError, but got result %s" % (result, ))
 
     def test_checkidImmediate(self):
         args = {
@@ -182,7 +198,7 @@ class TestDecode(unittest.TestCase):
             'openid.trust_root': self.tr_url,
             # should be ignored
             'openid.some.extension': 'junk',
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.CheckIDRequest))
         self.assertEqual(r.mode, "checkid_immediate")
@@ -199,7 +215,7 @@ class TestDecode(unittest.TestCase):
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': self.rt_url,
             'openid.trust_root': self.tr_url,
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.CheckIDRequest))
         self.assertEqual(r.mode, "checkid_setup")
@@ -217,7 +233,7 @@ class TestDecode(unittest.TestCase):
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': self.rt_url,
             'openid.realm': self.tr_url,
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.CheckIDRequest))
         self.assertEqual(r.mode, "checkid_setup")
@@ -235,7 +251,7 @@ class TestDecode(unittest.TestCase):
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': self.rt_url,
             'openid.realm': self.tr_url,
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_checkidSetupNoIdentityOpenID2(self):
@@ -245,7 +261,7 @@ class TestDecode(unittest.TestCase):
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': self.rt_url,
             'openid.realm': self.tr_url,
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.CheckIDRequest))
         self.assertEqual(r.mode, "checkid_setup")
@@ -263,7 +279,7 @@ class TestDecode(unittest.TestCase):
             'openid.identity': self.id_url,
             'openid.assoc_handle': self.assoc_handle,
             'openid.trust_root': self.tr_url,
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_checkidSetupNoReturnOpenID2(self):
@@ -278,7 +294,7 @@ class TestDecode(unittest.TestCase):
             'openid.claimed_id': self.id_url,
             'openid.assoc_handle': self.assoc_handle,
             'openid.realm': self.tr_url,
-            }
+        }
         self.assertTrue(isinstance(self.decode(args), server.CheckIDRequest))
 
         req = self.decode(args)
@@ -296,7 +312,7 @@ class TestDecode(unittest.TestCase):
             'openid.mode': 'checkid_setup',
             'openid.identity': self.id_url,
             'openid.assoc_handle': self.assoc_handle,
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_checkidSetupBadReturn(self):
@@ -305,14 +321,14 @@ class TestDecode(unittest.TestCase):
             'openid.identity': self.id_url,
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': 'not a url',
-            }
+        }
         try:
             result = self.decode(args)
         except server.ProtocolError as err:
             self.assertTrue(err.openid_message)
         else:
             self.fail("Expected ProtocolError, instead returned with %s" %
-                      (result,))
+                      (result, ))
 
     def test_checkidSetupUntrustedReturn(self):
         args = {
@@ -321,14 +337,14 @@ class TestDecode(unittest.TestCase):
             'openid.assoc_handle': self.assoc_handle,
             'openid.return_to': self.rt_url,
             'openid.trust_root': 'http://not-the-return-place.unittest/',
-            }
+        }
         try:
             result = self.decode(args)
         except server.UntrustedReturnURL as err:
             self.assertTrue(err.openid_message)
         else:
             self.fail("Expected UntrustedReturnURL, instead returned with %s" %
-                      (result,))
+                      (result, ))
 
     def test_checkAuth(self):
         args = {
@@ -340,7 +356,7 @@ class TestDecode(unittest.TestCase):
             'openid.return_to': 'signedval2',
             'openid.response_nonce': 'signedval3',
             'openid.baz': 'unsigned',
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.CheckAuthRequest))
         self.assertEqual(r.mode, 'check_authentication')
@@ -354,7 +370,7 @@ class TestDecode(unittest.TestCase):
             'openid.foo': 'signedval1',
             'openid.bar': 'signedval2',
             'openid.baz': 'unsigned',
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_checkAuthAndInvalidate(self):
@@ -368,7 +384,7 @@ class TestDecode(unittest.TestCase):
             'openid.return_to': 'signedval2',
             'openid.response_nonce': 'signedval3',
             'openid.baz': 'unsigned',
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.CheckAuthRequest))
         self.assertEqual(r.invalidate_handle, '[[SMART_handle]]')
@@ -378,7 +394,7 @@ class TestDecode(unittest.TestCase):
             'openid.mode': 'associate',
             'openid.session_type': 'DH-SHA1',
             'openid.dh_consumer_public': "Rzup9265tw==",
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.AssociateRequest))
         self.assertEqual(r.mode, "associate")
@@ -391,7 +407,7 @@ class TestDecode(unittest.TestCase):
         args = {
             'openid.mode': 'associate',
             'openid.session_type': 'DH-SHA1',
-            }
+        }
         # Using DH-SHA1 without supplying dh_consumer_public is an error.
         self.assertRaises(server.ProtocolError, self.decode, args)
 
@@ -400,7 +416,7 @@ class TestDecode(unittest.TestCase):
             'openid.mode': 'associate',
             'openid.session_type': 'DH-SHA1',
             'openid.dh_consumer_public': "donkeydonkeydonkey",
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_associateDHModGen(self):
@@ -411,7 +427,7 @@ class TestDecode(unittest.TestCase):
             'openid.dh_consumer_public': "Rzup9265tw==",
             'openid.dh_modulus': cryptutil.longToBase64(ALT_MODULUS),
             'openid.dh_gen': cryptutil.longToBase64(ALT_GEN)
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.AssociateRequest))
         self.assertEqual(r.mode, "associate")
@@ -429,7 +445,7 @@ class TestDecode(unittest.TestCase):
             'openid.dh_consumer_public': "Rzup9265tw==",
             'openid.dh_modulus': 'pizza',
             'openid.dh_gen': 'gnocchi',
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_associateDHMissingModGen(self):
@@ -439,7 +455,7 @@ class TestDecode(unittest.TestCase):
             'openid.session_type': 'DH-SHA1',
             'openid.dh_consumer_public': "Rzup9265tw==",
             'openid.dh_modulus': 'pizza',
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
 #     def test_associateDHInvalidModGen(self):
@@ -460,13 +476,13 @@ class TestDecode(unittest.TestCase):
             'openid.mode': 'associate',
             'openid.session_type': 'FLCL6',
             'openid.dh_consumer_public': "YQ==\n",
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_associatePlain(self):
         args = {
             'openid.mode': 'associate',
-            }
+        }
         r = self.decode(args)
         self.assertTrue(isinstance(r, server.AssociateRequest))
         self.assertEqual(r.mode, "associate")
@@ -477,12 +493,11 @@ class TestDecode(unittest.TestCase):
         args = {
             'openid.session_type': 'DH-SHA1',
             'openid.dh_consumer_public': "my public keeey",
-            }
+        }
         self.assertRaises(server.ProtocolError, self.decode, args)
 
     def test_invalidns(self):
-        args = {'openid.ns': 'Tuesday',
-                'openid.mode': 'associate'}
+        args = {'openid.ns': 'Tuesday', 'openid.mode': 'associate'}
 
         try:
             r = self.decode(args)
@@ -493,11 +508,10 @@ class TestDecode(unittest.TestCase):
             # The error message contains the bad openid.ns.
             self.assertTrue('Tuesday' in str(err), str(err))
         else:
-            self.fail("Expected ProtocolError but returned with %r" % (r,))
+            self.fail("Expected ProtocolError but returned with %r" % (r, ))
 
 
 class TestEncode(unittest.TestCase):
-
     def setUp(self):
         self.encoder = server.Encoder()
         self.encode = self.encoder.encode
@@ -516,17 +530,21 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'ns': OPENID2_NS,
-            'mode': 'id_res',
-            'identity': request.identity,
-            'claimed_id': request.identity,
-            'return_to': request.return_to,
-            })
+            'ns':
+            OPENID2_NS,
+            'mode':
+            'id_res',
+            'identity':
+            request.identity,
+            'claimed_id':
+            request.identity,
+            'return_to':
+            request.return_to,
+        })
 
         self.assertFalse(response.renderAsForm())
         self.assertTrue(response.whichEncoding() == server.ENCODE_URL)
@@ -544,17 +562,21 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'ns': OPENID2_NS,
-            'mode': 'id_res',
-            'identity': request.identity,
-            'claimed_id': request.identity,
-            'return_to': 'x' * OPENID1_URL_LIMIT,
-            })
+            'ns':
+            OPENID2_NS,
+            'mode':
+            'id_res',
+            'identity':
+            request.identity,
+            'claimed_id':
+            request.identity,
+            'return_to':
+            'x' * OPENID1_URL_LIMIT,
+        })
 
         self.assertTrue(response.renderAsForm())
         self.assertTrue(len(response.encodeToURL()) > OPENID1_URL_LIMIT)
@@ -568,17 +590,21 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'ns': OPENID2_NS,
-            'mode': 'id_res',
-            'identity': request.identity,
-            'claimed_id': request.identity,
-            'return_to': 'x' * OPENID1_URL_LIMIT,
-            })
+            'ns':
+            OPENID2_NS,
+            'mode':
+            'id_res',
+            'identity':
+            request.identity,
+            'claimed_id':
+            request.identity,
+            'return_to':
+            'x' * OPENID1_URL_LIMIT,
+        })
 
         form_markup = response.toFormMarkup({'foo': 'bar'})
         self.assertTrue(' foo="bar"' in form_markup)
@@ -589,17 +615,21 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'ns': OPENID2_NS,
-            'mode': 'id_res',
-            'identity': request.identity,
-            'claimed_id': request.identity,
-            'return_to': 'x' * OPENID1_URL_LIMIT,
-            })
+            'ns':
+            OPENID2_NS,
+            'mode':
+            'id_res',
+            'identity':
+            request.identity,
+            'claimed_id':
+            request.identity,
+            'return_to':
+            'x' * OPENID1_URL_LIMIT,
+        })
         html = response.toHTML()
         self.assertTrue('<html>' in html)
         self.assertTrue('</html>' in html)
@@ -619,22 +649,24 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'mode': 'id_res',
-            'identity': request.identity,
-            'return_to': 'x' * OPENID1_URL_LIMIT,
-            })
+            'mode':
+            'id_res',
+            'identity':
+            request.identity,
+            'return_to':
+            'x' * OPENID1_URL_LIMIT,
+        })
 
         self.assertFalse(response.renderAsForm())
         self.assertTrue(len(response.encodeToURL()) > OPENID1_URL_LIMIT)
         self.assertTrue(response.whichEncoding() == server.ENCODE_URL)
         webresponse = self.encode(response)
         self.assertEqual(webresponse.headers['location'],
-                             response.encodeToURL())
+                         response.encodeToURL())
 
     def test_id_res(self):
         request = server.CheckIDRequest(
@@ -642,23 +674,25 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'mode': 'id_res',
-            'identity': request.identity,
-            'return_to': request.return_to,
-            })
+            'mode':
+            'id_res',
+            'identity':
+            request.identity,
+            'return_to':
+            request.return_to,
+        })
         webresponse = self.encode(response)
         self.assertEqual(webresponse.code, server.HTTP_REDIRECT)
         self.assertTrue('location' in webresponse.headers)
 
         location = webresponse.headers['location']
-        self.assertTrue(location.startswith(request.return_to),
-                        "%s does not start with %s" % (location,
-                                                       request.return_to))
+        self.assertTrue(
+            location.startswith(request.return_to),
+            "%s does not start with %s" % (location, request.return_to))
         # argh.
         q2 = dict(parse_qsl(urlparse(location)[4]))
         expected = response.fields.toPostArgs()
@@ -670,13 +704,12 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
             'mode': 'cancel',
-            })
+        })
         webresponse = self.encode(response)
         self.assertEqual(webresponse.code, server.HTTP_REDIRECT)
         self.assertTrue('location' in webresponse.headers)
@@ -687,13 +720,12 @@ class TestEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
             'mode': 'cancel',
-            })
+        })
         form = response.toFormMarkup()
         self.assertTrue(form)
 
@@ -703,7 +735,9 @@ class TestEncode(unittest.TestCase):
         request = server.AssociateRequest.fromMessage(msg)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromPostArgs(
-            {'openid.assoc_handle': "every-zig"})
+            {
+                'openid.assoc_handle': "every-zig"
+            })
         webresponse = self.encode(response)
         body = """assoc_handle:every-zig
 """
@@ -712,14 +746,14 @@ class TestEncode(unittest.TestCase):
         self.assertEqual(webresponse.body, body)
 
     def test_checkauthReply(self):
-        request = server.CheckAuthRequest('a_sock_monkey',
-                                          'siggggg',
-                                          [])
+        request = server.CheckAuthRequest('a_sock_monkey', 'siggggg', [])
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
-            'is_valid': 'true',
-            'invalidate_handle': 'xXxX:xXXx'
-            })
+            'is_valid':
+            'true',
+            'invalidate_handle':
+            'xXxX:xXXx'
+        })
         body = """invalidate_handle:xXxX:xXXx
 is_valid:true
 """
@@ -731,7 +765,7 @@ is_valid:true
     def test_unencodableError(self):
         args = Message.fromPostArgs({
             'openid.identity': 'http://limu.unittest/',
-            })
+        })
         e = server.ProtocolError(args, "wet paint")
         self.assertRaises(server.EncodingError, self.encode, e)
 
@@ -739,7 +773,7 @@ is_valid:true
         args = Message.fromPostArgs({
             'openid.mode': 'associate',
             'openid.identity': 'http://limu.unittest/',
-            })
+        })
         body = "error:snoot\nmode:error\n"
         webresponse = self.encode(server.ProtocolError(args, "snoot"))
         self.assertEqual(webresponse.code, server.HTTP_ERROR)
@@ -758,15 +792,17 @@ class TestSigningEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         self.request.message = Message(OPENID2_NS)
         self.response = server.OpenIDResponse(self.request)
         self.response.fields = Message.fromOpenIDArgs({
-            'mode': 'id_res',
-            'identity': self.request.identity,
-            'return_to': self.request.return_to,
-            })
+            'mode':
+            'id_res',
+            'identity':
+            self.request.identity,
+            'return_to':
+            self.request.return_to,
+        })
         self.signatory = server.Signatory(self.store)
         self.encoder = server.SigningEncoder(self.signatory)
         self.encode = self.encoder.encode
@@ -775,8 +811,8 @@ class TestSigningEncode(unittest.TestCase):
         assoc_handle = '{bicycle}{shed}'
         self.store.storeAssociation(
             self._normal_key,
-            association.Association.fromExpiresIn(60, assoc_handle,
-                                                  'sekrit', 'HMAC-SHA1'))
+            association.Association.fromExpiresIn(60, assoc_handle, 'sekrit',
+                                                  'HMAC-SHA1'))
         self.request.assoc_handle = assoc_handle
         webresponse = self.encode(self.response)
         self.assertEqual(webresponse.code, server.HTTP_REDIRECT)
@@ -809,8 +845,7 @@ class TestSigningEncode(unittest.TestCase):
             trust_root='http://burr.unittest/',
             return_to='http://burr.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-        )
+            op_endpoint=self.server.op_endpoint, )
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields.setArg(OPENID_NS, 'mode', 'cancel')
@@ -849,8 +884,7 @@ class TestCheckID(unittest.TestCase):
             trust_root='http://bar.unittest/',
             return_to='http://bar.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         self.request.message = Message(OPENID2_NS)
 
     def test_trustRootInvalid(self):
@@ -873,8 +907,8 @@ class TestCheckID(unittest.TestCase):
         except server.MalformedTrustRoot as why:
             self.assertTrue(sentinel is why.openid_message)
         else:
-            self.fail('Expected MalformedTrustRoot exception. Got %r'
-                      % (result,))
+            self.fail('Expected MalformedTrustRoot exception. Got %r' %
+                      (result, ))
 
     def test_trustRootValidNoReturnTo(self):
         request = server.CheckIDRequest(
@@ -882,8 +916,7 @@ class TestCheckID(unittest.TestCase):
             trust_root='http://bar.unittest/',
             return_to=None,
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
 
         self.assertTrue(request.trustRootValid())
 
@@ -891,6 +924,7 @@ class TestCheckID(unittest.TestCase):
         """Make sure that verifyReturnTo is calling the trustroot
         function verifyReturnTo
         """
+
         def withVerifyReturnTo(new_verify, callable):
             old_verify = server.verifyReturnTo
             try:
@@ -918,20 +952,21 @@ class TestCheckID(unittest.TestCase):
                 self.assertEqual(self.request.trust_root, trust_root)
                 self.assertEqual(self.request.return_to, return_to)
                 return val
+
             return verify
 
         for val in [True, False]:
-            self.assertEqual(
-                val,
-                withVerifyReturnTo(constVerify(val),
-                                   self.request.returnToVerified))
+            self.assertEqual(val,
+                             withVerifyReturnTo(
+                                 constVerify(val),
+                                 self.request.returnToVerified))
 
     def _expectAnswer(self, answer, identity=None, claimed_id=None):
         expected_list = [
             ('mode', 'id_res'),
             ('return_to', self.request.return_to),
             ('op_endpoint', self.op_endpoint),
-            ]
+        ]
         if identity:
             expected_list.append(('identity', identity))
             if claimed_id:
@@ -942,16 +977,15 @@ class TestCheckID(unittest.TestCase):
         for k, expected in expected_list:
             actual = answer.fields.getArg(OPENID_NS, k)
             self.assertEqual(actual, expected,
-                                 "%s: expected %s, got %s" %
-                                 (k, expected, actual))
+                             "%s: expected %s, got %s" % (k, expected, actual))
 
         self.assertTrue(answer.fields.hasKey(OPENID_NS, 'response_nonce'))
         self.assertTrue(answer.fields.getOpenIDNamespace() == OPENID2_NS)
 
         # One for nonce, one for ns
-        self.assertEqual(len(answer.fields.toPostArgs()),
-                             len(expected_list) + 2,
-                             answer.fields.toPostArgs())
+        self.assertEqual(
+            len(answer.fields.toPostArgs()),
+            len(expected_list) + 2, answer.fields.toPostArgs())
 
     def test_answerAllow(self):
         """Check the fields specified by "Positive Assertions"
@@ -985,8 +1019,7 @@ class TestCheckID(unittest.TestCase):
     def test_answerAllowAnonymousFail(self):
         self.request.identity = None
         # XXX - Check on this, I think this behavior is legal in OpenID 2.0?
-        self.assertRaises(
-            ValueError, self.request.answer, True, identity="=V")
+        self.assertRaises(ValueError, self.request.answer, True, identity="=V")
 
     def test_answerAllowWithIdentity(self):
         self.request.identity = IDENTIFIER_SELECT
@@ -1001,8 +1034,8 @@ class TestCheckID(unittest.TestCase):
         self.request.identity = IDENTIFIER_SELECT
         selected_id = 'http://anon.unittest/9861'
         claimed_id = 'http://monkeyhat.unittest/'
-        answer = self.request.answer(True, identity=selected_id,
-                                     claimed_id=claimed_id)
+        answer = self.request.answer(
+            True, identity=selected_id, claimed_id=claimed_id)
         self._expectAnswer(answer, selected_id, claimed_id)
 
     def test_answerAllowWithDelegatedIdentityOpenID1(self):
@@ -1013,15 +1046,20 @@ class TestCheckID(unittest.TestCase):
         self.request.identity = IDENTIFIER_SELECT
         selected_id = 'http://anon.unittest/9861'
         claimed_id = 'http://monkeyhat.unittest/'
-        self.assertRaises(server.VersionError,
-                              self.request.answer, True,
-                              identity=selected_id,
-                              claimed_id=claimed_id)
+        self.assertRaises(
+            server.VersionError,
+            self.request.answer,
+            True,
+            identity=selected_id,
+            claimed_id=claimed_id)
 
     def test_answerAllowWithAnotherIdentity(self):
         # XXX - Check on this, I think this behavior is legal in OpenID 2.0?
-        self.assertRaises(ValueError, self.request.answer, True,
-                              identity="http://pebbles.unittest/")
+        self.assertRaises(
+            ValueError,
+            self.request.answer,
+            True,
+            identity="http://pebbles.unittest/")
 
     def test_answerAllowWithIdentityNormalization(self):
         # The RP has sent us a non-normalized value for openid.identity,
@@ -1037,14 +1075,13 @@ class TestCheckID(unittest.TestCase):
 
         # Expect the values that were sent in the request, even though
         # they're not normalized.
-        self._expectAnswer(answer, identity=non_normalized,
-                           claimed_id=non_normalized)
+        self._expectAnswer(
+            answer, identity=non_normalized, claimed_id=non_normalized)
 
     def test_answerAllowNoIdentityOpenID1(self):
         self.request.message = Message(OPENID1_NS)
         self.request.identity = None
-        self.assertRaises(ValueError, self.request.answer, True,
-                              identity=None)
+        self.assertRaises(ValueError, self.request.answer, True, identity=None)
 
     def test_answerAllowForgotEndpoint(self):
         self.request.op_endpoint = None
@@ -1058,8 +1095,7 @@ class TestCheckID(unittest.TestCase):
         msg.setArg(OPENID_NS, 'assoc_handle', 'bogus')
 
         self.assertRaises(server.ProtocolError,
-                              server.CheckIDRequest.fromMessage,
-                              msg, self.server)
+                          server.CheckIDRequest.fromMessage, msg, self.server)
 
     def test_fromMessageClaimedIDWithoutIdentityOpenID2(self):
         name = 'https://example.myopenid.com'
@@ -1070,8 +1106,7 @@ class TestCheckID(unittest.TestCase):
         msg.setArg(OPENID_NS, 'claimed_id', name)
 
         self.assertRaises(server.ProtocolError,
-                              server.CheckIDRequest.fromMessage,
-                              msg, self.server)
+                          server.CheckIDRequest.fromMessage, msg, self.server)
 
     def test_fromMessageIdentityWithoutClaimedIDOpenID2(self):
         name = 'https://example.myopenid.com'
@@ -1082,8 +1117,7 @@ class TestCheckID(unittest.TestCase):
         msg.setArg(OPENID_NS, 'identity', name)
 
         self.assertRaises(server.ProtocolError,
-                              server.CheckIDRequest.fromMessage,
-                              msg, self.server)
+                          server.CheckIDRequest.fromMessage, msg, self.server)
 
     def test_trustRootOpenID1(self):
         """Ignore openid.realm in OpenID 1"""
@@ -1095,8 +1129,8 @@ class TestCheckID(unittest.TestCase):
         msg.setArg(OPENID_NS, 'assoc_handle', 'bogus')
         msg.setArg(OPENID_NS, 'identity', 'george')
 
-        result = server.CheckIDRequest.fromMessage(
-            msg, self.server.op_endpoint)
+        result = server.CheckIDRequest.fromMessage(msg,
+                                                   self.server.op_endpoint)
 
         self.assertTrue(result.trust_root == 'http://real_trust_root/')
 
@@ -1111,8 +1145,8 @@ class TestCheckID(unittest.TestCase):
         msg.setArg(OPENID_NS, 'identity', 'george')
         msg.setArg(OPENID_NS, 'claimed_id', 'george')
 
-        result = server.CheckIDRequest.fromMessage(
-            msg, self.server.op_endpoint)
+        result = server.CheckIDRequest.fromMessage(msg,
+                                                   self.server.op_endpoint)
 
         self.assertTrue(result.trust_root == 'http://real_trust_root/')
 
@@ -1138,13 +1172,21 @@ class TestCheckID(unittest.TestCase):
     def test_fromMessageWithEmptyTrustRoot(self):
         return_to = 'http://someplace.invalid/?go=thing'
         msg = Message.fromPostArgs({
-                'openid.assoc_handle': '{blah}{blah}{OZivdQ==}',
-                'openid.claimed_id': 'http://delegated.invalid/',
-                'openid.identity': 'http://op-local.example.com/',
-                'openid.mode': 'checkid_setup',
-                'openid.ns': 'http://openid.net/signon/1.0',
-                'openid.return_to': return_to,
-                'openid.trust_root': ''})
+            'openid.assoc_handle':
+            '{blah}{blah}{OZivdQ==}',
+            'openid.claimed_id':
+            'http://delegated.invalid/',
+            'openid.identity':
+            'http://op-local.example.com/',
+            'openid.mode':
+            'checkid_setup',
+            'openid.ns':
+            'http://openid.net/signon/1.0',
+            'openid.return_to':
+            return_to,
+            'openid.trust_root':
+            ''
+        })
 
         result = server.CheckIDRequest.fromMessage(msg,
                                                    self.server.op_endpoint)
@@ -1159,8 +1201,8 @@ class TestCheckID(unittest.TestCase):
         msg.setArg(OPENID_NS, 'claimed_id', 'george')
 
         self.assertRaises(server.ProtocolError,
-                              server.CheckIDRequest.fromMessage,
-                              msg, self.server.op_endpoint)
+                          server.CheckIDRequest.fromMessage, msg,
+                          self.server.op_endpoint)
 
     def test_answerAllowNoEndpointOpenID1(self):
         """Test .allow() with an OpenID 1.x Message on a CheckIDRequest
@@ -1168,10 +1210,13 @@ class TestCheckID(unittest.TestCase):
         """
         identity = 'http://bambam.unittest/'
         reqmessage = Message.fromOpenIDArgs({
-            'identity': identity,
-            'trust_root': 'http://bar.unittest/',
-            'return_to': 'http://bar.unittest/999',
-            })
+            'identity':
+            identity,
+            'trust_root':
+            'http://bar.unittest/',
+            'return_to':
+            'http://bar.unittest/999',
+        })
         self.request = server.CheckIDRequest.fromMessage(reqmessage, None)
         answer = self.request.answer(True)
 
@@ -1179,22 +1224,21 @@ class TestCheckID(unittest.TestCase):
             ('mode', 'id_res'),
             ('return_to', self.request.return_to),
             ('identity', identity),
-            ]
+        ]
 
         for k, expected in expected_list:
             actual = answer.fields.getArg(OPENID_NS, k)
-            self.assertEqual(
-                expected, actual,
-                "%s: expected %s, got %s" % (k, expected, actual))
+            self.assertEqual(expected, actual,
+                             "%s: expected %s, got %s" % (k, expected, actual))
 
         self.assertTrue(answer.fields.hasKey(OPENID_NS, 'response_nonce'))
         self.assertEqual(answer.fields.getOpenIDNamespace(), OPENID1_NS)
         self.assertTrue(answer.fields.namespaces.isImplicit(OPENID1_NS))
 
         # One for nonce (OpenID v1 namespace is implicit)
-        self.assertEqual(len(answer.fields.toPostArgs()),
-                             len(expected_list) + 1,
-                             answer.fields.toPostArgs())
+        self.assertEqual(
+            len(answer.fields.toPostArgs()),
+            len(expected_list) + 1, answer.fields.toPostArgs())
 
     def test_answerImmediateDenyOpenID2(self):
         """Look for mode=setup_needed in checkid_immediate negative
@@ -1212,8 +1256,8 @@ class TestCheckID(unittest.TestCase):
         self.assertEqual(answer.request, self.request)
         self.assertEqual(len(answer.fields.toPostArgs()), 3, answer.fields)
         self.assertEqual(answer.fields.getOpenIDNamespace(), OPENID2_NS)
-        self.assertEqual(answer.fields.getArg(OPENID_NS, 'mode'),
-                             'setup_needed')
+        self.assertEqual(
+            answer.fields.getArg(OPENID_NS, 'mode'), 'setup_needed')
 
         usu = answer.fields.getArg(OPENID_NS, 'user_setup_url')
         expected_substr = 'openid.claimed_id=http%3A%2F%2Fclaimed-id.test%2F'
@@ -1233,8 +1277,9 @@ class TestCheckID(unittest.TestCase):
         self.assertEqual(answer.fields.getOpenIDNamespace(), OPENID1_NS)
         self.assertTrue(answer.fields.namespaces.isImplicit(OPENID1_NS))
         self.assertEqual(answer.fields.getArg(OPENID_NS, 'mode'), 'id_res')
-        self.assertTrue(answer.fields.getArg(
-            OPENID_NS, 'user_setup_url', '').startswith(server_url))
+        self.assertTrue(
+            answer.fields.getArg(OPENID_NS, 'user_setup_url', '').startswith(
+                server_url))
 
     def test_answerSetupDeny(self):
         answer = self.request.answer(False)
@@ -1260,8 +1305,9 @@ class TestCheckID(unittest.TestCase):
         rt, query_string = url.split('?')
         self.assertEqual(self.request.return_to, rt)
         query = dict(parse_qsl(query_string))
-        self.assertEqual(query, {'openid.mode': 'cancel',
-                                 'openid.ns': OPENID2_NS})
+        self.assertEqual(query,
+                         {'openid.mode': 'cancel',
+                          'openid.ns': OPENID2_NS})
 
     def test_getCancelURLimmed(self):
         self.request.mode = 'checkid_immediate'
@@ -1279,8 +1325,7 @@ class TestCheckIDExtension(unittest.TestCase):
             trust_root='http://bar.unittest/',
             return_to='http://bar.unittest/999',
             immediate=False,
-            op_endpoint=self.server.op_endpoint,
-            )
+            op_endpoint=self.server.op_endpoint, )
         self.request.message = Message(OPENID2_NS)
         self.response = server.OpenIDResponse(self.request)
         self.response.fields.setArg(OPENID_NS, 'mode', 'id_res')
@@ -1289,21 +1334,23 @@ class TestCheckIDExtension(unittest.TestCase):
     def test_addField(self):
         namespace = 'something:'
         self.response.fields.setArg(namespace, 'bright', 'potato')
-        self.assertEqual(self.response.fields.getArgs(OPENID_NS), {
+        self.assertEqual(
+            self.response.fields.getArgs(OPENID_NS), {
                 'blue': 'star',
                 'mode': 'id_res',
-                })
+            })
 
-        self.assertEqual(self.response.fields.getArgs(namespace),
-                         {'bright': 'potato'})
+        self.assertEqual(
+            self.response.fields.getArgs(namespace), {'bright': 'potato'})
 
     def test_addFields(self):
         namespace = 'mi5:'
-        args = {'tangy': 'suspenders',
-                'bravo': 'inclusion'}
+        args = {'tangy': 'suspenders', 'bravo': 'inclusion'}
         self.response.fields.updateArgs(namespace, args)
-        self.assertEqual(self.response.fields.getArgs(OPENID_NS),
-                             {'blue': 'star', 'mode': 'id_res'})
+        self.assertEqual(
+            self.response.fields.getArgs(OPENID_NS),
+            {'blue': 'star',
+             'mode': 'id_res'})
         self.assertEqual(self.response.fields.getArgs(namespace), args)
 
 
@@ -1340,23 +1387,20 @@ class TestCheckAuth(unittest.TestCase):
             'openid.sig': 'signarture',
             'one': 'alpha',
             'two': 'beta',
-            })
-        self.request = server.CheckAuthRequest(
-            self.assoc_handle, self.message)
+        })
+        self.request = server.CheckAuthRequest(self.assoc_handle, self.message)
 
         self.signatory = MockSignatory((True, self.assoc_handle))
 
     def test_valid(self):
         r = self.request.answer(self.signatory)
-        self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': 'true'})
+        self.assertEqual(r.fields.getArgs(OPENID_NS), {'is_valid': 'true'})
         self.assertEqual(r.request, self.request)
 
     def test_invalid(self):
         self.signatory.isValid = False
         r = self.request.answer(self.signatory)
-        self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': 'false'})
+        self.assertEqual(r.fields.getArgs(OPENID_NS), {'is_valid': 'false'})
 
     def test_replay(self):
         """Don't validate the same response twice.
@@ -1373,15 +1417,15 @@ class TestCheckAuth(unittest.TestCase):
         """
         r = self.request.answer(self.signatory)
         r = self.request.answer(self.signatory)
-        self.assertEqual(r.fields.getArgs(OPENID_NS),
-                         {'is_valid': 'false'})
+        self.assertEqual(r.fields.getArgs(OPENID_NS), {'is_valid': 'false'})
 
     def test_invalidatehandle(self):
         self.request.invalidate_handle = "bogusHandle"
         r = self.request.answer(self.signatory)
-        self.assertEqual(r.fields.getArgs(OPENID_NS),
-                         {'is_valid': 'true',
-                          'invalidate_handle': "bogusHandle"})
+        self.assertEqual(
+            r.fields.getArgs(OPENID_NS),
+            {'is_valid': 'true',
+             'invalidate_handle': "bogusHandle"})
         self.assertEqual(r.request, self.request)
 
     def test_invalidatehandleNo(self):
@@ -1389,8 +1433,7 @@ class TestCheckAuth(unittest.TestCase):
         self.signatory.assocs.append((False, 'goodhandle'))
         self.request.invalidate_handle = assoc_handle
         r = self.request.answer(self.signatory)
-        self.assertEqual(r.fields.getArgs(OPENID_NS),
-                             {'is_valid': 'true'})
+        self.assertEqual(r.fields.getArgs(OPENID_NS), {'is_valid': 'true'})
 
 
 class TestAssociate(unittest.TestCase):
@@ -1430,6 +1473,7 @@ class TestAssociate(unittest.TestCase):
     if not cryptutil.SHA256_AVAILABLE:
         warnings.warn("Not running SHA256 tests.")
     else:
+
         def test_dhSHA256(self):
             self.assoc = self.signatory.createAssociation(
                 dumb=False, assoc_type='HMAC-SHA256')
@@ -1460,51 +1504,57 @@ class TestAssociate(unittest.TestCase):
 
             s256_session = DiffieHellmanSHA256ConsumerSession()
 
-            invalid_s256 = {'openid.assoc_type': 'HMAC-SHA1',
-                            'openid.session_type': 'DH-SHA256'}
+            invalid_s256 = {
+                'openid.assoc_type': 'HMAC-SHA1',
+                'openid.session_type': 'DH-SHA256'
+            }
             invalid_s256.update(s256_session.getRequest())
 
-            invalid_s256_2 = {'openid.assoc_type': 'MONKEY-PIRATE',
-                              'openid.session_type': 'DH-SHA256'}
+            invalid_s256_2 = {
+                'openid.assoc_type': 'MONKEY-PIRATE',
+                'openid.session_type': 'DH-SHA256'
+            }
             invalid_s256_2.update(s256_session.getRequest())
 
             bad_request_argss = [
                 invalid_s256,
                 invalid_s256_2,
-                ]
+            ]
 
             for request_args in bad_request_argss:
                 message = Message.fromPostArgs(request_args)
                 self.assertRaises(server.ProtocolError,
-                                      server.AssociateRequest.fromMessage,
-                                      message)
+                                  server.AssociateRequest.fromMessage, message)
 
     def test_protoError(self):
         from openid.consumer.consumer import DiffieHellmanSHA1ConsumerSession
 
         s1_session = DiffieHellmanSHA1ConsumerSession()
 
-        invalid_s1 = {'openid.assoc_type': 'HMAC-SHA256',
-                      'openid.session_type': 'DH-SHA1'}
+        invalid_s1 = {
+            'openid.assoc_type': 'HMAC-SHA256',
+            'openid.session_type': 'DH-SHA1'
+        }
         invalid_s1.update(s1_session.getRequest())
 
         invalid_s1_2 = {
             'openid.assoc_type': 'ROBOT-NINJA',
             'openid.session_type': 'DH-SHA1'
-            }
+        }
         invalid_s1_2.update(s1_session.getRequest())
 
         bad_request_argss = [
-            {'openid.assoc_type':'Wha?'},
+            {
+                'openid.assoc_type': 'Wha?'
+            },
             invalid_s1,
             invalid_s1_2,
-            ]
+        ]
 
         for request_args in bad_request_argss:
             message = Message.fromPostArgs(request_args)
             self.assertRaises(server.ProtocolError,
-                                  server.AssociateRequest.fromMessage,
-                                  message)
+                              server.AssociateRequest.fromMessage, message)
 
     def test_protoErrorFields(self):
 
@@ -1515,7 +1565,7 @@ class TestAssociate(unittest.TestCase):
         openid1_args = {
             'openid.identitiy': 'invalid',
             'openid.mode': 'checkid_setup',
-            }
+        }
 
         openid2_args = dict(openid1_args)
         openid2_args.update({'openid.ns': OPENID2_NS})
@@ -1523,16 +1573,16 @@ class TestAssociate(unittest.TestCase):
         # Check presence of optional fields in both protocol versions
 
         openid1_msg = Message.fromPostArgs(openid1_args)
-        p = server.ProtocolError(openid1_msg, error,
-                                 contact=contact, reference=reference)
+        p = server.ProtocolError(
+            openid1_msg, error, contact=contact, reference=reference)
         reply = p.toMessage()
 
         self.assertEqual(reply.getArg(OPENID_NS, 'reference'), reference)
         self.assertEqual(reply.getArg(OPENID_NS, 'contact'), contact)
 
         openid2_msg = Message.fromPostArgs(openid2_args)
-        p = server.ProtocolError(openid2_msg, error,
-                                 contact=contact, reference=reference)
+        p = server.ProtocolError(
+            openid2_msg, error, contact=contact, reference=reference)
         reply = p.toMessage()
 
         self.assertEqual(reply.getArg(OPENID_NS, 'reference'), reference)
@@ -1561,8 +1611,8 @@ class TestAssociate(unittest.TestCase):
         self.assertEqual(rfg("assoc_type"), "HMAC-SHA1")
         self.assertEqual(rfg("assoc_handle"), self.assoc.handle)
 
-        self.failUnlessExpiresInMatches(
-            response.fields, self.signatory.SECRET_LIFETIME)
+        self.failUnlessExpiresInMatches(response.fields,
+                                        self.signatory.SECRET_LIFETIME)
 
         # remember, oidutil.toBase64 returns bytes...
         r_mac_key = rfg("mac_key").encode('utf-8')
@@ -1579,7 +1629,7 @@ class TestAssociate(unittest.TestCase):
             'openid.mode': 'associate',
             'openid.assoc_type': 'HMAC-SHA1',
             'openid.session_type': 'no-encryption',
-            }
+        }
         self.request = server.AssociateRequest.fromMessage(
             Message.fromPostArgs(args))
 
@@ -1593,8 +1643,8 @@ class TestAssociate(unittest.TestCase):
         self.assertEqual(rfg("assoc_type"), "HMAC-SHA1")
         self.assertEqual(rfg("assoc_handle"), self.assoc.handle)
 
-        self.failUnlessExpiresInMatches(
-            response.fields, self.signatory.SECRET_LIFETIME)
+        self.failUnlessExpiresInMatches(response.fields,
+                                        self.signatory.SECRET_LIFETIME)
 
         # rfg gets from the response which will return str; oidutil.toBase64
         # returns bytes. Make them comparable by bytes-ifying the mac_key
@@ -1614,8 +1664,8 @@ class TestAssociate(unittest.TestCase):
         self.assertEqual(rfg("assoc_type"), "HMAC-SHA1")
         self.assertEqual(rfg("assoc_handle"), self.assoc.handle)
 
-        self.failUnlessExpiresInMatches(
-            response.fields, self.signatory.SECRET_LIFETIME)
+        self.failUnlessExpiresInMatches(response.fields,
+                                        self.signatory.SECRET_LIFETIME)
 
         # remember, oidutil.toBase64 returns bytes...
         r_mac_key = rfg("mac_key").encode("utf-8")
@@ -1636,8 +1686,7 @@ class TestAssociate(unittest.TestCase):
         response = self.request.answerUnsupported(
             message=message,
             preferred_session_type=allowed_sess,
-            preferred_association_type=allowed_assoc,
-            )
+            preferred_association_type=allowed_assoc, )
         rfg = lambda f: response.fields.getArg(OPENID_NS, f)
         self.assertEqual(rfg('error_code'), 'unsupported-type')
         self.assertEqual(rfg('assoc_type'), allowed_assoc)
@@ -1680,6 +1729,7 @@ class TestServer(unittest.TestCase, CatchLogs):
             monkeycalled.inc()
             r = server.OpenIDResponse(request)
             return r
+
         self.server.openid_monkeymode = monkeyDo
         request = server.OpenIDRequest()
         request.mode = "monkeymode"
@@ -1690,8 +1740,9 @@ class TestServer(unittest.TestCase, CatchLogs):
     def test_associate(self):
         request = server.AssociateRequest.fromMessage(Message.fromPostArgs({}))
         response = self.server.openid_associate(request)
-        self.assertTrue(response.fields.hasKey(OPENID_NS, "assoc_handle"),
-                        "No assoc_handle here: %s" % (response.fields,))
+        self.assertTrue(
+            response.fields.hasKey(OPENID_NS, "assoc_handle"),
+            "No assoc_handle here: %s" % (response.fields, ))
 
     def test_associate2(self):
         """Associate when the server has no allowed association types
@@ -1705,7 +1756,7 @@ class TestServer(unittest.TestCase, CatchLogs):
         msg = Message.fromPostArgs({
             'openid.ns': OPENID2_NS,
             'openid.session_type': 'no-encryption',
-            })
+        })
 
         request = server.AssociateRequest.fromMessage(msg)
 
@@ -1727,7 +1778,7 @@ class TestServer(unittest.TestCase, CatchLogs):
         msg = Message.fromPostArgs({
             'openid.ns': OPENID2_NS,
             'openid.session_type': 'no-encryption',
-            })
+        })
 
         request = server.AssociateRequest.fromMessage(msg)
         response = self.server.openid_associate(request)
@@ -1735,14 +1786,15 @@ class TestServer(unittest.TestCase, CatchLogs):
         self.assertTrue(response.fields.hasKey(OPENID_NS, "error"))
         self.assertTrue(response.fields.hasKey(OPENID_NS, "error_code"))
         self.assertFalse(response.fields.hasKey(OPENID_NS, "assoc_handle"))
-        self.assertEqual(response.fields.getArg(OPENID_NS, "assoc_type"),
-                             'HMAC-SHA256')
-        self.assertEqual(response.fields.getArg(OPENID_NS, "session_type"),
-                             'DH-SHA256')
+        self.assertEqual(
+            response.fields.getArg(OPENID_NS, "assoc_type"), 'HMAC-SHA256')
+        self.assertEqual(
+            response.fields.getArg(OPENID_NS, "session_type"), 'DH-SHA256')
 
     if not cryptutil.SHA256_AVAILABLE:
         warnings.warn("Not running SHA256 tests.")
     else:
+
         def test_associate4(self):
             """DH-SHA256 association session"""
             self.server.negotiator.setAllowedTypes(
@@ -1752,9 +1804,11 @@ class TestServer(unittest.TestCase, CatchLogs):
                 'ALZgnx8N5Lgd7pCj8K86T/DDMFjJXSss1SKoLmxE72kJTzOtG6I2PaYrHX'
                 'xku4jMQWSsGfLJxwCZ6280uYjUST/9NWmuAfcrBfmDHIBc3H8xh6RBnlXJ'
                 '1WxJY3jHd5k1/ZReyRZOxZTKdF/dnIqwF8ZXUwI6peV0TyS/K1fOfF/s',
-                'openid.assoc_type': 'HMAC-SHA256',
-                'openid.session_type': 'DH-SHA256',
-                }
+                'openid.assoc_type':
+                'HMAC-SHA256',
+                'openid.session_type':
+                'DH-SHA256',
+            }
             message = Message.fromPostArgs(query)
             request = server.AssociateRequest.fromMessage(message)
             response = self.server.openid_associate(request)
@@ -1764,7 +1818,7 @@ class TestServer(unittest.TestCase, CatchLogs):
         """Make sure session_type is required in OpenID 2"""
         msg = Message.fromPostArgs({
             'openid.ns': OPENID2_NS,
-            })
+        })
 
         self.assertRaises(server.ProtocolError,
                           server.AssociateRequest.fromMessage, msg)
@@ -1788,8 +1842,8 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         assoc_handle = '{assoc}{lookatme}'
         self.store.storeAssociation(
             self._normal_key,
-            association.Association.fromExpiresIn(60, assoc_handle,
-                                                  'sekrit', 'HMAC-SHA1'))
+            association.Association.fromExpiresIn(60, assoc_handle, 'sekrit',
+                                                  'HMAC-SHA1'))
         request.assoc_handle = assoc_handle
         request.namespace = OPENID1_NS
         response = server.OpenIDResponse(request)
@@ -1797,13 +1851,13 @@ class TestSignatory(unittest.TestCase, CatchLogs):
             'foo': 'amsigned',
             'bar': 'notsigned',
             'azu': 'alsosigned',
-            })
+        })
         sresponse = self.signatory.sign(response)
         self.assertEqual(
-            sresponse.fields.getArg(OPENID_NS, 'assoc_handle'),
-            assoc_handle)
-        self.assertEqual(sresponse.fields.getArg(OPENID_NS, 'signed'),
-                             'assoc_handle,azu,bar,foo,signed')
+            sresponse.fields.getArg(OPENID_NS, 'assoc_handle'), assoc_handle)
+        self.assertEqual(
+            sresponse.fields.getArg(OPENID_NS, 'signed'),
+            'assoc_handle,azu,bar,foo,signed')
         self.assertTrue(sresponse.fields.getArg(OPENID_NS, 'sig'))
         self.assertFalse(self.messages, self.messages)
 
@@ -1817,14 +1871,15 @@ class TestSignatory(unittest.TestCase, CatchLogs):
             'bar': 'notsigned',
             'azu': 'alsosigned',
             'ns': OPENID2_NS,
-            })
+        })
         sresponse = self.signatory.sign(response)
         assoc_handle = sresponse.fields.getArg(OPENID_NS, 'assoc_handle')
         self.assertTrue(assoc_handle)
         assoc = self.signatory.getAssociation(assoc_handle, dumb=True)
         self.assertTrue(assoc)
-        self.assertEqual(sresponse.fields.getArg(OPENID_NS, 'signed'),
-                             'assoc_handle,azu,bar,foo,ns,signed')
+        self.assertEqual(
+            sresponse.fields.getArg(OPENID_NS, 'signed'),
+            'assoc_handle,azu,bar,foo,ns,signed')
         self.assertTrue(sresponse.fields.getArg(OPENID_NS, 'sig'))
         self.assertFalse(self.messages, self.messages)
 
@@ -1849,10 +1904,10 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         assoc_handle = '{assoc}{lookatme}'
         self.store.storeAssociation(
             self._normal_key,
-            association.Association.fromExpiresIn(-10, assoc_handle,
-                                                  'sekrit', 'HMAC-SHA1'))
-        self.assertTrue(self.store.getAssociation(
-                self._normal_key, assoc_handle))
+            association.Association.fromExpiresIn(-10, assoc_handle, 'sekrit',
+                                                  'HMAC-SHA1'))
+        self.assertTrue(
+            self.store.getAssociation(self._normal_key, assoc_handle))
 
         request.assoc_handle = assoc_handle
         response = server.OpenIDResponse(request)
@@ -1860,7 +1915,7 @@ class TestSignatory(unittest.TestCase, CatchLogs):
             'foo': 'amsigned',
             'bar': 'notsigned',
             'azu': 'alsosigned',
-            })
+        })
         sresponse = self.signatory.sign(response)
 
         new_assoc_handle = sresponse.fields.getArg(OPENID_NS, 'assoc_handle')
@@ -1877,8 +1932,9 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         self.assertTrue(sresponse.fields.getArg(OPENID_NS, 'sig'))
 
         # make sure the expired association is gone
-        self.assertFalse(self.store.getAssociation(self._normal_key, assoc_handle),
-                    "expired association is still retrievable.")
+        self.assertFalse(
+            self.store.getAssociation(self._normal_key, assoc_handle),
+            "expired association is still retrievable.")
 
         # make sure the new key is a dumb mode association
         self.assertTrue(
@@ -1898,7 +1954,7 @@ class TestSignatory(unittest.TestCase, CatchLogs):
             'foo': 'amsigned',
             'bar': 'notsigned',
             'azu': 'alsosigned',
-            })
+        })
         sresponse = self.signatory.sign(response)
 
         new_assoc_handle = sresponse.fields.getArg(OPENID_NS, 'assoc_handle')
@@ -1923,18 +1979,23 @@ class TestSignatory(unittest.TestCase, CatchLogs):
 
     def test_verify(self):
         assoc_handle = '{vroom}{zoom}'
-        assoc = association.Association.fromExpiresIn(
-            60, assoc_handle, 'sekrit', 'HMAC-SHA1')
+        assoc = association.Association.fromExpiresIn(60, assoc_handle,
+                                                      'sekrit', 'HMAC-SHA1')
 
         self.store.storeAssociation(self._dumb_key, assoc)
 
         signed = Message.fromPostArgs({
-            'openid.foo': 'bar',
-            'openid.apple': 'orange',
-            'openid.assoc_handle': assoc_handle,
-            'openid.signed': 'apple,assoc_handle,foo,signed',
-            'openid.sig': 'uXoT1qm62/BB09Xbj98TQ8mlBco=',
-            })
+            'openid.foo':
+            'bar',
+            'openid.apple':
+            'orange',
+            'openid.assoc_handle':
+            assoc_handle,
+            'openid.signed':
+            'apple,assoc_handle,foo,signed',
+            'openid.sig':
+            'uXoT1qm62/BB09Xbj98TQ8mlBco=',
+        })
 
         verified = self.signatory.verify(assoc_handle, signed)
         self.assertFalse(self.messages, self.messages)
@@ -1942,18 +2003,23 @@ class TestSignatory(unittest.TestCase, CatchLogs):
 
     def test_verifyBadSig(self):
         assoc_handle = '{vroom}{zoom}'
-        assoc = association.Association.fromExpiresIn(
-            60, assoc_handle, 'sekrit', 'HMAC-SHA1')
+        assoc = association.Association.fromExpiresIn(60, assoc_handle,
+                                                      'sekrit', 'HMAC-SHA1')
 
         self.store.storeAssociation(self._dumb_key, assoc)
 
         signed = Message.fromPostArgs({
-            'openid.foo': 'bar',
-            'openid.apple': 'orange',
-            'openid.assoc_handle': assoc_handle,
-            'openid.signed': 'apple,assoc_handle,foo,signed',
-            'openid.sig': 'uXoT1qm62/BB09Xbj98TQ8mlBco='[::-1],
-            })
+            'openid.foo':
+            'bar',
+            'openid.apple':
+            'orange',
+            'openid.assoc_handle':
+            assoc_handle,
+            'openid.signed':
+            'apple,assoc_handle,foo,signed',
+            'openid.sig':
+            'uXoT1qm62/BB09Xbj98TQ8mlBco=' [::-1],
+        })
 
         verified = self.signatory.verify(assoc_handle, signed)
         self.assertFalse(self.messages, self.messages)
@@ -1962,10 +2028,13 @@ class TestSignatory(unittest.TestCase, CatchLogs):
     def test_verifyBadHandle(self):
         assoc_handle = '{vroom}{zoom}'
         signed = Message.fromPostArgs({
-            'foo': 'bar',
-            'apple': 'orange',
-            'openid.sig': "Ylu0KcIR7PvNegB/K41KpnRgJl0=",
-            })
+            'foo':
+            'bar',
+            'apple':
+            'orange',
+            'openid.sig':
+            "Ylu0KcIR7PvNegB/K41KpnRgJl0=",
+        })
 
         verified = self.signatory.verify(assoc_handle, signed)
         self.assertFalse(verified)
@@ -1974,16 +2043,19 @@ class TestSignatory(unittest.TestCase, CatchLogs):
     def test_verifyAssocMismatch(self):
         """Attempt to validate sign-all message with a signed-list assoc."""
         assoc_handle = '{vroom}{zoom}'
-        assoc = association.Association.fromExpiresIn(
-            60, assoc_handle, 'sekrit', 'HMAC-SHA1')
+        assoc = association.Association.fromExpiresIn(60, assoc_handle,
+                                                      'sekrit', 'HMAC-SHA1')
 
         self.store.storeAssociation(self._dumb_key, assoc)
 
         signed = Message.fromPostArgs({
-            'foo': 'bar',
-            'apple': 'orange',
-            'openid.sig': "d71xlHtqnq98DonoSgoK/nD+QRM=",
-            })
+            'foo':
+            'bar',
+            'apple':
+            'orange',
+            'openid.sig':
+            "d71xlHtqnq98DonoSgoK/nD+QRM=",
+        })
 
         verified = self.signatory.verify(assoc_handle, signed)
         self.assertFalse(verified)
@@ -2004,8 +2076,7 @@ class TestSignatory(unittest.TestCase, CatchLogs):
 
     def test_getAssocInvalid(self):
         ah = 'no-such-handle'
-        self.assertEqual(
-            self.signatory.getAssociation(ah, dumb=False), None)
+        self.assertEqual(self.signatory.getAssociation(ah, dumb=False), None)
         self.assertFalse(self.messages, self.messages)
 
     def test_getAssocDumbVsNormal(self):
@@ -2039,8 +2110,8 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         assoc = association.Association.fromExpiresIn(lifetime, assoc_handle,
                                                       'sekrit', 'HMAC-SHA1')
 
-        self.store.storeAssociation(
-            (dumb and self._dumb_key) or self._normal_key, assoc)
+        self.store.storeAssociation((dumb and self._dumb_key) or
+                                    self._normal_key, assoc)
         return assoc_handle
 
     def test_invalidate(self):

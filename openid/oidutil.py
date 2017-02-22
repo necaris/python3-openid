@@ -5,8 +5,10 @@ For users of this library, the C{L{log}} function is probably the most
 interesting.
 """
 
-__all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML',
-           'toUnicode']
+__all__ = [
+    'log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML',
+    'toUnicode'
+]
 
 import binascii
 import logging
@@ -14,19 +16,17 @@ import logging
 # import urllib.parse as urlparse
 from urllib.parse import urlencode
 
-
 xxe_safe_elementtree_modules = [
     'defusedxml.cElementTree',
     'defusedxml.ElementTree',
-    ]
-
+]
 
 elementtree_modules = [
     'xml.etree.cElementTree',
     'xml.etree.ElementTree',
     'cElementTree',
     'elementtree.ElementTree',
-    ]
+]
 
 
 def toUnicode(value):
@@ -83,8 +83,8 @@ def importSafeElementTree(module_names=None):
         return importElementTree(module_names)
     except ImportError:
         raise ImportError('Unable to find a ElementTree module '
-            'that is not vulnerable to XXE. '
-            'Tried importing %r' % (module_names,))
+                          'that is not vulnerable to XXE. '
+                          'Tried importing %r' % (module_names, ))
 
 
 def importElementTree(module_names=None):
@@ -121,8 +121,7 @@ def importElementTree(module_names=None):
     else:
         raise ImportError('No ElementTree library found. '
                           'You may need to install one. '
-                          'Tried importing %r' % (module_names,)
-                          )
+                          'Tried importing %r' % (module_names, ))
 
 
 def log(message, level=0):
@@ -144,7 +143,7 @@ def log(message, level=0):
     """
 
     logging.error("This is a legacy log message, please use the "
-      "logging module. Message: %s", message)
+                  "logging module. Message: %s", message)
 
 
 def appendArgs(url, args):
@@ -234,4 +233,4 @@ class Symbol(object):
         return hash((self.__class__, self.name))
 
     def __repr__(self):
-        return '<Symbol %s>' % (self.name,)
+        return '<Symbol %s>' % (self.name, )

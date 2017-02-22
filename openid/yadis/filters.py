@@ -9,7 +9,7 @@ __all__ = [
     'IFilter',
     'TransformFilterMaker',
     'CompoundFilter',
-    ]
+]
 
 from openid.yadis.etxrd import expandService
 import collections
@@ -28,6 +28,7 @@ class BasicServiceEndpoint(object):
     The simplest kind of filter you can write implements
     fromBasicServiceEndpoint, which takes one of these objects.
     """
+
     def __init__(self, yadis_url, type_uris, uri, service_element):
         self.type_uris = type_uris
         self.yadis_url = yadis_url
@@ -106,8 +107,8 @@ class TransformFilterMaker(object):
 
             # Create a basic endpoint object to represent this
             # yadis_url, Service, Type, URI combination
-            endpoint = BasicServiceEndpoint(
-                yadis_url, type_uris, uri, service_element)
+            endpoint = BasicServiceEndpoint(yadis_url, type_uris, uri,
+                                            service_element)
 
             e = self.applyFilters(endpoint)
             if e is not None:
@@ -132,6 +133,7 @@ class CompoundFilter(object):
     """Create a new filter that applies a set of filters to an endpoint
     and collects their results.
     """
+
     def __init__(self, subfilters):
         self.subfilters = subfilters
 
@@ -143,6 +145,7 @@ class CompoundFilter(object):
             endpoints.extend(
                 subfilter.getServiceEndpoints(yadis_url, service_element))
         return endpoints
+
 
 # Exception raised when something is not able to be turned into a filter
 filter_type_error = TypeError(

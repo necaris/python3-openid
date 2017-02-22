@@ -15,8 +15,7 @@ except ImportError as e:
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+ADMINS = (  # ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
@@ -59,30 +58,25 @@ ADMIN_MEDIA_PREFIX = '/media/'
 SECRET_KEY = 'u^bw6lmsa6fah0$^lz-ct$)y7x7#ag92-z+y45-8!(jk0lkavy'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
+TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader', )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
-)
+    'django.middleware.doc.XViewMiddleware', )
 
 ROOT_URLCONF = 'djopenid.urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = ()
 
 TEMPLATE_DIRS = (
-    os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates')),
-)
+    os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates')), )
 
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     # These are the example OpenID consumer and server
     'djopenid.consumer',
-    'djopenid.server',
-)
+    'djopenid.server', )

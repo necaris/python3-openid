@@ -48,7 +48,7 @@ class BaseAssocTest(CatchLogs, unittest.TestCase):
             message = 'Expected prefix %r, got %r' % (str_prefix, e_arg)
             self.assertTrue(e_arg.startswith(str_prefix), message)
         else:
-            self.fail('Expected ProtocolError, got %r' % (result,))
+            self.fail('Expected ProtocolError, got %r' % (result, ))
 
 
 def mkExtractAssocMissingTest(keys):
@@ -75,8 +75,8 @@ def mkExtractAssocMissingTest(keys):
     def test(self):
         msg = mkAssocResponse(*keys)
 
-        self.assertRaises(KeyError,
-                              self.consumer._extractAssociation, msg, None)
+        self.assertRaises(KeyError, self.consumer._extractAssociation, msg,
+                          None)
 
     return test
 
@@ -132,47 +132,41 @@ class ExtractAssociationSessionTypeMismatch(BaseAssocTest):
             msg = mkAssocResponse(*keys)
             msg.setArg(OPENID_NS, 'session_type', response_session_type)
             self.failUnlessProtocolError('Session type mismatch',
-                self.consumer._extractAssociation, msg, assoc_session)
+                                         self.consumer._extractAssociation,
+                                         msg, assoc_session)
 
         return test
 
     test_typeMismatchNoEncBlank_openid2 = mkTest(
         requested_session_type='no-encryption',
-        response_session_type='',
-        )
+        response_session_type='', )
 
     test_typeMismatchDHSHA1NoEnc_openid2 = mkTest(
         requested_session_type='DH-SHA1',
-        response_session_type='no-encryption',
-        )
+        response_session_type='no-encryption', )
 
     test_typeMismatchDHSHA256NoEnc_openid2 = mkTest(
         requested_session_type='DH-SHA256',
-        response_session_type='no-encryption',
-        )
+        response_session_type='no-encryption', )
 
     test_typeMismatchNoEncDHSHA1_openid2 = mkTest(
         requested_session_type='no-encryption',
-        response_session_type='DH-SHA1',
-        )
+        response_session_type='DH-SHA1', )
 
     test_typeMismatchDHSHA1NoEnc_openid1 = mkTest(
         requested_session_type='DH-SHA1',
         response_session_type='DH-SHA256',
-        openid1=True,
-        )
+        openid1=True, )
 
     test_typeMismatchDHSHA256NoEnc_openid1 = mkTest(
         requested_session_type='DH-SHA256',
         response_session_type='DH-SHA1',
-        openid1=True,
-        )
+        openid1=True, )
 
     test_typeMismatchNoEncDHSHA1_openid1 = mkTest(
         requested_session_type='no-encryption',
         response_session_type='DH-SHA1',
-        openid1=True,
-        )
+        openid1=True, )
 
 
 class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
@@ -181,6 +175,7 @@ class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
         be used if the OpenID 1 response to an associate call sets the
         'session_type' field to `session_type_value`
         """
+
         def test(self):
             self._doTest(expected_session_type, session_type_value)
             self.assertEqual(0, len(self.messages))
@@ -202,35 +197,31 @@ class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
                          'to yield session type %r, but yielded %r' %
                          (session_type_value, expected_session_type,
                           actual_session_type))
-        self.assertEqual(
-            expected_session_type, actual_session_type, error_message)
+        self.assertEqual(expected_session_type, actual_session_type,
+                         error_message)
 
     test_none = mkTest(
         session_type_value=None,
-        expected_session_type='no-encryption',
-        )
+        expected_session_type='no-encryption', )
 
     test_empty = mkTest(
         session_type_value='',
-        expected_session_type='no-encryption',
-        )
+        expected_session_type='no-encryption', )
 
     # This one's different because it expects log messages
     def test_explicitNoEncryption(self):
         self._doTest(
             session_type_value='no-encryption',
-            expected_session_type='no-encryption',
-            )
+            expected_session_type='no-encryption', )
         self.assertEqual(1, len(self.messages))
         log_msg = self.messages[0]
         self.assertEqual(log_msg['levelname'], 'WARNING')
-        self.assertTrue(log_msg['msg'].startswith(
-                'OpenID server sent "no-encryption"'))
+        self.assertTrue(
+            log_msg['msg'].startswith('OpenID server sent "no-encryption"'))
 
     test_dhSHA1 = mkTest(
         session_type_value='DH-SHA1',
-        expected_session_type='DH-SHA1',
-        )
+        expected_session_type='DH-SHA1', )
 
     # DH-SHA256 is not a valid session type for OpenID1, but this
     # function does not test that. This is mostly just to make sure
@@ -239,8 +230,7 @@ class TestOpenID1AssociationResponseSessionType(BaseAssocTest):
     # 2
     test_dhSHA256 = mkTest(
         session_type_value='DH-SHA256',
-        expected_session_type='DH-SHA256',
-        )
+        expected_session_type='DH-SHA256', )
 
 
 class DummyAssociationSession(object):
@@ -268,12 +258,17 @@ class TestInvalidFields(BaseAssocTest):
 
         # These arguments should all be valid
         self.assoc_response = Message.fromOpenIDArgs({
-            'expires_in': '1000',
-            'assoc_handle': self.assoc_handle,
-            'assoc_type': self.assoc_type,
-            'session_type': self.session_type,
-            'ns': OPENID2_NS,
-            })
+            'expires_in':
+            '1000',
+            'assoc_handle':
+            self.assoc_handle,
+            'assoc_type':
+            self.assoc_type,
+            'session_type':
+            self.session_type,
+            'ns':
+            OPENID2_NS,
+        })
 
         self.assoc_session = DummyAssociationSession()
 
@@ -283,8 +278,8 @@ class TestInvalidFields(BaseAssocTest):
 
     def test_worksWithGoodFields(self):
         """Handle a full successful association response"""
-        assoc = self.consumer._extractAssociation(
-            self.assoc_response, self.assoc_session)
+        assoc = self.consumer._extractAssociation(self.assoc_response,
+                                                  self.assoc_session)
         self.assertTrue(self.assoc_session.extract_secret_called)
         self.assertEqual(self.assoc_session.secret, assoc.secret)
         self.assertEqual(1000, assoc.lifetime)
@@ -296,15 +291,15 @@ class TestInvalidFields(BaseAssocTest):
         # for the given session.
         self.assoc_session.allowed_assoc_types = []
         self.failUnlessProtocolError('Unsupported assoc_type for session',
-            self.consumer._extractAssociation,
-            self.assoc_response, self.assoc_session)
+                                     self.consumer._extractAssociation,
+                                     self.assoc_response, self.assoc_session)
 
     def test_badExpiresIn(self):
         # Invalid value for expires_in should cause failure
         self.assoc_response.setArg(OPENID_NS, 'expires_in', 'forever')
         self.failUnlessProtocolError('Invalid expires_in',
-            self.consumer._extractAssociation,
-            self.assoc_response, self.assoc_session)
+                                     self.consumer._extractAssociation,
+                                     self.assoc_response, self.assoc_session)
 
 
 # XXX: This is what causes most of the imports in this file. It is
@@ -319,7 +314,7 @@ class TestExtractAssociationDiffieHellman(BaseAssocTest):
 
         # XXX: this is testing _createAssociateRequest
         self.assertEqual(self.endpoint.compatibilityMode(),
-                             message.isOpenID1())
+                         message.isOpenID1())
 
         server_sess = DiffieHellmanSHA1ServerSession.fromMessage(message)
         server_resp = server_sess.answer(self.secret)
@@ -348,4 +343,5 @@ class TestExtractAssociationDiffieHellman(BaseAssocTest):
         sess, server_resp = self._setUpDH()
         server_resp.setArg(OPENID_NS, 'enc_mac_key', '\x00\x00\x00')
         self.failUnlessProtocolError('Malformed response for',
-            self.consumer._extractAssociation, server_resp, sess)
+                                     self.consumer._extractAssociation,
+                                     server_resp, sess)

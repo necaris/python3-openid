@@ -4,5 +4,4 @@ urlpatterns = patterns(
     '',
     ('^$', 'djopenid.views.index'),
     ('^consumer/', include('djopenid.consumer.urls')),
-    ('^server/', include('djopenid.server.urls')),
-)
+    ('^server/', include('djopenid.server.urls')), )

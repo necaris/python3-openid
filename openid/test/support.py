@@ -2,6 +2,7 @@ from openid import message
 from logging.handlers import BufferingHandler
 import logging
 
+
 class TestHandler(BufferingHandler):
     def __init__(self, messages):
         BufferingHandler.__init__(self, 0)
@@ -12,6 +13,7 @@ class TestHandler(BufferingHandler):
 
     def emit(self, record):
         self.messages.append(record.__dict__)
+
 
 class OpenIDTestMixin(object):
     def failUnlessOpenIDValueEquals(self, msg, key, expected, ns=None):
@@ -31,6 +33,7 @@ class OpenIDTestMixin(object):
         error_message = 'openid.%s unexpectedly present: %s' % (key, actual)
         self.assertFalse(actual is not None, error_message)
 
+
 class CatchLogs(object):
     def setUp(self):
         self.messages = []
@@ -39,7 +42,8 @@ class CatchLogs(object):
         root_logger.setLevel(logging.DEBUG)
 
         self.handler = TestHandler(self.messages)
-        formatter = logging.Formatter("%(message)s [%(asctime)s - %(name)s - %(levelname)s]")
+        formatter = logging.Formatter(
+            "%(message)s [%(asctime)s - %(name)s - %(levelname)s]")
         self.handler.setFormatter(formatter)
         root_logger.addHandler(self.handler)
 

@@ -7,6 +7,7 @@ def datapath(filename):
     module_directory = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(module_directory, 'data', 'test_etxrd', filename)
 
+
 XRD_FILE = datapath('valid-populated-xrds.xml')
 NOXRDS_FILE = datapath('not-xrds.xml')
 NOXRD_FILE = datapath('no-xrd.xml')
@@ -23,8 +24,9 @@ def simpleOpenIDTransformer(endpoint):
     if 'http://openid.net/signon/1.0' not in endpoint.type_uris:
         return None
 
-    delegates = list(endpoint.service_element.findall(
-        '{http://openid.net/xmlns/1.0}Delegate'))
+    delegates = list(
+        endpoint.service_element.findall(
+            '{http://openid.net/xmlns/1.0}Delegate'))
     assert len(delegates) == 1
     delegate = delegates[0].text
     return (endpoint.uri, delegate)
@@ -52,7 +54,7 @@ class TestServiceParser(unittest.TestCase):
             ("http://www.schtuff.com/openid", "http://users.schtuff.com/josh"),
             ("http://www.livejournal.com/openid/server.bml",
              "http://www.livejournal.com/users/nedthealpaca/"),
-            ]
+        ]
 
         it = iter(services)
         for (server_url, delegate) in expectedServices:
@@ -73,7 +75,7 @@ class TestServiceParser(unittest.TestCase):
                     self.assertEqual(service.uri, uri)
                     break
             else:
-                self.fail('Did not find %r service' % (type_uri,))
+                self.fail('Did not find %r service' % (type_uri, ))
 
     def testGetSeveral(self):
         """Get some services in order"""
@@ -81,15 +83,15 @@ class TestServiceParser(unittest.TestCase):
             # type, URL
             (TYPEKEY_1_0, None),
             (LID_2_0, "http://mylid.net/josh"),
-            ]
+        ]
 
         self._checkServices(expectedServices)
 
     def testGetSeveralForOne(self):
         """Getting services for one Service with several Type elements."""
-        types = ['http://lid.netmesh.org/sso/2.0b5',
-                 'http://lid.netmesh.org/2.0b5'
-                ]
+        types = [
+            'http://lid.netmesh.org/sso/2.0b5', 'http://lid.netmesh.org/2.0b5'
+        ]
 
         uri = "http://mylid.net/josh"
 
@@ -106,30 +108,26 @@ class TestServiceParser(unittest.TestCase):
         not present"""
         with open(NOXRDS_FILE, 'rb') as f:
             self.xmldoc = f.read()
-        self.assertRaises(
-            etxrd.XRDSError,
-            services.applyFilter, self.yadis_url, self.xmldoc, None)
+        self.assertRaises(etxrd.XRDSError, services.applyFilter,
+                          self.yadis_url, self.xmldoc, None)
 
     def testEmpty(self):
         """Make sure that we get an exception when an XRDS element is
         not present"""
         self.xmldoc = ''
-        self.assertRaises(
-            etxrd.XRDSError,
-            services.applyFilter, self.yadis_url, self.xmldoc, None)
+        self.assertRaises(etxrd.XRDSError, services.applyFilter,
+                          self.yadis_url, self.xmldoc, None)
 
     def testNoXRD(self):
         """Make sure that we get an exception when there is no XRD
         element present."""
         with open(NOXRD_FILE, 'rb') as f:
             self.xmldoc = f.read()
-        self.assertRaises(
-            etxrd.XRDSError,
-            services.applyFilter, self.yadis_url, self.xmldoc, None)
+        self.assertRaises(etxrd.XRDSError, services.applyFilter,
+                          self.yadis_url, self.xmldoc, None)
 
 
 class TestCanonicalID(unittest.TestCase):
-
     def mkTest(iname, filename, expectedID):
         """This function builds a method that runs the CanonicalID
         test for the given set of inputs"""
@@ -140,27 +138,23 @@ class TestCanonicalID(unittest.TestCase):
             with open(filename, 'rb') as f:
                 xrds = etxrd.parseXRDS(f.read())
             self._getCanonicalID(iname, xrds, expectedID)
+
         return test
 
-    test_delegated = mkTest(
-        "@ootao*test1", "delegated-20060809.xrds",
-        "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
+    test_delegated = mkTest("@ootao*test1", "delegated-20060809.xrds",
+                            "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
 
-    test_delegated_r1 = mkTest(
-        "@ootao*test1", "delegated-20060809-r1.xrds",
-        "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
+    test_delegated_r1 = mkTest("@ootao*test1", "delegated-20060809-r1.xrds",
+                               "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
 
-    test_delegated_r2 = mkTest(
-        "@ootao*test1", "delegated-20060809-r2.xrds",
-        "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
+    test_delegated_r2 = mkTest("@ootao*test1", "delegated-20060809-r2.xrds",
+                               "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
 
-    test_sometimesprefix = mkTest(
-        "@ootao*test1", "sometimesprefix.xrds",
-        "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
+    test_sometimesprefix = mkTest("@ootao*test1", "sometimesprefix.xrds",
+                                  "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
 
-    test_prefixsometimes = mkTest(
-        "@ootao*test1", "prefixsometimes.xrds",
-        "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
+    test_prefixsometimes = mkTest("@ootao*test1", "prefixsometimes.xrds",
+                                  "@!5BAD.2AA.3C72.AF46!0000.0000.3B9A.CA01")
 
     test_spoof1 = mkTest("=keturn*isDrummond", "spoof1.xrds", etxrd.XRDSFraud)
 
@@ -191,11 +185,10 @@ class TestCanonicalID(unittest.TestCase):
             cid = etxrd.getCanonicalID(iname, xrds)
             self.assertEqual(cid, expectedID and xri.XRI(expectedID))
         elif issubclass(expectedID, etxrd.XRDSError):
-            self.assertRaises(expectedID, etxrd.getCanonicalID,
-                                  iname, xrds)
+            self.assertRaises(expectedID, etxrd.getCanonicalID, iname, xrds)
         else:
-            self.fail("Don't know how to test for expected value %r"
-                      % (expectedID,))
+            self.fail("Don't know how to test for expected value %r" %
+                      (expectedID, ))
 
 
 if __name__ == '__main__':

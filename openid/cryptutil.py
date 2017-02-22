@@ -24,7 +24,7 @@ __all__ = [
     'randrange',
     'sha1',
     'sha256',
-    ]
+]
 
 import hmac
 import os
@@ -39,6 +39,7 @@ class HashContainer(object):
     def __init__(self, hash_constructor):
         self.new = hash_constructor
         self.digest_size = hash_constructor().digest_size
+
 
 sha1_module = HashContainer(hashlib.sha1)
 sha256_module = HashContainer(hashlib.sha256)
@@ -73,7 +74,6 @@ def sha256(s):
 
 
 SHA256_AVAILABLE = True
-
 
 try:
     from Crypto.Util.number import long_to_bytes, bytes_to_long

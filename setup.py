@@ -1,12 +1,9 @@
 import sys
-import os
-
 from setuptools import setup
 
 import openid
 
 version = openid.__version__
-
 
 install_requires = [
     # Ensure that Python <= 3.3 uses an older version of `defusedxml`, which
@@ -55,5 +52,4 @@ Includes example code and support for a variety of storage back-ends.''',
         "Topic :: Software Development :: Libraries :: Python Modules",
         ("Topic :: System :: Systems Administration :: "
          "Authentication/Directory"),
-    ]
-)
+    ])

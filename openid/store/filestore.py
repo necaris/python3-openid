@@ -60,6 +60,7 @@ def _removeIfPresent(filename):
         # File was present
         return 1
 
+
 def _ensureDir(dir_name):
     """Create dir_name as a directory if it does not exist. If it
     exists, make sure that it is, in fact, a directory.
@@ -73,6 +74,7 @@ def _ensureDir(dir_name):
     except OSError as why:
         if why.errno != EEXIST or not os.path.isdir(dir_name):
             raise
+
 
 class FileOpenIDStore(OpenIDStore):
     """
@@ -113,7 +115,7 @@ class FileOpenIDStore(OpenIDStore):
         # directory
         self.temp_dir = os.path.join(directory, 'temp')
 
-        self.max_nonce_age = 6 * 60 * 60 # Six hours, in seconds
+        self.max_nonce_age = 6 * 60 * 60  # Six hours, in seconds
 
         self._setup()
 
@@ -313,8 +315,8 @@ class FileOpenIDStore(OpenIDStore):
         url_hash = _safe64(server_url)
         salt_hash = _safe64(salt)
 
-        filename = '%08x-%s-%s-%s-%s' % (timestamp, proto, domain,
-                                         url_hash, salt_hash)
+        filename = '%08x-%s-%s-%s-%s' % (timestamp, proto, domain, url_hash,
+                                         salt_hash)
 
         filename = os.path.join(self.nonce_dir, filename)
         try:
@@ -331,7 +333,10 @@ class FileOpenIDStore(OpenIDStore):
     def _allAssocs(self):
         all_associations = []
 
-        association_filenames = [os.path.join(self.association_dir, filename) for filename in os.listdir(self.association_dir)]
+        association_filenames = [
+            os.path.join(self.association_dir, filename)
+            for filename in os.listdir(self.association_dir)
+        ]
         for association_filename in association_filenames:
             try:
                 association_file = open(association_filename, 'rb')

@@ -2,6 +2,7 @@ import os
 import unittest
 from openid.server.trustroot import TrustRoot
 
+
 class _ParseTest(unittest.TestCase):
     def __init__(self, sanity, desc, case):
         unittest.TestCase.__init__(self)
@@ -20,6 +21,7 @@ class _ParseTest(unittest.TestCase):
             assert not tr.isSane(), self.case
         else:
             assert tr is None, tr
+
 
 class _MatchTest(unittest.TestCase):
     def __init__(self, match, desc, line):
@@ -43,6 +45,7 @@ class _MatchTest(unittest.TestCase):
         else:
             assert not match
 
+
 def getTests(t, grps, head, dat):
     tests = []
     top = head.strip()
@@ -58,6 +61,7 @@ def getTests(t, grps, head, dat):
             tests.append(t(x, top + ' - ' + desc, case))
         i += 2
     return tests
+
 
 def parseTests(data):
     parts = list(map(str.strip, data.split('=' * 40 + '\n')))

@@ -11,9 +11,11 @@ import cgi
 import cgitb
 import sys
 
+
 def quoteattr(s):
     qs = cgi.escape(s, 1)
-    return '"%s"' % (qs,)
+    return '"%s"' % (qs, )
+
 
 try:
     import openid
@@ -33,11 +35,13 @@ from openid.server import server
 from openid.store.filestore import FileOpenIDStore
 from openid.consumer import discover
 
+
 class OpenIDHTTPServer(HTTPServer):
     """
     http server that contains a reference to an OpenID Server and
     knows its base URL.
     """
+
     def __init__(self, *args, **kwargs):
         HTTPServer.__init__(self, *args, **kwargs)
 
@@ -45,7 +49,7 @@ class OpenIDHTTPServer(HTTPServer):
             self.base_url = ('http://%s:%s/' %
                              (self.server_name, self.server_port))
         else:
-            self.base_url = 'http://%s/' % (self.server_name,)
+            self.base_url = 'http://%s/' % (self.server_name, )
 
         self.openid = None
         self.approved = {}
@@ -59,7 +63,6 @@ class ServerHandler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         self.user = None
         BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
-
 
     def do_GET(self):
         try:
@@ -97,7 +100,8 @@ class ServerHandler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
+            self.wfile.write(
+                bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
 
     def do_POST(self):
         try:
@@ -127,7 +131,8 @@ class ServerHandler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
+            self.wfile.write(
+                bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
 
     def handleAllow(self, query):
         # pretend this next bit is keying off the user's session or something,
@@ -153,10 +158,9 @@ class ServerHandler(BaseHTTPRequestHandler):
             response = request.answer(False)
 
         else:
-            assert False, 'strange allow post.  %r' % (query,)
+            assert False, 'strange allow post.  %r' % (query, )
 
         self.displayResponse(response)
-
 
     def setUser(self):
         cookies = self.headers.get('Cookie')
@@ -200,9 +204,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         # In a real application, this data would be user-specific,
         # and the user should be asked for permission to release
         # it.
-        sreg_data = {
-            'nickname':self.user
-            }
+        sreg_data = {'nickname': self.user}
 
         sreg_resp = sreg.SRegResponse.extractResponse(sreg_req, sreg_data)
         response.addExtension(sreg_resp)
@@ -251,7 +253,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         elif 'cancel' in self.query:
             self.redirect(self.query['fail_to'])
         else:
-            assert 0, 'strange login %r' % (self.query,)
+            assert 0, 'strange login %r' % (self.query, )
 
     def redirect(self, url):
         self.send_response(302)
@@ -263,8 +265,7 @@ class ServerHandler(BaseHTTPRequestHandler):
     def writeUserHeader(self):
         if self.user is None:
             t1970 = time.gmtime(0)
-            expires = time.strftime(
-                'Expires=%a, %d-%b-%y %H:%M:%S GMT', t1970)
+            expires = time.strftime('Expires=%a, %d-%b-%y %H:%M:%S GMT', t1970)
             self.send_header('Set-Cookie', 'user=;%s' % expires)
         else:
             self.send_header('Set-Cookie', 'user=%s' % self.user)
@@ -285,20 +286,26 @@ class ServerHandler(BaseHTTPRequestHandler):
             ('http://www.openidenabled.com/',
              'An OpenID community Web site, home of this library'),
             ('http://www.openid.net/', 'the official OpenID Web site'),
-            ]
+        ]
 
         resource_markup = ''.join([term(url, text) for url, text in resources])
 
-        self.showPage(200, 'This is an OpenID server', msg="""\
+        self.showPage(
+            200,
+            'This is an OpenID server',
+            msg="""\
         <p>%s is an OpenID server endpoint.<p>
         <p>For more information about OpenID, see:</p>
         <dl>
         %s
         </dl>
-        """ % (link(endpoint_url), resource_markup,))
+        """ % (link(endpoint_url), resource_markup, ))
 
     def showErrorPage(self, error_message):
-        self.showPage(400, 'Error Processing Request', err='''\
+        self.showPage(
+            400,
+            'Error Processing Request',
+            err='''\
         <p>%s</p>
         <!--
 
@@ -334,14 +341,14 @@ class ServerHandler(BaseHTTPRequestHandler):
         ''' % error_message)
 
     def showDecidePage(self, request):
-        id_url_base = self.server.base_url+'id/'
+        id_url_base = self.server.base_url + 'id/'
         # XXX: This may break if there are any synonyms for id_url_base,
         # such as referring to it by IP address or a CNAME.
-        assert (request.identity.startswith(id_url_base) or 
+        assert (request.identity.startswith(id_url_base) or
                 request.idSelect()), repr((request.identity, id_url_base))
         expected_user = request.identity[len(id_url_base):]
 
-        if request.idSelect(): # We are being asked to select an ID
+        if request.idSelect():  # We are being asked to select an ID
             msg = '''\
             <p>A site has asked for your identity.  You may select an
             identifier by which you would like this site to know you.
@@ -353,7 +360,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             fdata = {
                 'id_url_base': id_url_base,
                 'trust_root': request.trust_root,
-                }
+            }
             form = '''\
             <form method="POST" action="/allow">
             <table>
@@ -368,7 +375,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             <input type="submit" name="yes" value="yes" />
             <input type="submit" name="no" value="no" />
             </form>
-            '''%fdata
+            ''' % fdata
         elif expected_user == self.user:
             msg = '''\
             <p>A new site has asked to confirm your identity.  If you
@@ -380,7 +387,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             fdata = {
                 'identity': request.identity,
                 'trust_root': request.trust_root,
-                }
+            }
             form = '''\
             <table>
               <tr><td>Identity:</td><td>%(identity)s</td></tr>
@@ -398,7 +405,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             mdata = {
                 'expected_user': expected_user,
                 'user': self.user,
-                }
+            }
             msg = '''\
             <p>A site has asked for an identity belonging to
             %(expected_user)s, but you are logged in as %(user)s.  To
@@ -410,7 +417,7 @@ class ServerHandler(BaseHTTPRequestHandler):
                 'identity': request.identity,
                 'trust_root': request.trust_root,
                 'expected_user': expected_user,
-                }
+            }
             form = '''\
             <table>
               <tr><td>Identity:</td><td>%(identity)s</td></tr>
@@ -450,7 +457,11 @@ class ServerHandler(BaseHTTPRequestHandler):
         else:
             msg = ''
 
-        self.showPage(200, 'An Identity Page', head_extras=disco_tags, msg='''\
+        self.showPage(
+            200,
+            'An Identity Page',
+            head_extras=disco_tags,
+            msg='''\
         <p>This is an identity page for %s.</p>
         %s
         ''' % (ident, msg))
@@ -462,7 +473,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 
         endpoint_url = self.server.base_url + 'openidserver'
         user_url = self.server.base_url + 'id/' + user
-        self.wfile.write(bytes("""\
+        self.wfile.write(
+            bytes("""\
 <?xml version="1.0" encoding="UTF-8"?>
 <xrds:XRDS
     xmlns:xrds="xri://$xrds"
@@ -478,8 +490,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 
   </XRD>
 </xrds:XRDS>
-"""%(discover.OPENID_2_0_TYPE, discover.OPENID_1_0_TYPE,
-     endpoint_url, user_url), 'utf-8'))
+""" % (discover.OPENID_2_0_TYPE, discover.OPENID_1_0_TYPE, endpoint_url,
+       user_url), 'utf-8'))
 
     def showServerYadis(self):
         self.send_response(200)
@@ -487,7 +499,8 @@ class ServerHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         endpoint_url = self.server.base_url + 'openidserver'
-        self.wfile.write(bytes("""\
+        self.wfile.write(
+            bytes("""\
 <?xml version="1.0" encoding="UTF-8"?>
 <xrds:XRDS
     xmlns:xrds="xri://$xrds"
@@ -501,7 +514,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
   </XRD>
 </xrds:XRDS>
-"""%(discover.OPENID_IDP_2_0_TYPE, endpoint_url,), 'utf-8'))
+""" % (discover.OPENID_IDP_2_0_TYPE, endpoint_url, ), 'utf-8'))
 
     def showMainPage(self):
         yadis_tag = '<meta http-equiv="x-xrds-location" content="%s">'%\
@@ -519,7 +532,11 @@ class ServerHandler(BaseHTTPRequestHandler):
             order to simulate a standard Web user experience. You are
             not <a href='/login'>logged in</a>.</p>"""
 
-        self.showPage(200, 'Main Page', head_extras = yadis_tag, msg='''\
+        self.showPage(
+            200,
+            'Main Page',
+            head_extras=yadis_tag,
+            msg='''\
         <p>This is a simple OpenID server implemented using the <a
         href="http://openid.schtuff.com/">Python OpenID
         library</a>.</p>
@@ -532,10 +549,14 @@ class ServerHandler(BaseHTTPRequestHandler):
         OpenID consumers outside of the firewall with it.</p>
 
         <p>The URL for this server is <a href=%s><tt>%s</tt></a>.</p>
-        ''' % (user_message, quoteattr(self.server.base_url), self.server.base_url))
+        ''' % (user_message, quoteattr(self.server.base_url),
+               self.server.base_url))
 
     def showLoginPage(self, success_to, fail_to):
-        self.showPage(200, 'Login Page', form='''\
+        self.showPage(
+            200,
+            'Login Page',
+            form='''\
         <h2>Login</h2>
         <p>You may log in with any name. This server does not use
         passwords because it is just a sample of how to use the OpenID
@@ -549,8 +570,13 @@ class ServerHandler(BaseHTTPRequestHandler):
         </form>
         ''' % (success_to, fail_to))
 
-    def showPage(self, response_code, title,
-                 head_extras='', msg=None, err=None, form=None):
+    def showPage(self,
+                 response_code,
+                 title,
+                 head_extras='',
+                 msg=None,
+                 err=None,
+                 form=None):
 
         if self.user is None:
             user_link = '<a href="/login">not logged in</a>.'
@@ -561,7 +587,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         body = ''
 
         if err is not None:
-            body +=  '''\
+            body += '''\
             <div class="error">
               %s
             </div>
@@ -586,14 +612,15 @@ class ServerHandler(BaseHTTPRequestHandler):
             'head_extras': head_extras,
             'body': body,
             'user_link': user_link,
-            }
+        }
 
         self.send_response(response_code)
         self.writeUserHeader()
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        self.wfile.write(bytes('''<html>
+        self.wfile.write(
+            bytes('''<html>
   <head>
     <title>%(title)s</title>
     %(head_extras)s
@@ -669,14 +696,15 @@ class ServerHandler(BaseHTTPRequestHandler):
   </body>
 </html>
 ''' % contents, 'UTF-8'))
-    
+
     def binaryToUTF8(self, data):
         args = {}
-        for key, value in data.items():        
+        for key, value in data.items():
             key = key.decode('utf-8')
             value = value.decode('utf-8')
             args[key] = value
         return args
+
 
 def main(host, port, data_path):
     addr = (host, port)
@@ -694,6 +722,7 @@ def main(host, port, data_path):
     print(httpserver.base_url)
     httpserver.serve_forever()
 
+
 if __name__ == '__main__':
     host = 'localhost'
     data_path = 'sstore'
@@ -702,19 +731,29 @@ if __name__ == '__main__':
     try:
         import optparse
     except ImportError:
-        pass # Use defaults (for Python 2.2)
+        pass  # Use defaults (for Python 2.2)
     else:
         parser = optparse.OptionParser('Usage:\n %prog [options]')
         parser.add_option(
-            '-d', '--data-path', dest='data_path', default=data_path,
+            '-d',
+            '--data-path',
+            dest='data_path',
+            default=data_path,
             help='Data directory for storing OpenID consumer state. '
             'Defaults to "%default" in the current directory.')
         parser.add_option(
-            '-p', '--port', dest='port', type='int', default=port,
+            '-p',
+            '--port',
+            dest='port',
+            type='int',
+            default=port,
             help='Port on which to listen for HTTP requests. '
             'Defaults to port %default.')
         parser.add_option(
-            '-s', '--host', dest='host', default=host,
+            '-s',
+            '--host',
+            dest='host',
+            default=host,
             help='Host on which to listen for HTTP requests. '
             'Also used for generating URLs. Defaults to %default.')
 

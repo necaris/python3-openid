@@ -50,13 +50,11 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
 
     def failUnlessHasRequiredFields(self, msg):
         self.assertEqual(self.preferred_namespace,
-                             self.authreq.message.getOpenIDNamespace())
+                         self.authreq.message.getOpenIDNamespace())
 
-        self.assertEqual(self.preferred_namespace,
-                             msg.getOpenIDNamespace())
+        self.assertEqual(self.preferred_namespace, msg.getOpenIDNamespace())
 
-        self.failUnlessOpenIDValueEquals(msg, 'mode',
-                                         self.expected_mode)
+        self.failUnlessOpenIDValueEquals(msg, 'mode', self.expected_mode)
 
         # Implement these in subclasses because they depend on
         # protocol differences!
@@ -83,9 +81,10 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         self.authreq.addExtensionArg('bag:', 'color', 'brown')
         self.authreq.addExtensionArg('bag:', 'material', 'paper')
         self.assertTrue('bag:' in self.authreq.message.namespaces)
-        self.assertEqual(self.authreq.message.getArgs('bag:'),
-                             {'color': 'brown',
-                              'material': 'paper'})
+        self.assertEqual(
+            self.authreq.message.getArgs('bag:'),
+            {'color': 'brown',
+             'material': 'paper'})
         msg = self.authreq.getMessage(self.realm, self.return_to,
                                       self.immediate)
 
@@ -100,8 +99,8 @@ class TestAuthRequestMixin(support.OpenIDTestMixin):
         msg = self.authreq.getMessage(self.realm, self.return_to,
                                       self.immediate)
 
-        self.failUnlessHasIdentifiers(
-            msg, self.endpoint.local_id, self.endpoint.claimed_id)
+        self.failUnlessHasIdentifiers(msg, self.endpoint.local_id,
+                                      self.endpoint.claimed_id)
 
 
 class TestAuthRequestOpenID2(TestAuthRequestMixin, unittest.TestCase):
@@ -151,8 +150,8 @@ class TestAuthRequestOpenID2(TestAuthRequestMixin, unittest.TestCase):
         msg = self.authreq.getMessage(self.realm, self.return_to,
                                       self.immediate)
         self.failUnlessHasRequiredFields(msg)
-        self.failUnlessHasIdentifiers(
-            msg, message.IDENTIFIER_SELECT, message.IDENTIFIER_SELECT)
+        self.failUnlessHasIdentifiers(msg, message.IDENTIFIER_SELECT,
+                                      message.IDENTIFIER_SELECT)
 
 
 class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
@@ -196,7 +195,7 @@ class TestAuthRequestOpenID1(TestAuthRequestMixin, unittest.TestCase):
                                       self.immediate)
         self.failUnlessHasRequiredFields(msg)
         self.assertEqual(message.IDENTIFIER_SELECT,
-                             msg.getArg(message.OPENID1_NS, 'identity'))
+                         msg.getArg(message.OPENID1_NS, 'identity'))
 
 
 class TestAuthRequestOpenID1Immediate(TestAuthRequestOpenID1):
@@ -207,6 +206,7 @@ class TestAuthRequestOpenID1Immediate(TestAuthRequestOpenID1):
 class TestAuthRequestOpenID2Immediate(TestAuthRequestOpenID2):
     immediate = True
     expected_mode = 'checkid_immediate'
+
 
 if __name__ == '__main__':
     unittest.main()

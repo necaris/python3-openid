@@ -9,6 +9,7 @@ from openid.yadis.constants import \
      YADIS_HEADER_NAME, YADIS_CONTENT_TYPE, YADIS_ACCEPT_HEADER
 from openid.yadis.parsehtml import MetaNotFound, findHTMLMeta
 
+
 class DiscoveryFailure(Exception):
     """Raised when a YADIS protocol error occurs in the discovery process"""
     identity_url = None
@@ -16,6 +17,7 @@ class DiscoveryFailure(Exception):
     def __init__(self, message, http_response):
         Exception.__init__(self, message)
         self.http_response = http_response
+
 
 class DiscoveryResult(object):
     """Contains the result of performing Yadis discovery on a URI"""
@@ -54,6 +56,7 @@ class DiscoveryResult(object):
         return (self.usedYadisLocation() or
                 self.content_type == YADIS_CONTENT_TYPE)
 
+
 def discover(uri):
     """Discover services for a given URI.
 
@@ -73,7 +76,7 @@ def discover(uri):
     if resp.status not in (200, 206):
         raise DiscoveryFailure(
             'HTTP Response status from identity URL host is not 200. '
-            'Got status %r' % (resp.status,), resp)
+            'Got status %r' % (resp.status, ), resp)
 
     # Note the URL after following redirects
     result.normalized_uri = resp.final_url
@@ -89,14 +92,13 @@ def discover(uri):
         if resp.status not in (200, 206):
             exc = DiscoveryFailure(
                 'HTTP Response status from Yadis host is not 200. '
-                'Got status %r' % (resp.status,), resp)
+                'Got status %r' % (resp.status, ), resp)
             exc.identity_url = result.normalized_uri
             raise exc
         result.content_type = resp.headers.get('content-type')
 
     result.response_text = resp.body
     return result
-
 
 
 def whereIsYadis(resp):
@@ -116,7 +118,7 @@ def whereIsYadis(resp):
     # According to the spec, the content-type header must be an exact
     # match, or else we have to look for an indirection.
     if (content_type and
-        content_type.split(';', 1)[0].lower() == YADIS_CONTENT_TYPE):
+            content_type.split(';', 1)[0].lower() == YADIS_CONTENT_TYPE):
         return resp.final_url
     else:
         # Try the header

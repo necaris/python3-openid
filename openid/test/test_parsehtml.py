@@ -36,10 +36,8 @@ class _TestCase(unittest.TestCase):
             self.assertTrue(self.expected == 'EOF', (self.case, self.expected))
 
     def shortDescription(self):
-        return "%s (%s<%s>)" % (
-            self.testname,
-            self.__class__.__module__,
-            os.path.basename(self.filename))
+        return "%s (%s<%s>)" % (self.testname, self.__class__.__module__,
+                                os.path.basename(self.filename))
 
 
 def parseCases(data):
@@ -61,6 +59,7 @@ def pyUnitTests():
 def test():
     runner = unittest.TextTestRunner()
     return runner.run(pyUnitTests())
+
 
 filenames = ['data/test1-parsehtml.txt']
 

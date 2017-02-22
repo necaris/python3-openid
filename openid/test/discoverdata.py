@@ -9,25 +9,25 @@ tests_dir = os.path.dirname(__file__)
 data_path = os.path.join(tests_dir, 'data')
 
 testlist = [
-# success,  input_name,          id_name,            result_name
-    (True,  "equiv",             "equiv",            "xrds"),
-    (True,  "header",            "header",           "xrds"),
-    (True,  "lowercase_header",  "lowercase_header", "xrds"),
-    (True,  "xrds",              "xrds",             "xrds"),
-    (True,  "xrds_ctparam",      "xrds_ctparam",     "xrds_ctparam"),
-    (True,  "xrds_ctcase",       "xrds_ctcase",      "xrds_ctcase"),
-    (False, "xrds_html",         "xrds_html",        "xrds_html"),
-    (True,  "redir_equiv",       "equiv",            "xrds"),
-    (True,  "redir_header",      "header",           "xrds"),
-    (True,  "redir_xrds",        "xrds",             "xrds"),
-    (False, "redir_xrds_html",   "xrds_html",        "xrds_html"),
-    (True,  "redir_redir_equiv", "equiv",            "xrds"),
-    (False, "404_server_response", None,             None),
-    (False, "404_with_header",     None,             None),
-    (False, "404_with_meta",       None,             None),
-    (False, "201_server_response", None,             None),
-    (False, "500_server_response", None,             None),
-    ]
+    # success,  input_name,          id_name,            result_name
+    (True, "equiv", "equiv", "xrds"),
+    (True, "header", "header", "xrds"),
+    (True, "lowercase_header", "lowercase_header", "xrds"),
+    (True, "xrds", "xrds", "xrds"),
+    (True, "xrds_ctparam", "xrds_ctparam", "xrds_ctparam"),
+    (True, "xrds_ctcase", "xrds_ctcase", "xrds_ctcase"),
+    (False, "xrds_html", "xrds_html", "xrds_html"),
+    (True, "redir_equiv", "equiv", "xrds"),
+    (True, "redir_header", "header", "xrds"),
+    (True, "redir_xrds", "xrds", "xrds"),
+    (False, "redir_xrds_html", "xrds_html", "xrds_html"),
+    (True, "redir_redir_equiv", "equiv", "xrds"),
+    (False, "404_server_response", None, None),
+    (False, "404_with_header", None, None),
+    (False, "404_with_meta", None, None),
+    (False, "201_server_response", None, None),
+    (False, "500_server_response", None, None),
+]
 
 
 def getDataName(*components):
@@ -48,6 +48,7 @@ def getExampleXRDS():
     filename = getDataName('example-xrds.xml')
     with open(filename) as f:
         return f.read()
+
 
 example_xrds = getExampleXRDS()
 default_test_file = getDataName('test1-discover.txt')
@@ -80,7 +81,7 @@ def fillTemplate(test_name, template, base_url, example_xrds):
         ('<XRDS Content>', example_xrds),
         ('YADIS_HEADER', YADIS_HEADER_NAME),
         ('NAME', test_name),
-        ]
+    ]
 
     for k, v in mapping:
         template = template.replace(k, v)
@@ -88,7 +89,8 @@ def fillTemplate(test_name, template, base_url, example_xrds):
     return template
 
 
-def generateSample(test_name, base_url,
+def generateSample(test_name,
+                   base_url,
                    example_xrds=example_xrds,
                    filename=default_test_file):
     try:

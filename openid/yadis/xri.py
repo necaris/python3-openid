@@ -17,8 +17,8 @@ def identifierScheme(identifier):
 
     @returns: C{"XRI"} or C{"URI"}
     """
-    if identifier.startswith('xri://') or (
-        identifier and identifier[0] in XRI_AUTHORITIES):
+    if identifier.startswith('xri://') or (identifier and
+                                           identifier[0] in XRI_AUTHORITIES):
         return "XRI"
     else:
         return "URI"
@@ -101,8 +101,7 @@ def rootAuthority(xri):
     else:
         # IRI reference.  XXX: Can IRI authorities have segments?
         segments = authority.split('!')
-        segments = reduce(list.__add__,
-            [s.split('*') for s in segments])
+        segments = reduce(list.__add__, [s.split('*') for s in segments])
         root = segments[0]
 
     return XRI(root)

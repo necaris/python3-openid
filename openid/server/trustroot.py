@@ -15,7 +15,7 @@ __all__ = [
     'extractReturnToURLs',
     'returnToMatches',
     'verifyReturnTo',
-    ]
+]
 
 from openid import urinorm
 from openid.yadis import services
@@ -27,37 +27,33 @@ import logging
 ############################################
 _protocols = ['http', 'https']
 _top_level_domains = [
-    'ac', 'ad', 'ae', 'aero', 'af', 'ag', 'ai', 'al', 'am', 'an',
-    'ao', 'aq', 'ar', 'arpa', 'as', 'asia', 'at', 'au', 'aw',
-    'ax', 'az', 'ba', 'bb', 'bd', 'be', 'bf', 'bg', 'bh', 'bi',
-    'biz', 'bj', 'bm', 'bn', 'bo', 'br', 'bs', 'bt', 'bv', 'bw',
-    'by', 'bz', 'ca', 'cat', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci',
-    'ck', 'cl', 'cm', 'cn', 'co', 'com', 'coop', 'cr', 'cu', 'cv',
-    'cx', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec',
-    'edu', 'ee', 'eg', 'er', 'es', 'et', 'eu', 'fi', 'fj', 'fk',
-    'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg', 'gh',
-    'gi', 'gl', 'gm', 'gn', 'gov', 'gp', 'gq', 'gr', 'gs', 'gt',
-    'gu', 'gw', 'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id',
-    'ie', 'il', 'im', 'in', 'info', 'int', 'io', 'iq', 'ir', 'is',
-    'it', 'je', 'jm', 'jo', 'jobs', 'jp', 'ke', 'kg', 'kh', 'ki',
-    'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc',
-    'li', 'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc',
-    'md', 'me', 'mg', 'mh', 'mil', 'mk', 'ml', 'mm', 'mn', 'mo',
-    'mobi', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'museum', 'mv',
-    'mw', 'mx', 'my', 'mz', 'na', 'name', 'nc', 'ne', 'net', 'nf',
-    'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nu', 'nz', 'om', 'org',
-    'pa', 'pe', 'pf', 'pg', 'ph', 'pk', 'pl', 'pm', 'pn', 'pr',
-    'pro', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs', 'ru',
-    'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj',
-    'sk', 'sl', 'sm', 'sn', 'so', 'sr', 'st', 'su', 'sv', 'sy',
-    'sz', 'tc', 'td', 'tel', 'tf', 'tg', 'th', 'tj', 'tk', 'tl',
-    'tm', 'tn', 'to', 'tp', 'tr', 'travel', 'tt', 'tv', 'tw',
-    'tz', 'ua', 'ug', 'uk', 'us', 'uy', 'uz', 'va', 'vc', 've',
-    'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'xn--0zwm56d',
-    'xn--11b5bs3a9aj6g', 'xn--80akhbyknj4f', 'xn--9t4b11yi5a',
-    'xn--deba0ad', 'xn--g6w251d', 'xn--hgbk6aj7f53bba',
-    'xn--hlcj6aya9esc7a', 'xn--jxalpdlp', 'xn--kgbechtv',
-    'xn--zckzah', 'ye', 'yt', 'yu', 'za', 'zm', 'zw']
+    'ac', 'ad', 'ae', 'aero', 'af', 'ag', 'ai', 'al', 'am', 'an', 'ao', 'aq',
+    'ar', 'arpa', 'as', 'asia', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd',
+    'be', 'bf', 'bg', 'bh', 'bi', 'biz', 'bj', 'bm', 'bn', 'bo', 'br', 'bs',
+    'bt', 'bv', 'bw', 'by', 'bz', 'ca', 'cat', 'cc', 'cd', 'cf', 'cg', 'ch',
+    'ci', 'ck', 'cl', 'cm', 'cn', 'co', 'com', 'coop', 'cr', 'cu', 'cv', 'cx',
+    'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'edu', 'ee', 'eg',
+    'er', 'es', 'et', 'eu', 'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb',
+    'gd', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gn', 'gov', 'gp', 'gq',
+    'gr', 'gs', 'gt', 'gu', 'gw', 'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu',
+    'id', 'ie', 'il', 'im', 'in', 'info', 'int', 'io', 'iq', 'ir', 'is', 'it',
+    'je', 'jm', 'jo', 'jobs', 'jp', 'ke', 'kg', 'kh', 'ki', 'km', 'kn', 'kp',
+    'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'lr', 'ls', 'lt',
+    'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mg', 'mh', 'mil', 'mk', 'ml',
+    'mm', 'mn', 'mo', 'mobi', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'museum',
+    'mv', 'mw', 'mx', 'my', 'mz', 'na', 'name', 'nc', 'ne', 'net', 'nf', 'ng',
+    'ni', 'nl', 'no', 'np', 'nr', 'nu', 'nz', 'om', 'org', 'pa', 'pe', 'pf',
+    'pg', 'ph', 'pk', 'pl', 'pm', 'pn', 'pr', 'pro', 'ps', 'pt', 'pw', 'py',
+    'qa', 're', 'ro', 'rs', 'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg',
+    'sh', 'si', 'sj', 'sk', 'sl', 'sm', 'sn', 'so', 'sr', 'st', 'su', 'sv',
+    'sy', 'sz', 'tc', 'td', 'tel', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm',
+    'tn', 'to', 'tp', 'tr', 'travel', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'uk',
+    'us', 'uy', 'uz', 'va', 'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws',
+    'xn--0zwm56d', 'xn--11b5bs3a9aj6g', 'xn--80akhbyknj4f', 'xn--9t4b11yi5a',
+    'xn--deba0ad', 'xn--g6w251d', 'xn--hgbk6aj7f53bba', 'xn--hlcj6aya9esc7a',
+    'xn--jxalpdlp', 'xn--kgbechtv', 'xn--zckzah', 'ye', 'yt', 'yu', 'za', 'zm',
+    'zw'
+]
 
 # Build from RFC3986, section 3.2.2. Used to reject hosts with invalid
 # characters.
@@ -70,15 +66,15 @@ class RealmVerificationRedirected(Exception):
 
     @since: 2.1.0
     """
+
     def __init__(self, relying_party_url, rp_url_after_redirects):
         self.relying_party_url = relying_party_url
         self.rp_url_after_redirects = rp_url_after_redirects
 
     def __str__(self):
         return ("Attempting to verify %r resulted in "
-                "redirect to %r" %
-                (self.relying_party_url,
-                 self.rp_url_after_redirects))
+                "redirect to %r" % (self.relying_party_url,
+                                    self.rp_url_after_redirects))
 
 
 def _parseURL(url):
@@ -222,8 +218,7 @@ class TrustRoot(object):
         if not self.wildcard:
             if host != self.host:
                 return False
-        elif ((not host.endswith(self.host)) and
-              ('.' + host) != self.host):
+        elif ((not host.endswith(self.host)) and ('.' + host) != self.host):
             return False
 
         if path != self.path:
@@ -243,8 +238,7 @@ class TrustRoot(object):
             else:
                 allowed = '?/'
 
-            return (self.path[-1] in allowed or
-                path[path_len] in allowed)
+            return (self.path[-1] in allowed or path[path_len] in allowed)
 
         return True
 
@@ -352,11 +346,13 @@ class TrustRoot(object):
     def __str__(self):
         return repr(self)
 
+
 # The URI for relying party discovery, used in realm verification.
 #
 # XXX: This should probably live somewhere else (like in
 # openid.consumer or openid.yadis somewhere)
 RP_RETURN_TO_URL_TYPE = 'http://specs.openid.net/auth/2.0/return_to'
+
 
 def _extractReturnURL(endpoint):
     """If the endpoint is a relying party OpenID return_to endpoint,
@@ -380,6 +376,7 @@ def _extractReturnURL(endpoint):
     else:
         return None
 
+
 def returnToMatches(allowed_return_to_urls, return_to):
     """Is the return_to URL under one of the supplied allowed
     return_to URLs?
@@ -394,19 +391,19 @@ def returnToMatches(allowed_return_to_urls, return_to):
         # a wildcard.
 
         return_realm = TrustRoot.parse(allowed_return_to)
-        if (# Parses as a trust root
-            return_realm is not None and
+        if (  # Parses as a trust root
+                return_realm is not None and
 
-            # Does not have a wildcard
-            not return_realm.wildcard and
+                # Does not have a wildcard
+                not return_realm.wildcard and
 
-            # Matches the return_to that we passed in with it
-            return_realm.validateURL(return_to)
-            ):
+                # Matches the return_to that we passed in with it
+                return_realm.validateURL(return_to)):
             return True
 
     # No URL in the list matched
     return False
+
 
 def getAllowedReturnURLs(relying_party_url):
     """Given a relying party discovery URL return a list of return_to URLs.
@@ -418,10 +415,11 @@ def getAllowedReturnURLs(relying_party_url):
 
     if rp_url_after_redirects != relying_party_url:
         # Verification caused a redirect
-        raise RealmVerificationRedirected(
-            relying_party_url, rp_url_after_redirects)
+        raise RealmVerificationRedirected(relying_party_url,
+                                          rp_url_after_redirects)
 
     return return_to_urls
+
 
 # _vrfy parameter is there to make testing easier
 def verifyReturnTo(realm_str, return_to, _vrfy=getAllowedReturnURLs):
@@ -452,5 +450,5 @@ def verifyReturnTo(realm_str, return_to, _vrfy=getAllowedReturnURLs):
         return True
     else:
         logging.error("Failed to validate return_to %r for realm %r, was not "
-                    "in %s" % (return_to, realm_str, allowable_urls))
+                      "in %s" % (return_to, realm_str, allowable_urls))
         return False

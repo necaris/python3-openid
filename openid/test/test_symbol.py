@@ -2,6 +2,7 @@ import unittest
 
 from openid import oidutil
 
+
 class SymbolTest(unittest.TestCase):
     def test_selfEquality(self):
         s = oidutil.Symbol('xxx')
@@ -30,6 +31,7 @@ class SymbolTest(unittest.TestCase):
         x = oidutil.Symbol('xxx')
         y = oidutil.Symbol('yyy')
         self.assertTrue(x != y)
+
 
 if __name__ == '__main__':
     unittest.main()

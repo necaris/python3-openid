@@ -71,11 +71,11 @@ __all__ = ['parseLinkAttrs']
 
 import re
 
-flags = (re.DOTALL  # Match newlines with '.'
-         | re.IGNORECASE
-         | re.VERBOSE  # Allow comments and whitespace in patterns
-         | re.UNICODE  # Make \b respect Unicode word boundaries
-        )
+flags = (
+    re.DOTALL  # Match newlines with '.'
+    | re.IGNORECASE | re.VERBOSE  # Allow comments and whitespace in patterns
+    | re.UNICODE  # Make \b respect Unicode word boundaries
+)
 
 # Stuff to remove before we start looking for tags
 removed_re = re.compile(r'''
@@ -126,13 +126,14 @@ tag_expr = r'''
 
 def tagMatcher(tag_name, *close_tags):
     if close_tags:
-        options = '|'.join((tag_name,) + close_tags)
-        closers = '(?:%s)' % (options,)
+        options = '|'.join((tag_name, ) + close_tags)
+        closers = '(?:%s)' % (options, )
     else:
         closers = tag_name
 
     expr = tag_expr % locals()
     return re.compile(expr, flags)
+
 
 # Must contain at least an open html and an open head tag
 html_find = tagMatcher('html')
@@ -165,7 +166,7 @@ replacements = {
     'lt': '<',
     'gt': '>',
     'quot': '"',
-    }
+}
 
 ent_replace = re.compile(r'&(%s);' % '|'.join(list(replacements.keys())))
 
@@ -228,8 +229,8 @@ def parseLinkAttrs(html, ignore_errors=False):
 
             # Either q_val or unq_val must be present, but not both
             # unq_val is a True (non-empty) value if it is present
-            attr_name, q_val, unq_val = attr_mo.group(
-                'attr_name', 'q_val', 'unq_val')
+            attr_name, q_val, unq_val = attr_mo.group('attr_name', 'q_val',
+                                                      'unq_val')
             attr_val = ent_replace.sub(replaceEnt, unq_val or q_val)
 
             link_attrs[attr_name] = attr_val

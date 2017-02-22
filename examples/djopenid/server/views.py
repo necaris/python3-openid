@@ -1,4 +1,3 @@
-
 """
 This module implements an example server for the OpenID library.  Some
 functionality has been omitted intentionally; this code is intended to
@@ -33,6 +32,7 @@ from openid.extensions import sreg
 from openid.extensions import pape
 from openid.fetchers import HTTPFetchingError
 
+
 def getOpenIDStore():
     """
     Return an OpenID store object fit for the currently-chosen
@@ -40,11 +40,13 @@ def getOpenIDStore():
     """
     return util.getOpenIDStore('/tmp/djopenid_s_store', 's_')
 
+
 def getServer(request):
     """
     Get a Server object to perform OpenID authentication.
     """
     return Server(getOpenIDStore(), getViewURL(request, endpoint))
+
 
 def setRequest(request, openid_request):
     """
@@ -55,39 +57,43 @@ def setRequest(request, openid_request):
     else:
         request.session['openid_request'] = None
 
+
 def getRequest(request):
     """
     Get an openid request from the session, if any.
     """
     return request.session.get('openid_request')
 
+
 def server(request):
     """
     Respond to requests for the server's primary web page.
     """
     return render_to_response(
-        'server/index.html',
-        {'user_url': getViewURL(request, idPage),
-         'server_xrds_url': getViewURL(request, idpXrds),
-         },
+        'server/index.html', {
+            'user_url': getViewURL(request, idPage),
+            'server_xrds_url': getViewURL(request, idpXrds),
+        },
         context_instance=RequestContext(request))
+
 
 def idpXrds(request):
     """
     Respond to requests for the IDP's XRDS document, which is used in
     IDP-driven identifier selection.
     """
-    return util.renderXRDS(
-        request, [OPENID_IDP_2_0_TYPE], [getViewURL(request, endpoint)])
+    return util.renderXRDS(request, [OPENID_IDP_2_0_TYPE],
+                           [getViewURL(request, endpoint)])
+
 
 def idPage(request):
     """
     Serve the identity page for OpenID URLs.
     """
     return render_to_response(
-        'server/idPage.html',
-        {'server_url': getViewURL(request, endpoint)},
+        'server/idPage.html', {'server_url': getViewURL(request, endpoint)},
         context_instance=RequestContext(request))
+
 
 def trustPage(request):
     """
@@ -96,8 +102,9 @@ def trustPage(request):
     """
     return render_to_response(
         'server/trust.html',
-        {'trust_handler_url':getViewURL(request, processTrustResult)},
+        {'trust_handler_url': getViewURL(request, processTrustResult)},
         context_instance=RequestContext(request))
+
 
 def endpoint(request):
     """
@@ -114,16 +121,14 @@ def endpoint(request):
     except ProtocolError as why:
         # This means the incoming request was invalid.
         return render_to_response(
-            'server/endpoint.html',
-            {'error': str(why)},
-        context_instance=RequestContext(request))
+            'server/endpoint.html', {'error': str(why)},
+            context_instance=RequestContext(request))
 
     # If we did not get a request, display text indicating that this
     # is an endpoint.
     if openid_request is None:
         return render_to_response(
-            'server/endpoint.html',
-            {},
+            'server/endpoint.html', {},
             context_instance=RequestContext(request))
 
     # We got a request; if the mode is checkid_*, we will handle it by
@@ -135,6 +140,7 @@ def endpoint(request):
         # server handle this.
         openid_response = s.handleRequest(openid_request)
         return displayResponse(request, openid_response)
+
 
 def handleCheckIDRequest(request, openid_request):
     """
@@ -157,9 +163,8 @@ def handleCheckIDRequest(request, openid_request):
         if id_url != openid_request.identity:
             # Return an error response
             error_response = ProtocolError(
-                openid_request.message,
-                "This server cannot verify the URL %r" %
-                (openid_request.identity,))
+                openid_request.message, "This server cannot verify the URL %r"
+                % (openid_request.identity, ))
 
             return displayResponse(request, error_response)
 
@@ -176,6 +181,7 @@ def handleCheckIDRequest(request, openid_request):
         # get to it later.
         setRequest(request, openid_request)
         return showDecidePage(request, openid_request)
+
 
 def showDecidePage(request, openid_request):
     """
@@ -198,13 +204,14 @@ def showDecidePage(request, openid_request):
     pape_request = pape.Request.fromOpenIDRequest(openid_request)
 
     return render_to_response(
-        'server/trust.html',
-        {'trust_root': trust_root,
-         'trust_handler_url':getViewURL(request, processTrustResult),
-         'trust_root_valid': trust_root_valid,
-         'pape_request': pape_request,
-         },
+        'server/trust.html', {
+            'trust_root': trust_root,
+            'trust_handler_url': getViewURL(request, processTrustResult),
+            'trust_root_valid': trust_root_valid,
+            'pape_request': pape_request,
+        },
         context_instance=RequestContext(request))
+
 
 def processTrustResult(request):
     """
@@ -223,8 +230,8 @@ def processTrustResult(request):
     allowed = 'allow' in request.POST
 
     # Generate a response with the appropriate answer.
-    openid_response = openid_request.answer(allowed,
-                                            identity=response_identity)
+    openid_response = openid_request.answer(
+        allowed, identity=response_identity)
 
     # Send Simple Registration data in the response, if appropriate.
     if allowed:
@@ -238,7 +245,7 @@ def processTrustResult(request):
             'country': 'ES',
             'language': 'eu',
             'timezone': 'America/New_York',
-            }
+        }
 
         sreg_req = sreg.SRegRequest.fromOpenIDRequest(openid_request)
         sreg_resp = sreg.SRegResponse.extractResponse(sreg_req, sreg_data)
@@ -249,6 +256,7 @@ def processTrustResult(request):
         openid_response.addExtension(pape_response)
 
     return displayResponse(request, openid_response)
+
 
 def displayResponse(request, openid_response):
     """
@@ -266,9 +274,8 @@ def displayResponse(request, openid_response):
         # If it couldn't be encoded, display an error.
         text = why.response.encodeToKVForm()
         return render_to_response(
-            'server/endpoint.html',
-            {'error': cgi.escape(text)},
-        context_instance=RequestContext(request))
+            'server/endpoint.html', {'error': cgi.escape(text)},
+            context_instance=RequestContext(request))
 
     # Construct the appropriate django framework response.
     r = http.HttpResponse(webresponse.body)

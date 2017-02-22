@@ -9,6 +9,7 @@ from openid.server import trustroot
 from openid.test.support import CatchLogs
 import unittest
 
+
 # Too many methods does not apply to unit test objects
 #pylint:disable-msg=R0904
 class TestBuildDiscoveryURL(unittest.TestCase):
@@ -36,6 +37,7 @@ class TestBuildDiscoveryURL(unittest.TestCase):
         self.failUnlessDiscoURL('http://*.example.com/foo',
                                 'http://www.example.com/foo')
 
+
 class TestExtractReturnToURLs(unittest.TestCase):
     disco_url = 'http://example.com/'
 
@@ -54,20 +56,20 @@ class TestExtractReturnToURLs(unittest.TestCase):
         return result
 
     def failUnlessFileHasReturnURLs(self, filename, expected_return_urls):
-        self.failUnlessXRDSHasReturnURLs(open(filename).read(),
-                                         expected_return_urls)
+        self.failUnlessXRDSHasReturnURLs(
+            open(filename).read(), expected_return_urls)
 
     def failUnlessXRDSHasReturnURLs(self, data, expected_return_urls):
         self.data = data
-        actual_return_urls = list(trustroot.getAllowedReturnURLs(
-            self.disco_url))
+        actual_return_urls = list(
+            trustroot.getAllowedReturnURLs(self.disco_url))
 
         self.assertEqual(expected_return_urls, actual_return_urls)
 
     def failUnlessDiscoveryFailure(self, text):
         self.data = text
-        self.assertRaises(
-            DiscoveryFailure, trustroot.getAllowedReturnURLs, self.disco_url)
+        self.assertRaises(DiscoveryFailure, trustroot.getAllowedReturnURLs,
+                          self.disco_url)
 
     def test_empty(self):
         self.failUnlessDiscoveryFailure('')
@@ -140,8 +142,7 @@ class TestExtractReturnToURLs(unittest.TestCase):
     </Service>
   </XRD>
 </xrds:XRDS>
-''', ['http://rp.example.com/return',
-      'http://other.rp.example.com/return'])
+''', ['http://rp.example.com/return', 'http://other.rp.example.com/return'])
 
     def test_twoEntries_withOther(self):
         self.failUnlessXRDSHasReturnURLs(b'''\
@@ -164,9 +165,7 @@ class TestExtractReturnToURLs(unittest.TestCase):
     </Service>
   </XRD>
 </xrds:XRDS>
-''', ['http://rp.example.com/return',
-      'http://other.rp.example.com/return'])
-
+''', ['http://rp.example.com/return', 'http://other.rp.example.com/return'])
 
 
 class TestReturnToMatches(unittest.TestCase):
@@ -179,31 +178,30 @@ class TestReturnToMatches(unittest.TestCase):
 
     def test_garbageMatch(self):
         r = 'http://example.com/return.to'
-        self.assertTrue(trustroot.returnToMatches(
-            ['This is not a URL at all. In fact, it has characters, '
-             'like "<" that are not allowed in URLs',
-             r],
-            r))
+        self.assertTrue(
+            trustroot.returnToMatches([
+                'This is not a URL at all. In fact, it has characters, '
+                'like "<" that are not allowed in URLs', r
+            ], r))
 
     def test_descendant(self):
         r = 'http://example.com/return.to'
-        self.assertTrue(trustroot.returnToMatches(
-            [r],
-            'http://example.com/return.to/user:joe'))
+        self.assertTrue(
+            trustroot.returnToMatches([r],
+                                      'http://example.com/return.to/user:joe'))
 
     def test_wildcard(self):
-        self.assertFalse(trustroot.returnToMatches(
-            ['http://*.example.com/return.to'],
-            'http://example.com/return.to'))
+        self.assertFalse(
+            trustroot.returnToMatches(['http://*.example.com/return.to'],
+                                      'http://example.com/return.to'))
 
     def test_noMatch(self):
         r = 'http://example.com/return.to'
-        self.assertFalse(trustroot.returnToMatches(
-            [r],
-            'http://example.com/xss_exploit'))
+        self.assertFalse(
+            trustroot.returnToMatches([r], 'http://example.com/xss_exploit'))
+
 
 class TestVerifyReturnTo(unittest.TestCase, CatchLogs):
-
     def setUp(self):
         CatchLogs.setUp(self)
 
@@ -221,8 +219,7 @@ class TestVerifyReturnTo(unittest.TestCase, CatchLogs):
             self.assertEqual('http://www.example.com/', disco_url)
             return [return_to]
 
-        self.assertTrue(
-            trustroot.verifyReturnTo(realm, return_to, _vrfy=vrfy))
+        self.assertTrue(trustroot.verifyReturnTo(realm, return_to, _vrfy=vrfy))
         self.failUnlessLogEmpty()
 
     def test_verifyFailWithDiscoveryCalled(self):
@@ -248,6 +245,7 @@ class TestVerifyReturnTo(unittest.TestCase, CatchLogs):
         self.assertFalse(
             trustroot.verifyReturnTo(realm, return_to, _vrfy=vrfy))
         self.failUnlessLogMatches("Attempting to verify")
+
 
 if __name__ == '__main__':
     unittest.main()

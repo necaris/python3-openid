@@ -1,4 +1,3 @@
-
 from django.test.testcases import TestCase
 from djopenid.server import views
 from djopenid import util
@@ -29,11 +28,15 @@ class TestProcessTrustResult(TestCase):
         # Set up the OpenID request we're responding to.
         op_endpoint = 'http://127.0.0.1:8080/endpoint'
         message = Message.fromPostArgs({
-            'openid.mode': 'checkid_setup',
-            'openid.identity': id_url,
-            'openid.return_to': 'http://127.0.0.1/%s' % (self.id(),),
-            'openid.sreg.required': 'postcode',
-            })
+            'openid.mode':
+            'checkid_setup',
+            'openid.identity':
+            id_url,
+            'openid.return_to':
+            'http://127.0.0.1/%s' % (self.id(), ),
+            'openid.sreg.required':
+            'postcode',
+        })
         self.openid_request = CheckIDRequest.fromMessage(message, op_endpoint)
 
         views.setRequest(self.request, self.openid_request)
@@ -70,11 +73,15 @@ class TestShowDecidePage(TestCase):
         # Set up the OpenID request we're responding to.
         op_endpoint = 'http://127.0.0.1:8080/endpoint'
         message = Message.fromPostArgs({
-            'openid.mode': 'checkid_setup',
-            'openid.identity': id_url,
-            'openid.return_to': 'http://unreachable.invalid/%s' % (self.id(),),
-            'openid.sreg.required': 'postcode',
-            })
+            'openid.mode':
+            'checkid_setup',
+            'openid.identity':
+            id_url,
+            'openid.return_to':
+            'http://unreachable.invalid/%s' % (self.id(), ),
+            'openid.sreg.required':
+            'postcode',
+        })
         self.openid_request = CheckIDRequest.fromMessage(message, op_endpoint)
 
         views.setRequest(self.request, self.openid_request)
@@ -96,7 +103,7 @@ class TestGenericXRDS(TestCase):
         response = util.renderXRDS(request, type_uris, [endpoint_url])
 
         requested_url = 'http://requested.invalid/'
-        (endpoint,) = applyFilter(requested_url, response.content)
+        (endpoint, ) = applyFilter(requested_url, response.content)
 
         self.assertEqual(YADIS_CONTENT_TYPE, response['Content-Type'])
         self.assertEqual(type_uris, endpoint.type_uris)

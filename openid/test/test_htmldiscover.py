@@ -14,7 +14,8 @@ class BadLinksTestCase(datadriven.DataDrivenTestCase):
         self.data = data
 
     def runOneTest(self):
-        actual = OpenIDServiceEndpoint.fromHTML('http://unused.url/', self.data)
+        actual = OpenIDServiceEndpoint.fromHTML('http://unused.url/',
+                                                self.data)
         expected = []
         self.assertEqual(expected, actual)
 
