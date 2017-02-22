@@ -284,7 +284,7 @@ class DefaultFetcherTest(unittest.TestCase):
         fetchers.setDefaultFetcher(fetcher, wrap_exceptions=False)
 
         self.assertFalse(isinstance(fetchers.getDefaultFetcher(),
-                               fetchers.ExceptionWrappingFetcher))
+                                    fetchers.ExceptionWrappingFetcher))
 
         try:
             fetchers.fetch('http://invalid.janrain.com/')

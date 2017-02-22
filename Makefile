@@ -18,7 +18,7 @@ upload:
 	python setup.py clean sdist bdist_wheel upload
 
 test:
-	tox # coverage run -m unittest openid.test.test_suite
+	coverage run -m unittest openid.test.test_suite
 
 release-patch: clean test
 	@$(call release,patch)
