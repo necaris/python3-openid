@@ -2,6 +2,9 @@
 coverage==3.7.1
 coveralls
 
+# Documentation-building dependencies
+sphinx
+
 # Package dependencies -- keep these reasonably up to date, if not bleeding-
 # edge -- also try to maintain compatibility with all the Python versions we
 # support

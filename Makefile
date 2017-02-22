@@ -34,4 +34,7 @@ release-major: clean test
 push-tags:
 	git push --tags origin HEAD:master
 
-publish: push-tags upload
+documentation:
+	cd docs && $(MAKE) html
+
+publish: documentation push-tags upload

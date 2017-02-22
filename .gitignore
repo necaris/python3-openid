@@ -13,6 +13,7 @@ build/
 dist/
 sdist/
 *.egg-info/
+docs/_build
 
 .envrc
 .direnv
