@@ -5,8 +5,8 @@
 define release
 	$(eval NEXTVER := $(shell python admin/next_version.py --$(1)))
 	python admin/patch_version.py ${NEXTVER}
-	git commit -m \"Version $(NEXTVER)\" -- openid/__init__.py &&\
-		git tag "v$(NEXTVER)" -m \"Version $(NEXTVER)\"
+	git commit -m \"Version $(NEXTVER)\" -- openid/__init__.py # &&
+	git tag "v$(NEXTVER)" -m \"Version $(NEXTVER)\"
 endef
 
 clean:
@@ -15,7 +15,9 @@ clean:
 	find . -name '*~' -exec rm -f  {} +
 
 upload:
-	python setup.py clean sdist bdist_wheel upload
+	rm -rf dist/*
+	python setup.py clean sdist bdist_wheel
+	twine upload dist/*
 
 test:
 	coverage run -m unittest openid.test.test_suite
