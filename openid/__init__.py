@@ -9,7 +9,7 @@ module.
 
 @contact: U{http://github.com/necaris/python3-openid/}
 
-@copyright: (C) 2005-2008 JanRain, Inc., 2012-2013 Rami Chowdhury
+@copyright: (C) 2005-2008 JanRain, Inc., 2012-2017 Rami Chowdhury
 
 @license: Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
