@@ -55,7 +55,13 @@ def parseXRDS(text):
         not contain an XRDS.
     """
     try:
-        element = SafeElementTree.XML(text)
+        # lxml prefers to parse bytestrings, and occasionally chokes on a
+        # combination of text strings and declared XML encodings -- see
+        # https://github.com/necaris/python3-openid/issues/19
+        # To avoid this, we ensure that the 'text' we're parsing is actually
+        # a bytestring
+        bytestring = text.encode('utf8') if isinstance(text, str) else text
+        element = SafeElementTree.XML(bytestring)
     except (SystemExit, MemoryError, AssertionError, ImportError):
         raise
     except Exception as why:
