@@ -51,6 +51,10 @@ BARE_NS = oidutil.Symbol('Bare namespace')
 # response payload.  See OpenID 1.1 specification, Appendix D.
 OPENID1_URL_LIMIT = 2047
 
+# Increasing the limit based on maximum length of urls in different browsers
+# https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+INCREASED_OPENID_URL_LIMIT = 8000
+
 # All OpenID protocol fields.  Used to check namespace aliases.
 OPENID_PROTOCOL_FIELDS = [
     'ns',
