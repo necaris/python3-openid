@@ -12,7 +12,10 @@ __all__ = [
 ]
 
 from openid.yadis.etxrd import expandService
-import collections
+try:
+    from collections.abc import Callable
+except ImportError:
+    from collections import Callable
 
 
 class BasicServiceEndpoint(object):
@@ -192,7 +195,7 @@ def mkCompoundFilter(parts):
                 # conversion attribute into the list of endpoint
                 # transformers
                 transformers.append(subfilter.fromBasicServiceEndpoint)
-            elif isinstance(subfilter, collections.Callable):
+            elif isinstance(subfilter, Callable):
                 # It's a simple callable, so add it to the list of
                 # endpoint transformers
                 transformers.append(subfilter)
