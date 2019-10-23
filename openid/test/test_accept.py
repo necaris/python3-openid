@@ -9,11 +9,8 @@ def getTestData():
     () -> [(int, str)]
     """
     filename = os.path.join(os.path.dirname(__file__), 'data', 'accept.txt')
-    i = 1
-    lines = []
-    for line in open(filename):
-        lines.append((i, line))
-        i += 1
+    with open(filename, 'rt') as data_file:
+        lines = list(enumerate(data_file, 1))
     return lines
 
 

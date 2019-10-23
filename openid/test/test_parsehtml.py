@@ -74,7 +74,8 @@ def getCases(test_files=default_test_files):
     cases = []
     for filename in test_files:
         test_num = 0
-        data = open(filename).read()
+        with open(filename) as data_file:
+            data = data_file.read()
         for expected, case in parseCases(data):
             test_num += 1
             cases.append((filename, test_num, expected, case))
