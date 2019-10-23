@@ -53,8 +53,8 @@ def buildDiscover(base_url, out_dir):
                                          discoverdata.example_xrds)
 
         out_file_name = os.path.join(out_dir, test_name)
-        out_file = open(out_file_name, 'w', encoding="utf-8")
-        out_file.write(data)
+        with open(out_file_name, 'w', encoding="utf-8") as out_file:
+            out_file.write(data)
 
     manifest = [manifest_header]
     for success, input_name, id_name, result_name in discoverdata.testlist:
