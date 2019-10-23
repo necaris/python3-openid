@@ -13,7 +13,7 @@ uri_re = re.compile(uri_pattern)
 #
 # unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
 
-uri_illegal_char_re = re.compile("[^-A-Za-z0-9:/?#[\]@!$&'()*+,;=._~%]",
+uri_illegal_char_re = re.compile(r"[^-A-Za-z0-9:/?#[\]@!$&'()*+,;=._~%]",
                                  re.UNICODE)
 
 authority_pattern = r'^([^@]*@)?([^:]*)(:.*)?'
