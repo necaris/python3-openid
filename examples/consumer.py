@@ -9,14 +9,14 @@ robust examples, and integrating OpenID into your application.
 __copyright__ = 'Copyright 2005-2008, Janrain, Inc.'
 
 from http.cookies import SimpleCookie
-import cgi
+import html
 import urllib.parse
 import cgitb
 import sys
 
 
 def quoteattr(s):
-    qs = cgi.escape(s, 1)
+    qs = html.escape(s, 1)
     return '"%s"' % (qs, )
 
 
@@ -42,6 +42,7 @@ from openid.oidutil import appendArgs
 from openid.cryptutil import randomString
 from openid.fetchers import setDefaultFetcher, Urllib2Fetcher
 from openid.extensions import pape, sreg
+from random import randrange
 
 # Used with an OpenID provider affiliate program.
 OPENID_PROVIDER_NAME = 'MyOpenID'
@@ -132,7 +133,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
         try:
             self.parsed_uri = urllib.parse.urlparse(self.path)
             self.query = {}
-            for k, v in cgi.parse_qsl(self.parsed_uri[4]):
+            for k, v in urllib.parse.parse_qsl(self.parsed_uri[4]):
                 self.query[k] = v
 
             path = self.parsed_uri[2]
@@ -179,7 +180,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             request = oidconsumer.begin(openid_url)
         except consumer.DiscoveryFailure as exc:
             fetch_error_string = 'Error in discovery: %s' % (
-                cgi.escape(str(exc)))
+                html.escape(str(exc)))
             self.render(
                 fetch_error_string,
                 css_class='error',
@@ -187,7 +188,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
         else:
             if request is None:
                 msg = 'No OpenID services found for <code>%s</code>' % (
-                    cgi.escape(openid_url), )
+                    html.escape(openid_url), )
                 self.render(msg, css_class='error', form_contents=openid_url)
             else:
                 # Then, ask the library to begin the authorization.
@@ -249,7 +250,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             # URL that we were verifying. We include it in the error
             # message to help the user figure out what happened.
             fmt = "Verification of %s failed: %s"
-            message = fmt % (cgi.escape(display_identifier), info.message)
+            message = fmt % (html.escape(display_identifier), info.message)
         elif info.status == consumer.SUCCESS:
             # Success means that the transaction completed without
             # error. If info is None, it means that the user cancelled
@@ -260,7 +261,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             # was a real application, we would do our login,
             # comment posting, etc. here.
             fmt = "You have successfully verified %s as your identity."
-            message = fmt % (cgi.escape(display_identifier), )
+            message = fmt % (html.escape(display_identifier), )
             sreg_resp = sreg.SRegResponse.fromSuccessResponse(info)
             pape_resp = pape.Response.fromSuccessResponse(info)
             if info.endpoint.canonicalID:
@@ -269,7 +270,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
                 # way their account with you is not compromised if their
                 # i-name registration expires and is bought by someone else.
                 message += ("  This is an i-name, and its persistent ID is %s"
-                            % (cgi.escape(info.endpoint.canonicalID), ))
+                            % (html.escape(info.endpoint.canonicalID), ))
         elif info.status == consumer.CANCEL:
             # cancelled
             message = 'Verification cancelled'
@@ -322,7 +323,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             odd = ' class="odd"'
             for k, v in sreg_list:
                 field_name = sreg.data_fields.get(k, k)
-                value = cgi.escape(v.encode('UTF-8'))
+                value = html.escape(v.encode('UTF-8'))
                 self.wfile.write(
                     bytes('<tr%s><td>%s</td><td>%s</td></tr>' % (
                         odd, field_name, value), 'utf-8'))
@@ -345,7 +346,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
 
             for policy_uri in pape_data.auth_policies:
                 self.wfile.write(
-                    bytes('<li><tt>%s</tt></li>' % (cgi.escape(policy_uri), ),
+                    bytes('<li><tt>%s</tt></li>' % (html.escape(policy_uri), ),
                           'utf-8'))
 
             if not pape_data.auth_policies:
