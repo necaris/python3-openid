@@ -38,6 +38,10 @@ Includes example code and support for a variety of storage back-ends.''',
     download_url=('http://github.com/necaris/python3-openid/tarball'
                   '/v{}'.format(version)),
     install_requires=install_requires,
+    extras_require={
+        'mysql': ['mysql-connector-python'],
+        'postgresql': ['psycopg2'],
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",

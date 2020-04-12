@@ -10,12 +10,6 @@ python -c 'from openid.store import sqlstore; import pysqlite2.dbapi2;'
 import re
 import time
 
-try:
-    import psycopg2
-except ImportError:
-    from psycopg2cffi import compat
-    compat.register()
-
 from openid.association import Association
 from openid.store.interface import OpenIDStore
 from openid.store import nonce
@@ -433,6 +427,13 @@ class PostgreSQLStore(SQLStore):
 
     All other methods are implementation details.
     """
+
+    try:
+        import psycopg2
+    except ImportError:
+        from psycopg2cffi import compat
+        compat.register()
+
     exceptions = None
 
     create_nonce_sql = """

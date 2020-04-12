@@ -1,11 +1,11 @@
 # Test dependencies
-coverage==3.7.1
 coveralls
+coverage
 
 # Package dependencies -- keep these reasonably up to date, if not bleeding-
 # edge -- also try to maintain compatibility with all the Python versions we
 # support
-Django==1.8
+Django
 httplib2
 mysqlclient ; python_version >= '3.3'
 psycopg2cffi
