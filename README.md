@@ -1,4 +1,4 @@
-*NOTE*: This started out as a fork of the Python OpenID library, with changes
+_NOTE_: This started out as a fork of the Python OpenID library, with changes
 to make it Python 3 compatible. It's now a port of that library, including
 cleanups and updates to the code in general.
 
@@ -7,7 +7,7 @@ cleanups and updates to the code in general.
 
 # requirements
 
- - Python 3.5+ (tested on CPython 3.5-3.8, and PyPy3 (although some tests may fail on PyPy))
+- Python 3.5+ (tested on CPython 3.5-3.8, and PyPy3 (although some tests may fail on PyPy))
 
 # installation
 
@@ -24,16 +24,15 @@ the relevant "extra":
 
     pip install python3-openid[mysql]
 
-
 # getting started
 
 The library should follow the existing `python-openid` API as closely as possible.
 
-*NOTE*: documentation will be auto-generated as soon as I can figure out how to
+_NOTE_: documentation will be auto-generated as soon as I can figure out how to
 update the documentation tools.
 
-*NOTE*: The examples directory includes an example server and consumer
-implementation.  See the README file in that directory for more
+_NOTE_: The examples directory includes an example server and consumer
+implementation. See the README file in that directory for more
 information on running the examples.
 
 # logging
@@ -50,7 +49,7 @@ hook.
 The documentation in this library is in Epydoc format, which is
 detailed at:
 
-  http://epydoc.sourceforge.net/
+http://epydoc.sourceforge.net/
 
 # contact
 
