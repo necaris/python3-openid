@@ -19,6 +19,11 @@ Alternatively, you can run the following command from a source checkout:
 
     python setup.py install
 
+If you want to use MySQL or PostgreSQL storage options, be sure to install
+the relevant "extra":
+
+    pip install python3-openid[mysql]
+
 
 # getting started
 
@@ -57,3 +62,4 @@ There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
 
 - @necaris
 - @moreati
+- @earthday
