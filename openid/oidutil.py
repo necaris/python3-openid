@@ -9,9 +9,11 @@ __all__ = [
 
 import binascii
 import logging
-
 # import urllib.parse as urlparse
 from urllib.parse import urlencode
+
+from openid.cryputil import randomString
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,19 +43,21 @@ def toUnicode(value):
     return str(value)
 
 
-def autoSubmitHTML(form, title='OpenID transaction in progress'):
+def autoSubmitHTML(form, title='OpenID transaction in progress', nonce=None):
     if isinstance(form, bytes):
         form = str(form, encoding="utf-8")
     if isinstance(title, bytes):
         title = str(title, encoding="utf-8")
+    if nonce is None:
+        nonce = randomString(16)  # arbitrary chosen length
     html = """
 <html>
 <head>
-  <title>%s</title>
+  <title>{title}</title>
 </head>
 <body onload="document.forms[0].submit();">
-%s
-<script>
+{form}
+<script nonce="{nonce}">
 var elements = document.forms[0].elements;
 for (var i = 0; i < elements.length; i++) {
   elements[i].style.display = "none";
@@ -61,7 +65,7 @@ for (var i = 0; i < elements.length; i++) {
 </script>
 </body>
 </html>
-""" % (title, form)
+""".format(title=title, form=form, nonce=nonce)
     return html
 
 
