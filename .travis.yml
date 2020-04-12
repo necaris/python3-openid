@@ -1,5 +1,10 @@
 language: python
 sudo: false
+addons:
+  apt:
+    packages:
+      - libgnutls-dev
+
 
 cache:
   directories:
