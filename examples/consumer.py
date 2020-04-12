@@ -41,6 +41,7 @@ from openid.consumer import consumer
 from openid.oidutil import appendArgs
 from openid.fetchers import setDefaultFetcher, Urllib2Fetcher
 from openid.extensions import pape, sreg
+from random import randrange
 
 def randomString(length, chrs=None):
     """Produce a string of length random bytes, chosen from chrs."""
@@ -48,7 +49,7 @@ def randomString(length, chrs=None):
         return getBytes(length)
     else:
         n = len(chrs)
-        return ''.join([chrs[randrange(n)] for _ in xrange(length)])
+        return ''.join([chrs[randrange(n)] for _ in range(length)])
 
 # Used with an OpenID provider affiliate program.
 OPENID_PROVIDER_NAME = 'MyOpenID'
