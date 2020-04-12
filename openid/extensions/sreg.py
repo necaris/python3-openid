@@ -40,6 +40,8 @@ from openid.message import registerNamespaceAlias, \
 from openid.extension import Extension
 import logging
 
+logger = logging.getLogger(__name__)
+
 try:
     str  #pylint:disable-msg=W0104
 except NameError:
@@ -97,7 +99,7 @@ ns_uri = ns_uri_1_1
 try:
     registerNamespaceAlias(ns_uri_1_1, 'sreg')
 except NamespaceAliasRegistrationError as e:
-    logging.exception('registerNamespaceAlias(%r, %r) failed: %s' %
+    logger.exception('registerNamespaceAlias(%r, %r) failed: %s' %
                       (ns_uri_1_1, 'sreg', str(e), ))
 
 

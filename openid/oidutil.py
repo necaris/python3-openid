@@ -1,8 +1,5 @@
 """This module contains general utility code that is used throughout
 the library.
-
-For users of this library, the C{L{log}} function is probably the most
-interesting.
 """
 
 __all__ = [
@@ -15,6 +12,8 @@ import logging
 
 # import urllib.parse as urlparse
 from urllib.parse import urlencode
+
+logger = logging.getLogger(__name__)
 
 xxe_safe_elementtree_modules = [
     'defusedxml.cElementTree',
@@ -113,7 +112,7 @@ def importElementTree(module_names=None):
             except (SystemExit, MemoryError, AssertionError):
                 raise
             except:
-                logging.exception(
+                logger.exception(
                     'Not using ElementTree library %r because it failed to '
                     'parse a trivial document: %s' % mod_name)
             else:
@@ -127,7 +126,7 @@ def importElementTree(module_names=None):
 def log(message, level=0):
     """Handle a log message from the OpenID library.
 
-    This is a legacy function which redirects to logging.error.
+    This is a legacy function which redirects to logger.error.
     The logging module should be used instead of this
 
     @param message: A string containing a debugging message from the
@@ -142,7 +141,7 @@ def log(message, level=0):
     @returns: Nothing.
     """
 
-    logging.error("This is a legacy log message, please use the "
+    logger.error("This is a legacy log message, please use the "
                   "logging module. Message: %s", message)
 
 

@@ -1,5 +1,7 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
 __all__ = ['seqToKV', 'kvToSeq', 'dictToKV', 'kvToDict']
 
 
@@ -23,7 +25,7 @@ def seqToKV(seq, strict=False):
         if strict:
             raise KVFormError(formatted)
         else:
-            logging.warning(formatted)
+            logger.warning(formatted)
 
     lines = []
     for k, v in seq:
@@ -79,7 +81,7 @@ def kvToSeq(data, strict=False):
         if strict:
             raise KVFormError(formatted)
         else:
-            logging.warning(formatted)
+            logger.warning(formatted)
 
     if isinstance(data, bytes):
         data = data.decode("utf-8")
