@@ -4,16 +4,17 @@ __copyright__ = 'Copyright 2005-2008, Janrain, Inc.'
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
+from urllib.parse import parse_qsl
 
 import time
 import http.cookies
-import cgi
+import html
 import cgitb
 import sys
 
 
 def quoteattr(s):
-    qs = cgi.escape(s, 1)
+    qs = html.escape(s, 1)
     return '"%s"' % (qs, )
 
 
@@ -68,7 +69,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         try:
             self.parsed_uri = urlparse(self.path)
             self.query = {}
-            for k, v in cgi.parse_qsl(self.parsed_uri[4]):
+            for k, v in parse_qsl(self.parsed_uri[4]):
                 self.query[k] = v
 
             self.setUser()
@@ -112,7 +113,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
 
             self.query = {}
-            for k, v in cgi.parse_qsl(post_data):
+            for k, v in parse_qsl(post_data):
                 self.query[k] = v
 
             path = self.parsed_uri[2]
@@ -231,7 +232,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             webresponse = self.server.openid.encodeResponse(response)
         except server.EncodingError as why:
             text = why.response.encodeToKVForm()
-            self.showErrorPage('<pre>%s</pre>' % cgi.escape(text))
+            self.showErrorPage('<pre>%s</pre>' % html.escape(text))
             return
 
         self.send_response(webresponse.code)
@@ -275,7 +276,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
         def link(url):
             url_attr = quoteattr(url)
-            url_text = cgi.escape(url)
+            url_text = html.escape(url)
             return '<a href=%s><code>%s</code></a>' % (url_attr, url_text)
 
         def term(url, text):
@@ -446,7 +447,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         approved_trust_roots = []
         for (aident, trust_root) in list(self.server.approved.keys()):
             if aident == ident:
-                trs = '<li><tt>%s</tt></li>\n' % cgi.escape(trust_root)
+                trs = '<li><tt>%s</tt></li>\n' % html.escape(trust_root)
                 approved_trust_roots.append(trs)
 
         if approved_trust_roots:
