@@ -37,6 +37,8 @@ OPENID_1_0_TYPE = 'http://openid.net/signon/1.0'
 from openid.message import OPENID1_NS as OPENID_1_0_MESSAGE_NS
 from openid.message import OPENID2_NS as OPENID_2_0_MESSAGE_NS
 
+logger = logging.getLogger(__name__)
+
 
 class OpenIDServiceEndpoint(object):
     """Object representing an OpenID service endpoint.
@@ -418,7 +420,7 @@ def discoverXRI(iname):
         for service_element in services:
             endpoints.extend(flt.getServiceEndpoints(iname, service_element))
     except XRDSError:
-        logging.exception('xrds error on ' + iname)
+        logger.exception('xrds error on ' + iname)
 
     for endpoint in endpoints:
         # Is there a way to pass this through the filter to the endpoint

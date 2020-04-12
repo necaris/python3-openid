@@ -132,6 +132,8 @@ from openid.message import Message, InvalidOpenIDNamespace, \
      OPENID_NS, OPENID2_NS, IDENTIFIER_SELECT, OPENID1_URL_LIMIT
 from openid.urinorm import urinorm
 
+logger = logging.getLogger(__name__)
+
 HTTP_OK = 200
 HTTP_REDIRECT = 302
 HTTP_ERROR = 400
@@ -418,7 +420,7 @@ class AssociateRequest(OpenIDRequest):
         if message.isOpenID1():
             session_type = message.getArg(OPENID_NS, 'session_type')
             if session_type == 'no-encryption':
-                logging.warning(
+                logger.warning(
                     'Received OpenID 1 request with a no-encryption '
                     'assocaition session type. Continuing anyway.')
             elif not session_type:
@@ -1170,14 +1172,14 @@ class Signatory(object):
         """
         assoc = self.getAssociation(assoc_handle, dumb=True)
         if not assoc:
-            logging.error("failed to get assoc with handle %r to verify "
+            logger.error("failed to get assoc with handle %r to verify "
                           "message %r" % (assoc_handle, message))
             return False
 
         try:
             valid = assoc.checkMessageSignature(message)
         except ValueError as ex:
-            logging.exception("Error in verifying %s with %s: %s" %
+            logger.exception("Error in verifying %s with %s: %s" %
                               (message, assoc, ex))
             return False
         return valid
@@ -1281,7 +1283,7 @@ class Signatory(object):
             key = self._normal_key
         assoc = self.store.getAssociation(key, assoc_handle)
         if assoc is not None and assoc.expiresIn <= 0:
-            logging.info("requested %sdumb key %r is expired (by %s seconds)" %
+            logger.info("requested %sdumb key %r is expired (by %s seconds)" %
                          ((not dumb) and 'not-' or '', assoc_handle,
                           assoc.expiresIn))
             if checkExpiration:
