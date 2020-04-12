@@ -62,4 +62,5 @@ There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
 
 - @necaris
 - @moreati
+- @vstoykov
 - @earthday
