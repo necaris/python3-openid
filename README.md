@@ -7,7 +7,7 @@ cleanups and updates to the code in general.
 
 # requirements
 
- - Python 3.3+ (tested on CPython 3.3-3.6, and PyPy3 (although some tests may fail on PyPy))
+ - Python 3.5+ (tested on CPython 3.5-3.8, and PyPy3 (although some tests may fail on PyPy))
 
 # installation
 
@@ -15,7 +15,7 @@ The recommended way is to install from PyPI with `pip`:
 
     pip install python3-openid
 
-Alternatively, you can run the following command:
+Alternatively, you can run the following command from a source checkout:
 
     python setup.py install
 
