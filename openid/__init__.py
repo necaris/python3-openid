@@ -23,7 +23,8 @@ module.
     and limitations under the License.
 """
 
-version_info = (3, 1, 0)
+version_info = (3, 2, 0)
+
 
 
 
