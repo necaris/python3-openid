@@ -114,13 +114,13 @@ def importElementTree(module_names=None):
             except:
                 logger.exception(
                     'Not using ElementTree library %r because it failed to '
-                    'parse a trivial document: %s' % mod_name)
+                    'parse a trivial document: %s' % (mod_name, ))
             else:
                 return ElementTree
     else:
         raise ImportError('No ElementTree library found. '
                           'You may need to install one. '
-                          'Tried importing %r' % (module_names, ))
+                          'Tried importing %r' % module_names)
 
 
 def log(message, level=0):
