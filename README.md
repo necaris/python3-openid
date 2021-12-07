@@ -53,7 +53,7 @@ http://epydoc.sourceforge.net/
 
 # contact
 
-Bug reports, suggestions, and feature requests are [very welcome](issues)!
+Bug reports, suggestions, and feature requests are [very welcome](../../issues)!
 
 There are also the `#python-openid` and `#openid` channels on FreeNode IRC.
 
