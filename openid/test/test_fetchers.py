@@ -1,3 +1,4 @@
+import sys
 import warnings
 import unittest
 import urllib.request
@@ -222,7 +223,10 @@ def test():
 
     import threading
     server_thread = threading.Thread(target=server.serve_forever)
-    server_thread.setDaemon(True)
+    if sys.version_info < (3, 10):
+        server_thread.setDaemon(True)
+    else:
+        server_thread.daemon = True
     server_thread.start()
 
     run_fetcher_tests(server)
