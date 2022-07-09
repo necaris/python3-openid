@@ -7,7 +7,7 @@ coverage
 # support
 Django
 httplib2
-mysqlclient ; python_version >= '3.3'
-psycopg2cffi
+mysqlclient
+psycopg2 # cffi
 pycrypto
 pycurl

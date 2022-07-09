@@ -8,19 +8,18 @@ try:
     import psycopg2
 except ImportError:
     from psycopg2cffi import compat
+
     compat.register()
 
 from openid.association import Association
 from openid.cryptutil import randomString
 from openid.store.nonce import mkNonce, split
 
-db_host = os.environ.get('TEST_DB_HOST', 'dbtest')
-
 allowed_handle = []
 for c in string.printable:
     if c not in string.whitespace:
         allowed_handle.append(c)
-allowed_handle = ''.join(allowed_handle)
+allowed_handle = "".join(allowed_handle)
 
 
 def generateHandle(n):
@@ -50,21 +49,25 @@ def testStore(store):
     ### Association functions
     now = int(time.time())
 
-    server_url = 'http://www.myopenid.com/openid'
+    server_url = "http://www.myopenid.com/openid"
 
     def genAssoc(issued, lifetime=600):
         sec = generateSecret(20)
         hdl = generateHandle(128)
-        return Association(hdl, sec, now + issued, lifetime, 'HMAC-SHA1')
+        return Association(hdl, sec, now + issued, lifetime, "HMAC-SHA1")
 
     def checkRetrieve(url, handle=None, expected=None):
         retrieved_assoc = store.getAssociation(url, handle)
-        assert retrieved_assoc == expected, (retrieved_assoc.__dict__,
-                                             expected.__dict__)
+        assert retrieved_assoc == expected, (
+            retrieved_assoc.__dict__,
+            expected.__dict__,
+        )
         if expected is not None:
             if retrieved_assoc is expected:
-                print('Unexpected: retrieved a reference to the expected '
-                      'value instead of a new object')
+                print(
+                    "Unexpected: retrieved a reference to the expected "
+                    "value instead of a new object"
+                )
             assert retrieved_assoc.handle == expected.handle
             assert retrieved_assoc.secret == expected.secret
 
@@ -89,10 +92,10 @@ def testStore(store):
     checkRetrieve(server_url, None, assoc)
 
     # Removing an association that does not exist returns not present
-    checkRemove(server_url, assoc.handle + 'x', False)
+    checkRemove(server_url, assoc.handle + "x", False)
 
     # Removing an association that does not exist returns not present
-    checkRemove(server_url + 'x', assoc.handle, False)
+    checkRemove(server_url + "x", assoc.handle, False)
 
     # Removing an association that is present returns present
     checkRemove(server_url, assoc.handle, True)
@@ -168,24 +171,22 @@ def testStore(store):
     assocExpired2 = genAssoc(issued=-7200, lifetime=3600)
 
     store.cleanupAssociations()
-    store.storeAssociation(server_url + '1', assocValid1)
-    store.storeAssociation(server_url + '1', assocExpired1)
-    store.storeAssociation(server_url + '2', assocExpired2)
-    store.storeAssociation(server_url + '3', assocValid2)
+    store.storeAssociation(server_url + "1", assocValid1)
+    store.storeAssociation(server_url + "1", assocExpired1)
+    store.storeAssociation(server_url + "2", assocExpired2)
+    store.storeAssociation(server_url + "3", assocValid2)
 
     cleaned = store.cleanupAssociations()
     assert cleaned == 2, cleaned
 
     ### Nonce functions
 
-    def checkUseNonce(nonce, expected, server_url, msg=''):
+    def checkUseNonce(nonce, expected, server_url, msg=""):
         stamp, salt = split(nonce)
         actual = store.useNonce(server_url, stamp, salt)
-        assert bool(actual) == bool(expected),\
-            "%r != %r: %s" % (actual, expected,
-                                                                 msg)
+        assert bool(actual) == bool(expected), "%r != %r: %s" % (actual, expected, msg)
 
-    for url in [server_url, '']:
+    for url in [server_url, ""]:
         # Random nonce (not in store)
         nonce1 = mkNonce()
 
@@ -199,14 +200,14 @@ def testStore(store):
 
         # Nonces from when the universe was an hour old should not pass now.
         old_nonce = mkNonce(3600)
-        checkUseNonce(old_nonce, False, url,
-                      "Old nonce (%r) passed." % (old_nonce, ))
+        checkUseNonce(old_nonce, False, url, "Old nonce (%r) passed." % (old_nonce,))
 
     old_nonce1 = mkNonce(now - 20000)
     old_nonce2 = mkNonce(now - 10000)
     recent_nonce = mkNonce(now - 600)
 
     from openid.store import nonce as nonceModule
+
     orig_skew = nonceModule.SKEW
     try:
         nonceModule.SKEW = 0
@@ -219,7 +220,7 @@ def testStore(store):
 
         nonceModule.SKEW = 3600
         cleaned = store.cleanupNonces()
-        assert cleaned == 2, "Cleaned %r nonces." % (cleaned, )
+        assert cleaned == 2, "Cleaned %r nonces." % (cleaned,)
 
         nonceModule.SKEW = 100000
         # A roundabout method of checking that the old nonces were cleaned is
@@ -248,7 +249,8 @@ def test_filestore():
 def test_sqlite():
     from openid.store import sqlstore
     import sqlite3
-    conn = sqlite3.connect(':memory:')
+
+    conn = sqlite3.connect(":memory:")
     store = sqlstore.SQLiteStore(conn)
     store.createTables()
     testStore(store)
@@ -256,34 +258,37 @@ def test_sqlite():
 
 def test_mysql():
     from openid.store import sqlstore
+
     try:
         import MySQLdb
     except ImportError:
-        raise unittest.SkipTest('Skipping MySQL store tests. '
-                                'Could not import MySQLdb.')
+        raise unittest.SkipTest(
+            "Skipping MySQL store tests. " "Could not import MySQLdb."
+        )
 
     else:
-        db_user = os.environ.get('TEST_MYSQL_USER', 'openid_test')
-        db_passwd = ''
+        db_host = os.environ.get("TEST_MYSQL_HOST", "localhost")
+        db_user = os.environ.get("TEST_MYSQL_USER", "openid_test")
+        db_passwd = os.environ.get("TEST_MYSQL_PASSWORD", "password")
         db_name = getTmpDbName()
 
         from MySQLdb.constants import ER
 
         # Change this connect line to use the right user and password
         try:
-            conn = MySQLdb.connect(
-                user=db_user, passwd=db_passwd, host=db_host)
+            conn = MySQLdb.connect(user=db_user, passwd=db_passwd, host=db_host)
         except MySQLdb.OperationalError as why:
             if why.args[0] == 2005:
                 raise unittest.SkipTest(
-                    'Skipping MySQL store test. '
-                    'Cannot connect to server on host %r.' % (db_host, ))
+                    "Skipping MySQL store test. "
+                    "Cannot connect to server on host %r." % (db_host,)
+                )
             else:
                 raise
 
-        conn.query('CREATE DATABASE %s;' % db_name)
+        conn.query("CREATE DATABASE %s;" % db_name)
         try:
-            conn.query('USE %s;' % db_name)
+            conn.query("USE %s;" % db_name)
 
             # OK, we're in the right environment. Create store and
             # create the tables.
@@ -295,7 +300,7 @@ def test_mysql():
         finally:
             # Remove the database. If you want to do post-mortem on a
             # failing test, comment out this line.
-            conn.query('DROP DATABASE %s;' % db_name)
+            conn.query("DROP DATABASE %s;" % db_name)
 
 
 def test_postgresql():
@@ -325,33 +330,37 @@ def test_postgresql():
     - To the 'template1' database once more, to drop the test database
     """
     from openid.store import sqlstore
+
     try:
         import psycopg2
     except ImportError:
-        raise unittest.SkipTest('Skipping PostgreSQL store tests. '
-                                'Could not import psycopg2.')
+        raise unittest.SkipTest(
+            "Skipping PostgreSQL store tests. " "Could not import psycopg2."
+        )
     else:
         db_name = getTmpDbName()
-        db_user = os.environ.get('TEST_POSTGRES_USER', 'openid_test')
+        db_host = os.environ.get("TEST_POSTGRES_HOST", "localhost")
+        db_user = os.environ.get("TEST_POSTGRES_USER", "openid_test")
+        db_passwd = os.environ.get("TEST_POSTGRES_PASSWORD", "password")
 
         # Connect once to create the database; reconnect to access the
         # new database.
         try:
             conn_create = psycopg2.connect(
-                database='template1', user=db_user, host=db_host)
+                database="template1", user=db_user, host=db_host, password=db_passwd
+            )
         except psycopg2.OperationalError as why:
-            raise unittest.SkipTest('Skipping PostgreSQL store test: %s' % why)
+            raise unittest.SkipTest("Skipping PostgreSQL store test: %s" % why)
 
         conn_create.autocommit = True
 
         # Create the test database.
         cursor = conn_create.cursor()
-        cursor.execute('CREATE DATABASE %s;' % (db_name, ))
+        cursor.execute("CREATE DATABASE %s;" % (db_name,))
         conn_create.close()
 
         # Connect to the test database.
-        conn_test = psycopg2.connect(
-            database=db_name, user=db_user, host=db_host)
+        conn_test = psycopg2.connect(database=db_name, user=db_user, host=db_host)
 
         # OK, we're in the right environment. Create the store
         # instance and create the tables.
@@ -369,20 +378,21 @@ def test_postgresql():
         # the database.  (Maybe this is because we're using a UNIX
         # socket to connect to postgres rather than TCP?)
         import time
+
         time.sleep(1)
 
         # Remove the database now that the test is over.
-        conn_remove = psycopg2.connect(
-            database='template1', user=db_user, host=db_host)
+        conn_remove = psycopg2.connect(database="template1", user=db_user, host=db_host)
         conn_remove.autocommit = True
 
         cursor = conn_remove.cursor()
-        cursor.execute('DROP DATABASE %s;' % (db_name, ))
+        cursor.execute("DROP DATABASE %s;" % (db_name,))
         conn_remove.close()
 
 
 def test_memstore():
     from openid.store import memstore
+
     testStore(memstore.MemoryStore())
 
 
@@ -400,8 +410,9 @@ def pyUnitTests():
     return unittest.TestSuite(tests)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     suite = pyUnitTests()
     runner = unittest.TextTestRunner()
     result = runner.run(suite)
