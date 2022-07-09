@@ -1,9 +1,36 @@
 ---
-name: run-tests
-on: [push]
+name: Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    # container:
+    #   image: debian:bullseye
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_USER: mysql
+          MYSQL_PASSWORD: password
+          MYSQL_RANDOM_ROOT_PASSWORD: true
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
     env:
       TEST_MYSQL_HOST: mysql
       TEST_MYSQL_USER: mysql
@@ -11,7 +38,9 @@ jobs:
       TEST_POSTGRES_HOST: postgres
       TEST_POSTGRES_USER: postgres
       TEST_POSTGRES_PASSWORD: password
+    continue-on-error: ${{ contains(matrix.python-version, 'pypy') || contains(matrix.python-version, 'dev') }}
     strategy:
+      fail-fast: false
       matrix:
         python-version:
           - 3.5
@@ -19,49 +48,21 @@ jobs:
           - 3.7
           - 3.8
           - 3.9
-          - 3.10
+          - "3.10"
           - 3.11-dev
           - pypy3.6
           - pypy3.7
           - pypy3.8
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432/tcp
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_DATABASE: test_db
-          MYSQL_USER: mysql
-          MYSQL_PASSWORD: password
-          MYSQL_ROOT_PASSWORD: rootpassword
-        ports:
-          - 3306/tcp
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
     steps:
-      - run: sudo apt update && apt install --yes libcurl4-openssl-dev
+      - run: >-
+          sudo apt update
+          && sudo apt install --yes libcurl4-openssl-dev
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - run: pip install wheel
       - run: pip install -r dev-requirements.txt
       - run: pip install .
       - run: coverage run -m unittest openid.test.test_suite
       - run: coverage report
-
-services:
-  - mysql
-  - postgresql

@@ -2,7 +2,7 @@ _NOTE_: This started out as a fork of the Python OpenID library, with changes
 to make it Python 3 compatible. It's now a port of that library, including
 cleanups and updates to the code in general.
 
-[![Build Status](https://travis-ci.org/necaris/python3-openid.svg?branch=master)](https://travis-ci.org/necaris/python3-openid)
+[![Build Status](https://github.com/necaris/python3-openid/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/necaris/python3-openid/actions?query=branch%3Amain)
 [![Coverage Status](https://coveralls.io/repos/necaris/python3-openid/badge.svg?branch=master&service=github)](https://coveralls.io/github/necaris/python3-openid?branch=master)
 
 # requirements
