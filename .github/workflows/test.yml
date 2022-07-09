@@ -38,7 +38,9 @@ jobs:
       TEST_POSTGRES_HOST: postgres
       TEST_POSTGRES_USER: postgres
       TEST_POSTGRES_PASSWORD: password
+    continue-on-error: ${{ contains(matrix.python-version, 'pypy') || contains(matrix.python-version, 'dev') }}
     strategy:
+      fail-fast: false
       matrix:
         python-version:
           - 3.5
