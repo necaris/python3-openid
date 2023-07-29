@@ -16,8 +16,8 @@ from urllib.parse import urlencode
 logger = logging.getLogger(__name__)
 
 xxe_safe_elementtree_modules = [
-    'defusedxml.cElementTree',
     'defusedxml.ElementTree',
+    'defusedxml.cElementTree',
 ]
 
 elementtree_modules = [
