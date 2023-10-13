@@ -1243,7 +1243,7 @@ class Signatory(object):
         @returntype: L{openid.association.Association}
         """
         secret = cryptutil.getBytes(getSecretSize(assoc_type))
-        uniq = oidutil.toBase64(cryptutil.getBytes(4))
+        uniq = oidutil.toBase64(cryptutil.getBytes(4)).decode()
         handle = '{%s}{%x}{%s}' % (assoc_type, int(time.time()), uniq)
 
         assoc = Association.fromExpiresIn(self.SECRET_LIFETIME, handle, secret,
