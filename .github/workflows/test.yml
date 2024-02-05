@@ -65,8 +65,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - run: pip install wheel
-      - run: pip install -r dev-requirements.txt
-      - run: pip install .
+      - run: >
+          pip install wheel
+          && pip install -r dev-requirements.txt
+          && pip install .
       - run: coverage run -m unittest openid.test.test_suite
       - run: coverage report
