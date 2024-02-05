@@ -57,9 +57,10 @@ jobs:
           - 'pypy3.9'
           - 'pypy3.10'
     steps:
-      - run: >-
-          sudo apt update
-          && sudo apt install --yes libcurl4-openssl-dev
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libcurl4-openssl-dev
+          version: 1.0
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
