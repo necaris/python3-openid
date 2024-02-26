@@ -40,7 +40,7 @@ from openid.message import OPENID2_NS as OPENID_2_0_MESSAGE_NS
 logger = logging.getLogger(__name__)
 
 
-class OpenIDServiceEndpoint(object):
+class OpenIDServiceEndpoint(dict):
     """Object representing an OpenID service endpoint.
 
     @ivar identity_url: the verified identifier.
@@ -57,13 +57,86 @@ class OpenIDServiceEndpoint(object):
     ]
 
     def __init__(self):
-        self.claimed_id = None
-        self.server_url = None
-        self.type_uris = []
-        self.local_id = None
-        self.canonicalID = None
-        self.used_yadis = False  # whether this came from an XRDS
-        self.display_identifier = None
+        dict.__init__(
+            self,
+            claimed_id=None,
+            server_url=None,
+            type_uris=None,
+            local_id=None,
+            canonicalID=None,
+            # whether this came from an XRDS
+            used_yadis=False,
+            display_identifier=None
+        )
+
+    @classmethod
+    def _from_dict(cls, data):
+        newinstance = OpenIDServiceEndpoint()
+        newinstance.claimed_id = data.get("claimed_id", None),
+        newinstance.server_url = data.get("server_url", None),
+        newinstance.type_uris = data.get("type_uris", None),
+        newinstance.local_id = data.get("local_id", None),
+        newinstance.canonicalID = data.get("canonicalID", None),
+        # whether this came from an XRDS
+        newinstance.used_yadis = data.get("used_yadis", None),
+        newinstance.display_identifier = data.get("display_identifier", None)
+        return newinstance
+
+    @property
+    def claimed_id(self):
+        return self["claimed_id"]
+
+    @claimed_id.setter
+    def claimed_id(self, value):
+        self["claimed_id"] = value
+
+    @property
+    def server_url(self):
+        return self["server_url"]
+
+    @server_url.setter
+    def server_url(self, value):
+        self["server_url"] = value
+
+    @property
+    def type_uris(self):
+        return self["type_uris"]
+
+    @type_uris.setter
+    def type_uris(self, value):
+        self["type_uris"] = value
+
+    @property
+    def local_id(self):
+        return self["local_id"]
+
+    @local_id.setter
+    def local_id(self, value):
+        self["local_id"] = value
+
+    @property
+    def canonicalID(self):
+        return self["canonicalID"]
+
+    @canonicalID.setter
+    def canonicalID(self, value):
+        self["canonicalID"] = value
+
+    @property
+    def used_yadis(self):
+        return self["used_yadis"]
+
+    @used_yadis.setter
+    def used_yadis(self, value):
+        self["used_yadis"] = value
+
+    @property
+    def display_identifier(self):
+        return self["display_identifier"]
+
+    @display_identifier.setter
+    def display_identifier(self, value):
+        self["display_identifier"] = value
 
     def usesExtension(self, extension_uri):
         return extension_uri in self.type_uris
