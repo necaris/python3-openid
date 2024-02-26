@@ -933,6 +933,8 @@ class GenericConsumer(object):
         # again. This covers not using sessions, OP identifier
         # endpoints and responses that didn't match the original
         # request.
+        if type(endpoint) == dict:
+            endpoint = OpenIDServiceEndpoint._from_dict(endpoint)
         if not endpoint:
             logger.info('No pre-discovered information supplied.')
             endpoint = self._discoverAndVerify(to_match.claimed_id, [to_match])
