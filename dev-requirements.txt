@@ -8,7 +8,7 @@ coverage
 Django
 httplib2
 mysqlclient
-psycopg2     ; implementation_name == "cpython" 
-psycopg2cffi ; implementation_name == "pypy" 
+psycopg2     ; implementation_name == "cpython"
+psycopg2cffi ; implementation_name == "pypy"
 pycrypto     ; python_version < "3.7" and implementation_name == "cpython"
-pycurl       ; implementation_name == "cpython"
+pycurl       ; python_version < "3.6" and implementation_name == "cpython"
