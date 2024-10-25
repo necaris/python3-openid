@@ -56,87 +56,53 @@ class OpenIDServiceEndpoint(dict):
         OPENID_1_0_TYPE,
     ]
 
-    def __init__(self):
-        dict.__init__(
+    # NOTE: The intent for this is similar to __slots__, but since we are
+    # subclassing `dict` we can't use that technique directly
+    _slots_ = (
+        "claimed_id",
+        "server_url",
+        "type_uris",
+        "local_id",
+        "canonicalID",
+        "used_yadis",
+        "display_identifier",
+    )
+
+    def __init__(
+        self,
+        claimed_id=None,
+        server_url=None,
+        type_uris=None,
+        local_id=None,
+        canonicalID=None,
+        used_yadis=False,
+        display_identifier=None,
+    ):
+        super().__init__(
             self,
-            claimed_id=None,
-            server_url=None,
-            type_uris=None,
-            local_id=None,
-            canonicalID=None,
+            claimed_id=claimed_id,
+            server_url=server_url,
+            type_uris=type_uris,
+            local_id=local_id,
+            canonicalID=canonicalID,
             # whether this came from an XRDS
-            used_yadis=False,
-            display_identifier=None
+            used_yadis=used_yadis,
+            display_identifier=display_identifier,
         )
 
     @classmethod
     def _from_dict(cls, data):
-        newinstance = OpenIDServiceEndpoint()
-        newinstance.claimed_id = data.get("claimed_id", None),
-        newinstance.server_url = data.get("server_url", None),
-        newinstance.type_uris = data.get("type_uris", None),
-        newinstance.local_id = data.get("local_id", None),
-        newinstance.canonicalID = data.get("canonicalID", None),
-        # whether this came from an XRDS
-        newinstance.used_yadis = data.get("used_yadis", None),
-        newinstance.display_identifier = data.get("display_identifier", None)
-        return newinstance
+        return cls(**data)
 
-    @property
-    def claimed_id(self):
-        return self["claimed_id"]
+    def __getattr__(self, name):
+        if name not in self._slots_:
+            raise AttributeError(name=name)
+        return self[name]
 
-    @claimed_id.setter
-    def claimed_id(self, value):
-        self["claimed_id"] = value
-
-    @property
-    def server_url(self):
-        return self["server_url"]
-
-    @server_url.setter
-    def server_url(self, value):
-        self["server_url"] = value
-
-    @property
-    def type_uris(self):
-        return self["type_uris"]
-
-    @type_uris.setter
-    def type_uris(self, value):
-        self["type_uris"] = value
-
-    @property
-    def local_id(self):
-        return self["local_id"]
-
-    @local_id.setter
-    def local_id(self, value):
-        self["local_id"] = value
-
-    @property
-    def canonicalID(self):
-        return self["canonicalID"]
-
-    @canonicalID.setter
-    def canonicalID(self, value):
-        self["canonicalID"] = value
-
-    @property
-    def used_yadis(self):
-        return self["used_yadis"]
-
-    @used_yadis.setter
-    def used_yadis(self, value):
-        self["used_yadis"] = value
-
-    @property
-    def display_identifier(self):
-        return self["display_identifier"]
-
-    @display_identifier.setter
-    def display_identifier(self, value):
-        self["display_identifier"] = value
+    def __setattr__(self, name, value):
+        if name not in self._slots_:
+            raise AttributeError(name=name)
+        self[name] = value
 
     def usesExtension(self, extension_uri):
         return extension_uri in self.type_uris
