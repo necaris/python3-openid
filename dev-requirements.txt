@@ -9,5 +9,5 @@ Django
 httplib2
 mysqlclient
 psycopg2 # cffi
-pycrypto
+pycrypto ; python_version < "3.7"
 pycurl

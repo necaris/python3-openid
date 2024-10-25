@@ -29,6 +29,7 @@ __all__ = [
 import hmac
 import os
 import random
+import sys
 
 from openid.oidutil import toBase64, fromBase64
 
@@ -76,28 +77,9 @@ def sha256(s):
 SHA256_AVAILABLE = True
 
 try:
+    assert sys.version_info < (3, 10)
+
     from Crypto.Util.number import long_to_bytes, bytes_to_long
-except ImportError:
-    # In the case where we don't have pycrypto installed, define substitute
-    # functionality.
-
-    import pickle
-
-    def longToBinary(l):
-        if l == 0:
-            return b'\x00'
-        b = bytearray(pickle.encode_long(l))
-        b.reverse()
-        return bytes(b)
-
-    def binaryToLong(s):
-        if isinstance(s, str):
-            s = s.encode("utf-8")
-        b = bytearray(s)
-        b.reverse()
-        return pickle.decode_long(bytes(b))
-else:
-    # We have pycrypto, so wrap its functions instead.
 
     def longToBinary(l):
         if l < 0:
@@ -117,6 +99,26 @@ else:
             raise ValueError('This function only supports positive integers')
 
         return bytes_to_long(bytestring)
+
+except (AssertionError, ImportError):
+    # In the case where we don't have pycrypto installed, define substitute
+    # functionality.
+
+    import pickle
+
+    def longToBinary(l):
+        if l == 0:
+            return b'\x00'
+        b = bytearray(pickle.encode_long(l))
+        b.reverse()
+        return bytes(b)
+
+    def binaryToLong(s):
+        if isinstance(s, str):
+            s = s.encode("utf-8")
+        b = bytearray(s)
+        b.reverse()
+        return pickle.decode_long(bytes(b))
 
 
 # A cryptographically safe source of random bytes
