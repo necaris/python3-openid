@@ -11,7 +11,7 @@ __copyright__ = 'Copyright 2005-2008, Janrain, Inc.'
 from http.cookies import SimpleCookie
 import html
 import urllib.parse
-import cgitb
+import traceback
 import sys
 
 
@@ -156,7 +156,7 @@ class OpenIDRequestHandler(BaseHTTPRequestHandler):
             self.setSessionCookie()
             self.end_headers()
             self.wfile.write(
-                bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
+                bytes(traceback.format_exc(limit=10), 'utf-8'))
 
     def doVerify(self):
         """Process the form submission, initating OpenID verification.
