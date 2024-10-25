@@ -10,9 +10,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    # container:
-    #   image: debian:bullseye
+    # We need to specify 20.04 to maintain compatibility with older Python versions :-(
+    runs-on: ubuntu-20.04
     services:
       postgres:
         image: postgres:latest
@@ -43,19 +42,20 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - '3.5'
-          - '3.6'
-          - '3.7'
-          - '3.8'
-          - '3.9'
-          - '3.10'
-          - '3.11'
-          - '3.12'
-          - 'pypy3.6'
-          - 'pypy3.7'
-          - 'pypy3.8'
-          - 'pypy3.9'
-          - 'pypy3.10'
+          - "3.5"
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "pypy3.6"
+          - "pypy3.7"
+          - "pypy3.8"
+          - "pypy3.9"
+          - "pypy3.10"
     steps:
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
@@ -65,10 +65,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+        env:
+          # Workaround from https://github.com/actions/setup-python/issues/866
+          PIP_TRUSTED_HOST: ${{ contains(matrix.python-version, '3.5') && 'pypi.python.org pypi.org files.pythonhosted.org' || 'none'}}
+          cache: "pip"
       - run: >
           pip install wheel
           && pip install -r dev-requirements.txt
           && pip install .
+        env:
+          # Workaround from https://github.com/actions/setup-python/issues/866
+          PIP_TRUSTED_HOST: ${{ contains(matrix.python-version, '3.5') && 'pypi.python.org pypi.org files.pythonhosted.org' || 'none'}}
       - run: coverage run -m unittest openid.test.test_suite
       - run: coverage report
