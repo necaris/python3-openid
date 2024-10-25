@@ -43,26 +43,32 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - 3.5
-          - 3.6
-          - 3.7
-          - 3.8
-          - 3.9
-          - "3.10"
-          - 3.11-dev
-          - pypy3.6
-          - pypy3.7
-          - pypy3.8
+          - '3.5'
+          - '3.6'
+          - '3.7'
+          - '3.8'
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - 'pypy3.6'
+          - 'pypy3.7'
+          - 'pypy3.8'
+          - 'pypy3.9'
+          - 'pypy3.10'
     steps:
-      - run: >-
-          sudo apt update
-          && sudo apt install --yes libcurl4-openssl-dev
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libcurl4-openssl-dev
+          version: 1.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install wheel
-      - run: pip install -r dev-requirements.txt
-      - run: pip install .
+          cache: 'pip'
+      - run: >
+          pip install wheel
+          && pip install -r dev-requirements.txt
+          && pip install .
       - run: coverage run -m unittest openid.test.test_suite
       - run: coverage report
