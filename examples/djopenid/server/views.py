@@ -13,8 +13,7 @@ Some code conventions used here:
 
 * 'openid_response' is an OpenID library response
 """
-
-import cgi
+import html
 
 from djopenid import util
 from djopenid.util import getViewURL
@@ -274,7 +273,7 @@ def displayResponse(request, openid_response):
         # If it couldn't be encoded, display an error.
         text = why.response.encodeToKVForm()
         return render_to_response(
-            'server/endpoint.html', {'error': cgi.escape(text)},
+            'server/endpoint.html', {'error': html.escape(text)},
             context_instance=RequestContext(request))
 
     # Construct the appropriate django framework response.
