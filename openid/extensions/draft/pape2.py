@@ -27,7 +27,7 @@ AUTH_MULTI_FACTOR = \
 AUTH_PHISHING_RESISTANT = \
     'http://schemas.openid.net/pape/policies/2007/06/phishing-resistant'
 
-TIME_VALIDATOR = re.compile('^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$')
+TIME_VALIDATOR = re.compile(r'^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ$')
 
 
 class Request(Extension):
