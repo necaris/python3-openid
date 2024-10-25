@@ -2,70 +2,48 @@ class YadisServiceManager(dict):
     """Holds the state of a list of selected Yadis services, managing
     storing it in a session and iterating over the services in order."""
 
+    _slots_ = (
+        "starting_url",
+        "yadis_url",
+        "services",
+        "session_key",
+        "_current",
+    )
+
     def __init__(self, starting_url, yadis_url, services, session_key):
-        # starting_url: The URL that was used to initiate the Yadis protocol
-        # yadis_url: The URL after following redirects (the identifier)
-        # services: List of service elements
-        # session_key: The session key to be used
-        # _current: Reference to the current service object
-        dict.__init__(
+        super().__init__(
             self,
+            # The URL that was used to initiate the Yadis protocol
             starting_url=starting_url,
+            # The URL after following redirects (the identifier)
             yadis_url=yadis_url,
+            # List of service elements
             services=list(services),
+            # The session key to be used
             session_key=session_key,
+            # Reference to the current service object
             _current=None
         )
 
-    # Getters and setters for the above
-    @property
-    def starting_url(self):
-        return self["starting_url"]
+    @classmethod
+    def _from_dict(cls, data):
+        return cls(**data)
 
-    @starting_url.setter
-    def starting_url(self, value):
-        self["starting_url"] = value
+    def __getattr__(self, name):
+        if name not in self._slots_:
+            raise AttributeError(name)
+        return self[name]
 
-    @property
-    def yadis_url(self):
-        return self["yadis_url"]
+    def __setattr__(self, name, value):
+        if name not in self._slots_:
+            raise AttributeError(name)
+        self[name] = value
 
-    @yadis_url.setter
-    def yadis_url(self, value):
-        self["yadis_url"] = value
-
-    @property
-    def services(self):
-        return self["services"]
-
-    @services.setter
-    def services(self, value):
-        self["services"] = list(value)
-
-    @property
-    def session_key(self):
-        return self["session_key"]
-
-    @session_key.setter
-    def session_key(self, value):
-        self["session_key"] = value
-
-    @property
-    def _current(self):
-        return self["_current"]
-
-    @_current.setter
-    def _current(self, value):
-        self["_current"] = value
-
-    def __len__(self):
+    def service_count(self):
         """How many untried services remain?"""
         return len(self.services)
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
+    def next_service(self):
         """Return the next service
 
         self.current() will continue to return that service until the
@@ -114,8 +92,8 @@ class Discovery(object):
         this object in the session object.
     """
 
-    DEFAULT_SUFFIX = 'auth'
-    PREFIX = '_yadis_services_'
+    DEFAULT_SUFFIX = "auth"
+    PREFIX = "_yadis_services_"
 
     def __init__(self, session, url, session_key_suffix=None):
         """Initialize a discovery object"""
@@ -148,7 +126,7 @@ class Discovery(object):
             manager = self.createManager(services, yadis_url)
 
         if manager:
-            service = next(manager)
+            service = manager.next_service()
             manager.store(self.session)
         else:
             service = None
@@ -185,23 +163,6 @@ class Discovery(object):
         """
         return self.PREFIX + self.session_key_suffix
 
-    @classmethod
-    def _from_dict(cls, data):
-        newmanager = YadisServiceManager(
-            starting_url=data.get("starting_url", None),
-            yadis_url=data.get("yadis_url", None),
-            services=data.get("services", None),
-            session_key=data.get("session_key", None)
-        )
-        newmanager._current = data.get("_current", None),
-        newmanager.server_url = data.get("server_url", None),
-        newmanager.type_uris = data.get("type_uris", None),
-        newmanager.local_id = data.get("local_id", None),
-        newmanager.canonicalID = data.get("canonicalID", None),
-        newmanager.used_yadis = data.get("used_yadis", None),
-        newmanager.display_identifier = data.get("display_identifier", None)
-        return newmanager
-
     def getManager(self, force=False):
         """Extract the YadisServiceManager for this object's URL and
         suffix from the session.
@@ -216,10 +177,10 @@ class Discovery(object):
 
         # Handle the case where we only receive a dict, instead of a
         # full YadisServiceManager object
-        if(type(manager) == dict):
+        if type(manager) == dict:
             manager = self._from_dict(manager)
 
-        if (manager is not None and (manager.forURL(self.url) or force)):
+        if manager is not None and (manager.forURL(self.url) or force):
             return manager
         else:
             return None
@@ -234,8 +195,7 @@ class Discovery(object):
         """
         key = self.getSessionKey()
         if self.getManager():
-            raise KeyError('There is already a %r manager for %r' %
-                           (key, self.url))
+            raise KeyError("There is already a %r manager for %r" % (key, self.url))
 
         if not services:
             return None
