@@ -5,11 +5,10 @@ __copyright__ = 'Copyright 2005-2008, Janrain, Inc.'
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from urllib.parse import parse_qsl
-
 import time
 import http.cookies
 import html
-import cgitb
+import traceback
 import sys
 
 
@@ -102,7 +101,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(
-                bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
+                bytes(traceback.format_exc(limit=10), 'utf-8'))
 
     def do_POST(self):
         try:
@@ -133,7 +132,7 @@ class ServerHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(
-                bytes(cgitb.html(sys.exc_info(), context=10), 'utf-8'))
+                bytes(traceback.format_exc(limit=10), 'utf-8'))
 
     def handleAllow(self, query):
         # pretend this next bit is keying off the user's session or something,
