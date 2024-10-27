@@ -111,10 +111,10 @@ def importElementTree(module_names=None):
                 ElementTree.XML('<unused/>')
             except (SystemExit, MemoryError, AssertionError):
                 raise
-            except:
+            except Exception as e:
                 logger.exception(
                     'Not using ElementTree library %r because it failed to '
-                    'parse a trivial document: %s' % (mod_name, ))
+                    'parse a trivial document: %r' % (mod_name, e))
             else:
                 return ElementTree
     else:
