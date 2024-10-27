@@ -1,30 +1,49 @@
-class YadisServiceManager(object):
+class YadisServiceManager(dict):
     """Holds the state of a list of selected Yadis services, managing
     storing it in a session and iterating over the services in order."""
 
+    _slots_ = (
+        "starting_url",
+        "yadis_url",
+        "services",
+        "session_key",
+        "_current",
+    )
+
     def __init__(self, starting_url, yadis_url, services, session_key):
-        # The URL that was used to initiate the Yadis protocol
-        self.starting_url = starting_url
+        super().__init__(
+            self,
+            # The URL that was used to initiate the Yadis protocol
+            starting_url=starting_url,
+            # The URL after following redirects (the identifier)
+            yadis_url=yadis_url,
+            # List of service elements
+            services=list(services),
+            # The session key to be used
+            session_key=session_key,
+            # Reference to the current service object
+            _current=None
+        )
 
-        # The URL after following redirects (the identifier)
-        self.yadis_url = yadis_url
+    @classmethod
+    def _from_dict(cls, data):
+        return cls(**data)
 
-        # List of service elements
-        self.services = list(services)
+    def __getattr__(self, name):
+        if name not in self._slots_:
+            raise AttributeError(name)
+        return self[name]
 
-        self.session_key = session_key
+    def __setattr__(self, name, value):
+        if name not in self._slots_:
+            raise AttributeError(name)
+        self[name] = value
 
-        # Reference to the current service object
-        self._current = None
-
-    def __len__(self):
+    def service_count(self):
         """How many untried services remain?"""
         return len(self.services)
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
+    def next_service(self):
         """Return the next service
 
         self.current() will continue to return that service until the
@@ -73,8 +92,8 @@ class Discovery(object):
         this object in the session object.
     """
 
-    DEFAULT_SUFFIX = 'auth'
-    PREFIX = '_yadis_services_'
+    DEFAULT_SUFFIX = "auth"
+    PREFIX = "_yadis_services_"
 
     def __init__(self, session, url, session_key_suffix=None):
         """Initialize a discovery object"""
@@ -107,7 +126,7 @@ class Discovery(object):
             manager = self.createManager(services, yadis_url)
 
         if manager:
-            service = next(manager)
+            service = manager.next_service()
             manager.store(self.session)
         else:
             service = None
@@ -155,7 +174,13 @@ class Discovery(object):
             URL, or else None
         """
         manager = self.session.get(self.getSessionKey())
-        if (manager is not None and (manager.forURL(self.url) or force)):
+
+        # Handle the case where we only receive a dict, instead of a
+        # full YadisServiceManager object
+        if type(manager) == dict:
+            manager = self._from_dict(manager)
+
+        if manager is not None and (manager.forURL(self.url) or force):
             return manager
         else:
             return None
@@ -170,8 +195,7 @@ class Discovery(object):
         """
         key = self.getSessionKey()
         if self.getManager():
-            raise KeyError('There is already a %r manager for %r' %
-                           (key, self.url))
+            raise KeyError("There is already a %r manager for %r" % (key, self.url))
 
         if not services:
             return None

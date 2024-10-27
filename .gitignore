@@ -14,5 +14,6 @@ dist/
 sdist/
 *.egg-info/
 
+.venv
 .envrc
 .direnv

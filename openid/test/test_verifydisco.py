@@ -101,7 +101,7 @@ class DiscoveryVerificationTest(OpenIDTestMixin, TestIdRes):
 
     def test_openID2MismatchedDoesDisco(self):
         mismatched = discover.OpenIDServiceEndpoint()
-        mismatched.identity = 'nothing special, but different'
+        mismatched.claimed_id = 'nothing special, but different'
         mismatched.local_id = 'green cheese'
 
         op_endpoint = 'Phone Home'
