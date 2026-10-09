@@ -95,6 +95,77 @@ removed_re = re.compile(r'''
 
 ''', flags)
 
+
+# Linear, exact replacement for removed_re.sub('', html).  A lazy pair "O...C"
+# means the first O, then the first C after it, which a fixed-string search
+# gives directly.  The one subtlety is that when an O cannot complete, the
+# regex keeps looking for a later O - but if a C is absent from the rest of the
+# string, no later O of that kind can complete either, so that kind is retired.
+_comment_open = re.compile(r'<!--')
+_comment_close = re.compile(r'-->')
+_cdata_open = re.compile(r'<!\[CDATA\[', re.IGNORECASE)
+_cdata_close = re.compile(r'\]\]>')
+_script_lit = re.compile(r'<script', re.IGNORECASE)
+_script_head = re.compile(r'<script\b(?!:)', re.IGNORECASE | re.UNICODE)
+_script_gt = re.compile(r'>')
+_script_close = re.compile(r'</script>', re.IGNORECASE)
+
+
+def _script_span(html, start):
+    """Span of the leftmost ``<script...>...</script>`` at or after start."""
+    pos = start
+    while True:
+        mo = _script_lit.search(html, pos)
+        if mo is None:
+            return None
+        if _script_head.match(html, mo.start()) is None:
+            # Not a tag: a longer word, or the "script:" XML namespace.
+            pos = mo.start() + 1
+            continue
+        gt = _script_gt.search(html, mo.end())
+        if gt is None:
+            return None  # no ">" left, so no later opener can complete either
+        close = _script_close.search(html, gt.end())
+        if close is None:
+            return None  # no closer left, same reasoning
+        return mo.start(), close.end()
+
+
+def removeMarkup(html):
+    """Remove comments, CDATA blocks and script blocks, as removed_re does."""
+    out = []
+    copied = pos = 0
+    live_comment = live_cdata = live_script = True
+    while pos < len(html):
+        best = None
+        if live_comment:
+            mo = _comment_open.search(html, pos)
+            close = None if mo is None else _comment_close.search(html, mo.end())
+            if close is None:
+                live_comment = False
+            else:
+                best = (mo.start(), close.end())
+        if live_cdata:
+            mo = _cdata_open.search(html, pos)
+            close = None if mo is None else _cdata_close.search(html, mo.end())
+            if close is None:
+                live_cdata = False
+            elif best is None or mo.start() < best[0]:
+                best = (mo.start(), close.end())
+        if live_script:
+            span = _script_span(html, pos)
+            if span is None:
+                live_script = False
+            elif best is None or span[0] < best[0]:
+                best = span
+        if best is None:
+            break
+        out.append(html[copied:best[0]])
+        copied = pos = best[1]
+    out.append(html[copied:])
+    return ''.join(out)
+
+
 tag_expr = r'''
 # Starts with the tag name at a word boundary, where the tag name is
 # not a namespace
@@ -206,7 +277,7 @@ def parseLinkAttrs(html, ignore_errors=False):
                 else:
                     raise AssertionError("Unreadable HTML!")
 
-    stripped = removed_re.sub('', html)
+    stripped = removeMarkup(html)
     html_mo = html_find.search(stripped)
     if html_mo is None or html_mo.start('contents') == -1:
         return []
