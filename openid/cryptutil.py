@@ -122,8 +122,10 @@ else:
 # A cryptographically safe source of random bytes
 getBytes = os.urandom
 
-# A randrange function that works for longs
-randrange = random.randrange
+# A randrange function that works for longs. It feeds Diffie-Hellman private
+# keys and nonce salts, so it must draw from the operating system's CSPRNG and
+# not from the seedable, predictable Mersenne Twister behind random.randrange.
+randrange = random.SystemRandom().randrange
 
 
 def longToBase64(l):
@@ -144,11 +146,12 @@ def randomString(length, chrs=None):
 
 
 def const_eq(s1, s2):
-    if len(s1) != len(s2):
+    """Compare two strings, or two byte strings, in constant time."""
+    if isinstance(s1, str) and isinstance(s2, str):
+        s1 = s1.encode('utf-8', 'surrogatepass')
+        s2 = s2.encode('utf-8', 'surrogatepass')
+    elif isinstance(s1, str) or isinstance(s2, str):
+        # A string never equals a byte string
         return False
 
-    result = True
-    for i in range(len(s1)):
-        result = result and (s1[i] == s2[i])
-
-    return result
+    return hmac.compare_digest(s1, s2)

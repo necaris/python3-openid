@@ -1,4 +1,5 @@
 import os.path
+import random
 from openid.dh import DiffieHellman, strxor
 
 
@@ -52,6 +53,21 @@ def test_exchange():
     assert s1 != s2
 
 
+def test_private_not_seedable():
+    # The private key must not follow the seedable global generator of the
+    # random module
+    state = random.getstate()
+    try:
+        random.seed(1)
+        dh1 = DiffieHellman.fromDefaults()
+        random.seed(1)
+        dh2 = DiffieHellman.fromDefaults()
+    finally:
+        random.setstate(state)
+
+    assert dh1.private != dh2.private
+
+
 def test_public():
     f = open(os.path.join(os.path.dirname(__file__), 'dhpriv'))
     dh = DiffieHellman.fromDefaults()
@@ -67,6 +83,7 @@ def test_public():
 
 def test():
     test_exchange()
+    test_private_not_seedable()
     test_public()
     test_strxor()
 
