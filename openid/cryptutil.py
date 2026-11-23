@@ -122,9 +122,8 @@ else:
 # A cryptographically safe source of random bytes
 getBytes = os.urandom
 
-# A randrange function that works for longs. It feeds Diffie-Hellman private
-# keys and nonce salts, so it must draw from the operating system's CSPRNG and
-# not from the seedable, predictable Mersenne Twister behind random.randrange.
+# A randrange function that works for longs. Requires a high-quality source:
+# use the operating system's CSPRNG.
 randrange = random.SystemRandom().randrange
 
 
